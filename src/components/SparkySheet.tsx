@@ -284,7 +284,7 @@ export default function SparkySheet({ onCreated }: SparkySheetProps) {
                 </div>
 
                 <div className="text-sm text-muted-foreground">
-                  You have {timesArray.length} sessions, {customTimes ? "custom" : sessionMinutes} minutes each session, total {totalMinutes} minutes
+                  You have <strong>{timesArray.length}</strong> sessions, <strong>{customTimes ? "custom" : sessionMinutes} minutes</strong> each session, total <strong>{totalMinutes}</strong> minutes
                 </div>
               </CardContent>
             </Card>
