@@ -193,7 +193,7 @@ export default function SparkySheet({ onCreated }: SparkySheetProps) {
                 <CardTitle>How many sessions and minutes do you have?</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">We recommend 90–180 minutes total.</p>
+                <p className="text-sm text-muted-foreground">We recommend <strong>90–180 minutes </strong> total.</p>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -284,7 +284,7 @@ export default function SparkySheet({ onCreated }: SparkySheetProps) {
                 </div>
 
                 <div className="text-sm text-muted-foreground">
-                  You have <strong>{timesArray.length}</strong> sessions, <strong>{customTimes ? "custom" : sessionMinutes} minutes</strong> each session, total <strong>{totalMinutes}</strong> minutes
+                  You have <strong>{timesArray.length} sessions</strong>, <strong>{customTimes ? "custom" : sessionMinutes} minutes</strong> each session, total <strong>{totalMinutes} minutes</strong>
                 </div>
               </CardContent>
             </Card>
