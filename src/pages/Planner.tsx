@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, Trash2, Pencil, Presentation, User, Users } from "lucide-react";
+import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, Trash2, Pencil, Presentation, User, Users, ExternalLink } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button";
@@ -201,6 +201,39 @@ export default function Planner() {
                   <p className="text-sm text-muted-foreground">
                     Determining Theme and Author's Message in a Personal Narrative; Organizing Narrative Writing
                   </p>
+                </div>
+                
+                <div>
+                  <div className="text-sm font-semibold mb-2">Resources:</div>
+                  <div className="space-y-2">
+                    <a 
+                      href="https://learn.thinkcerca.com/lessons/206146?preview=true" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-primary hover:underline"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Module Link
+                    </a>
+                    <a 
+                      href="https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g29c977eb948_0_0#slide=id.g29c977eb948_0_0" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-primary hover:underline"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Student Guide
+                    </a>
+                    <a 
+                      href="https://thinkcerca-prod.s3.amazonaws.com/assets/Core+Guides+Print/Teacher+Guide+-+POU/G8/teacher-guide-unit-1-module-2-grade-8.pdf" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-primary hover:underline"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Teacher Guide
+                    </a>
+                  </div>
                 </div>
               </div>
             </CardHeader>
