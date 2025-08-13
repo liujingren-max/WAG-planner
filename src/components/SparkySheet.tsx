@@ -285,10 +285,20 @@ export default function SparkySheet({
       activities: [] as LessonPlan["sessions"][number]["activities"]
     }));
 
-    // Distribute activities across sessions round-robin
-    chosen.forEach((step, i) => {
-      const sessionIndex = i % sessions.length;
-      sessions[sessionIndex].activities.push({
+    // Distribute activities sequentially across sessions, maintaining order
+    let currentSessionIndex = 0;
+    let currentSessionTime = 0;
+    
+    chosen.forEach((step) => {
+      // Check if current activity fits in current session
+      if (currentSessionTime + step.minutes > sessions[currentSessionIndex].availableMinutes && 
+          currentSessionIndex < sessions.length - 1) {
+        // Move to next session
+        currentSessionIndex++;
+        currentSessionTime = 0;
+      }
+      
+      sessions[currentSessionIndex].activities.push({
         id: crypto.randomUUID(),
         title: step.title,
         minutes: step.minutes,
@@ -296,6 +306,8 @@ export default function SparkySheet({
         styles: step.styles as any,
         handoutUrl: step.handoutUrl
       });
+      
+      currentSessionTime += step.minutes;
     });
     return {
       id,
