@@ -6,6 +6,7 @@ export interface ActivityCard {
   minutes: number;
   optional?: boolean;
   styles: FacilitationStyle[];
+  handoutUrl?: string;
 }
 
 export interface SessionColumn {

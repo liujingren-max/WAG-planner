@@ -75,13 +75,15 @@ export default function SparkySheet({
         title: "Quick Journal - Write",
         minutes: 5,
         optional: true,
-        styles: ["individual"]
+        styles: ["individual"],
+        handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g29c977eb948_0_0#slide=id.g29c977eb948_0_0"
       },
       {
         title: "Build Your Vocabulary - Instruction",
         minutes: 5,
         optional: false,
-        styles: ["teacher", "individual", "collaborative"]
+        styles: ["teacher", "individual", "collaborative"],
+        handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g29c977eb948_0_0#slide=id.g29c977eb948_0_0"
       },
       {
         title: "Build Your Vocabulary - Collaboration",
@@ -111,7 +113,8 @@ export default function SparkySheet({
         title: "Connect - Write",
         minutes: 3,
         optional: false,
-        styles: ["individual"]
+        styles: ["individual"],
+        handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g29c977eb948_0_0#slide=id.g29c977eb948_0_0"
       },
       {
         title: "Connect - Pair and Share",
@@ -280,7 +283,8 @@ export default function SparkySheet({
         title: step.title,
         minutes: step.minutes,
         optional: !!step.optional,
-        styles: step.styles as any
+        styles: step.styles as any,
+        handoutUrl: step.handoutUrl
       });
     });
     return {

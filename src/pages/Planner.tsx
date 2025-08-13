@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, Trash2, Pencil, Presentation, User, Users, ExternalLink } from "lucide-react";
+import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, Trash2, Pencil, Presentation, User, Users, ExternalLink, Clipboard } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, } from "@/components/ui/alert-dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { LessonPlan, SessionColumn, ActivityCard, FacilitationStyle } from "@/state/planTypes";
 import { toast } from "@/hooks/use-toast";
 
@@ -151,6 +152,7 @@ export default function Planner() {
   if (!plan) return null;
 
   return (
+    <TooltipProvider>
     <div className="min-h-screen">
       <Helmet>
         <title>Lesson Planner – I'm the Greatest</title>
@@ -300,12 +302,34 @@ export default function Planner() {
                                       {...drag.dragHandleProps}
                                       className="rounded-md border p-3 bg-card hover:shadow-sm transition"
                                     >
-                                      <div className="flex items-start justify-between">
-                                        <div className="font-medium text-sm">{a.title}</div>
-                                        <Button variant="ghost" size="icon" onClick={() => deleteActivity(a.id, session.id)} aria-label="Delete activity">
-                                          <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                      </div>
+                                       <div className="flex items-start justify-between">
+                                         <div className="font-medium text-sm flex items-center gap-2">
+                                           {a.title}
+                                           {a.handoutUrl && (
+                                             <Tooltip>
+                                               <TooltipTrigger asChild>
+                                                 <Button
+                                                   variant="ghost"
+                                                   size="sm"
+                                                   className="h-5 w-5 p-0 hover:bg-muted"
+                                                   onClick={(e) => {
+                                                     e.stopPropagation();
+                                                     window.open(a.handoutUrl, '_blank');
+                                                   }}
+                                                 >
+                                                   <Clipboard className="h-3.5 w-3.5 text-muted-foreground" />
+                                                 </Button>
+                                               </TooltipTrigger>
+                                               <TooltipContent>
+                                                 <p>handout available</p>
+                                               </TooltipContent>
+                                             </Tooltip>
+                                           )}
+                                         </div>
+                                         <Button variant="ghost" size="icon" onClick={() => deleteActivity(a.id, session.id)} aria-label="Delete activity">
+                                           <Trash2 className="h-4 w-4" />
+                                         </Button>
+                                       </div>
                                       <div className="mt-2 flex items-center gap-2 flex-wrap">
                                         <TimeBadge minutes={a.minutes} onChange={(m) => changeTime(a.id, session.id, m)} />
                                         {a.optional && <Badge variant="secondary">Optional</Badge>}
@@ -372,6 +396,7 @@ export default function Planner() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+    </TooltipProvider>
   );
 }
 
