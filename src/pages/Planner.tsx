@@ -173,12 +173,41 @@ export default function Planner() {
         {/* Left settings panel */}
         <aside className="col-span-12 md:col-span-3 space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Settings</CardTitle>
+            <CardHeader className="pb-4">
+              <div className="flex items-start gap-3">
+                <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0">
+                  <img 
+                    src="/lovable-uploads/6c91bfd8-0d1b-46e5-9e20-2d012e882b55.png" 
+                    alt="I'm the Greatest lesson cover"
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h2 className="font-semibold text-base">I'm the Greatest</h2>
+                  <p className="text-sm text-muted-foreground">by James Bird (Personal Narrative)</p>
+                </div>
+              </div>
+              
+              <div className="mt-4 space-y-3">
+                <div>
+                  <div className="text-sm font-semibold mb-1">Learning Objective:</div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Students will understand the ways theme is conveyed in a literary text and be able to analyze the theme within a personal narrative, supporting their analysis with evidence from the text.
+                  </p>
+                </div>
+                
+                <div>
+                  <div className="text-sm font-semibold mb-1">Direct Instruction:</div>
+                  <p className="text-sm text-muted-foreground">
+                    Determining Theme and Author's Message in a Personal Narrative; Organizing Narrative Writing
+                  </p>
+                </div>
+              </div>
             </CardHeader>
+            
             <CardContent className="space-y-4">
               <div className="space-y-1">
-                <div className="text-sm font-medium">Session minutes</div>
+                <div className="text-sm font-semibold">Session Time</div>
                 {plan.sessions.map((s, i) => (
                   <div key={s.id} className="flex items-center gap-2">
                     <span className="text-sm w-20">{s.name}</span>
@@ -195,14 +224,6 @@ export default function Planner() {
                     <span className="text-xs text-muted-foreground">min</span>
                   </div>
                 ))}
-              </div>
-              <div className="space-y-1">
-                <div className="text-sm font-medium">Facilitation style</div>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary" className="gap-1"><BookOpen className="h-3.5 w-3.5" />Teacher led</Badge>
-                  <Badge variant="secondary" className="gap-1"><User className="h-3.5 w-3.5" />Individual</Badge>
-                  <Badge variant="secondary" className="gap-1"><Users className="h-3.5 w-3.5" />Collaborative</Badge>
-                </div>
               </div>
               <Button onClick={() => toast({ title: "Regenerated!", description: "Updated settings applied to your plan." })}>Update & Regenerate</Button>
             </CardContent>
@@ -354,20 +375,72 @@ function SessionMenu({ onRename, onRemove }: { onRename: () => void; onRemove: (
 }
 
 function TimeBadge({ minutes, onChange }: { minutes: number; onChange: (m: number) => void }) {
-  const options = [1, 2, 3, 5, 10, 15, 20, 25, 30];
+  const [isEditing, setIsEditing] = useState(false);
+  const [customValue, setCustomValue] = useState("");
+  const options = [2, 3, 4, 5, 7, 10, 12, 15, 20, 25, 30];
+
+  const handleCustomSelect = () => {
+    setCustomValue(minutes.toString());
+    setIsEditing(true);
+  };
+
+  const handleCustomSave = () => {
+    const value = parseInt(customValue);
+    if (!isNaN(value) && value > 0 && value <= 180) {
+      onChange(value);
+    }
+    setIsEditing(false);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleCustomSave();
+    }
+  };
+
+  if (isEditing) {
+    return (
+      <div className="flex items-center gap-1">
+        <Input
+          type="number"
+          value={customValue}
+          onChange={(e) => setCustomValue(e.target.value)}
+          onBlur={handleCustomSave}
+          onKeyPress={handleKeyPress}
+          className="w-16 h-6 text-xs px-1"
+          min={1}
+          max={180}
+          autoFocus
+        />
+        <span className="text-xs text-muted-foreground">min</span>
+      </div>
+    );
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Badge variant="outline" className="cursor-pointer select-none gap-1"><Clock className="h-3.5 w-3.5" />{minutes} min</Badge>
+        <Badge variant="outline" className="cursor-pointer select-none gap-1 hover:bg-muted">
+          <Clock className="h-3.5 w-3.5" />
+          {minutes} min
+          <svg className="h-3 w-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </Badge>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">
-        {options.map((o) => (
-          <DropdownMenuItem key={o} onClick={() => onChange(o)}>{o} min</DropdownMenuItem>
+      <DropdownMenuContent align="start" className="z-50">
+        {options.map((option) => (
+          <DropdownMenuItem 
+            key={option} 
+            onClick={() => onChange(option)}
+            className={minutes === option ? "bg-accent" : ""}
+          >
+            {option} min
+          </DropdownMenuItem>
         ))}
-        <DropdownMenuItem onClick={() => {
-          const m = Number(prompt("Enter minutes"));
-          if (!Number.isNaN(m) && m > 0) onChange(m);
-        }}>Other…</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleCustomSelect} className="text-primary">
+          Custom
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
