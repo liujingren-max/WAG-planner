@@ -206,7 +206,7 @@ export default function SparkySheet({
                 <CardTitle>How many sessions and minutes do you have?</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground font-semibold">We recommend 90–180 minutes total.</p>
+                <p className="text-sm text-muted-foreground">We recommend <span className="font-semibold">90–180 minutes</span> total.</p>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
