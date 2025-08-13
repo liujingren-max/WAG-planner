@@ -213,36 +213,48 @@ export default function SparkySheet({
     ];
 
     // Must-have tasks (Develop and Draft are required)
-    const mustHaveTasks = allTasks.filter(task => 
-      task.title === "Develop" || task.title === "Draft"
-    );
+    const mustHaveTaskNames = ["Develop", "Draft"];
     
-    // Other essential and optional tasks
-    const otherEssentialTasks = allTasks.filter(task => 
-      !task.optional && task.title !== "Develop" && task.title !== "Draft"
-    );
-    const optionalTasks = allTasks.filter(task => task.optional);
+    // Build activities in original sequence order
+    let chosen = [];
+    let totalTaskMinutes = 0;
     
-    let chosen = [...mustHaveTasks]; // Start with must-haves
-    let totalTaskMinutes = mustHaveTasks.reduce((sum, task) => sum + task.minutes, 0);
-    
-    // Add other essential tasks
-    for (const task of otherEssentialTasks) {
-      chosen.push(task);
-      totalTaskMinutes += task.minutes;
-    }
-    
-    // Add optional tasks if we have time
-    for (const task of optionalTasks) {
-      if (totalTaskMinutes + task.minutes <= totalMinutes) {
+    // First pass: add all non-optional tasks in original order
+    for (const task of allTasks) {
+      if (!task.optional) {
         chosen.push(task);
         totalTaskMinutes += task.minutes;
       }
     }
     
-    // If we exceed available time, remove optional tasks first
+    // Second pass: add optional tasks if we have time, in original order
+    for (const task of allTasks) {
+      if (task.optional && totalTaskMinutes + task.minutes <= totalMinutes) {
+        chosen.push(task);
+        totalTaskMinutes += task.minutes;
+      }
+    }
+    
+    // Ensure must-have tasks are included
+    for (const mustHaveName of mustHaveTaskNames) {
+      if (!chosen.find(t => t.title === mustHaveName)) {
+        const mustHaveTask = allTasks.find(t => t.title === mustHaveName);
+        if (mustHaveTask) {
+          chosen.push(mustHaveTask);
+          totalTaskMinutes += mustHaveTask.minutes;
+        }
+      }
+    }
+    
+    // If we exceed available time, remove optional tasks first (from end to preserve sequence)
     while (totalTaskMinutes > totalMinutes + 10 && chosen.some(t => t.optional)) {
-      const optionalIndex = chosen.findIndex(t => t.optional);
+      let optionalIndex = -1;
+      for (let i = chosen.length - 1; i >= 0; i--) {
+        if (chosen[i].optional) {
+          optionalIndex = i;
+          break;
+        }
+      }
       if (optionalIndex !== -1) {
         const removed = chosen.splice(optionalIndex, 1)[0];
         totalTaskMinutes -= removed.minutes;
@@ -252,7 +264,7 @@ export default function SparkySheet({
     // If still exceeding, compress non-must-have essential tasks slightly
     if (totalTaskMinutes > totalMinutes + 10) {
       const compressibleTasks = chosen.filter(t => 
-        !t.optional && t.title !== "Develop" && t.title !== "Draft"
+        !t.optional && !mustHaveTaskNames.includes(t.title)
       );
       const excess = totalTaskMinutes - (totalMinutes + 10);
       const compressionPerTask = Math.floor(excess / compressibleTasks.length);
@@ -266,11 +278,15 @@ export default function SparkySheet({
       });
     }
     
-    // If still exceeding, remove some essential tasks (except must-haves)
+    // If still exceeding, remove some essential tasks (except must-haves, from end to preserve sequence)
     while (totalTaskMinutes > totalMinutes + 10) {
-      const removableIndex = chosen.findIndex(t => 
-        !t.optional && t.title !== "Develop" && t.title !== "Draft"
-      );
+      let removableIndex = -1;
+      for (let i = chosen.length - 1; i >= 0; i--) {
+        if (!chosen[i].optional && !mustHaveTaskNames.includes(chosen[i].title)) {
+          removableIndex = i;
+          break;
+        }
+      }
       if (removableIndex !== -1) {
         const removed = chosen.splice(removableIndex, 1)[0];
         totalTaskMinutes -= removed.minutes;
