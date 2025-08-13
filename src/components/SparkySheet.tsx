@@ -27,8 +27,8 @@ export default function SparkySheet({
   const navigate = useNavigate();
 
   // Step state
-  const [sessionsCount, setSessionsCount] = useState(3);
-  const [sessionMinutes, setSessionMinutes] = useState(60);
+  const [sessionsCount, setSessionsCount] = useState(4);
+  const [sessionMinutes, setSessionMinutes] = useState(50);
   const [customTimes, setCustomTimes] = useState<number[] | null>(null);
   const totalMinutes = useMemo(() => {
     const times = customTimes ?? Array.from({
@@ -39,8 +39,8 @@ export default function SparkySheet({
   useEffect(() => {
     if (open) {
       // Reset defaults each time opened
-      setSessionsCount(3);
-      setSessionMinutes(60);
+      setSessionsCount(4);
+      setSessionMinutes(50);
       setCustomTimes(null);
     }
   }, [open]);
@@ -208,32 +208,35 @@ export default function SparkySheet({
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">We recommend <span className="font-semibold">90–180 minutes</span> total.</p>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label>Number of sessions</Label>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-sm">
+                    <span>I plan to implement the module in</span>
                     <Select value={String(sessionsCount)} onValueChange={v => setSessionsCount(Number(v))}>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-auto min-w-[80px]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         {range(1, 10).map(num => <SelectItem key={num} value={String(num)}>
-                            {num} session{num !== 1 ? 's' : ''}
+                            {num}
                           </SelectItem>)}
                       </SelectContent>
                     </Select>
+                    <span>sessions,</span>
                   </div>
-                  <div>
-                    <Label>Minutes per session</Label>
+                  
+                  <div className="flex items-center gap-2 text-sm">
+                    <span>and each session has</span>
                     <Select value={String(sessionMinutes)} onValueChange={v => setSessionMinutes(Number(v))} disabled={!!customTimes}>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-auto min-w-[80px]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         {[20, 25, 30, 35, 40, 45, 50, 60, 80, 90].map(min => <SelectItem key={min} value={String(min)}>
-                            {min} minutes
+                            {min}
                           </SelectItem>)}
                       </SelectContent>
                     </Select>
+                    <span>minutes.</span>
                   </div>
                 </div>
 
