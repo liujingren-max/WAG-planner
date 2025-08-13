@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { BookOpen, User, Users, Bot } from "lucide-react";
+import { Bot, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { LessonPlan } from "@/state/planTypes";
 
@@ -30,12 +30,6 @@ export default function SparkySheet({ onCreated }: SparkySheetProps) {
   const [sessionMinutes, setSessionMinutes] = useState(60);
   const [customTimes, setCustomTimes] = useState<number[] | null>(null);
 
-  const [styles, setStyles] = useState({
-    teacher: true,
-    individual: true,
-    collaborative: true,
-  });
-
   const totalMinutes = useMemo(() => {
     const times = customTimes ?? Array.from({ length: sessionsCount }, () => sessionMinutes);
     return times.reduce((a, b) => a + b, 0);
@@ -47,7 +41,6 @@ export default function SparkySheet({ onCreated }: SparkySheetProps) {
       setSessionsCount(3);
       setSessionMinutes(60);
       setCustomTimes(null);
-      setStyles({ teacher: true, individual: true, collaborative: true });
     }
   }, [open]);
 
@@ -77,10 +70,6 @@ export default function SparkySheet({ onCreated }: SparkySheetProps) {
 
     const chosen = totalMinutes < 180 ? shortSteps : fullSteps;
 
-    const chosenStyles = Object.entries(styles)
-      .filter(([, v]) => v)
-      .map(([k]) => k as keyof typeof styles);
-
     const sessions = times.map((t, idx) => ({
       id: crypto.randomUUID(),
       name: `Session ${idx + 1}`,
@@ -96,7 +85,7 @@ export default function SparkySheet({ onCreated }: SparkySheetProps) {
         title: step.title,
         minutes: step.minutes,
         optional: !!step.optional,
-        styles: (chosenStyles.length ? chosenStyles : ["teacher", "individual", "collaborative"]) as any,
+        styles: ["teacher", "individual", "collaborative"] as any,
       });
     });
 
@@ -207,24 +196,33 @@ export default function SparkySheet({ onCreated }: SparkySheetProps) {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label>Number of sessions</Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    max={10}
-                    value={sessionsCount}
-                    onChange={(e) => setSessionsCount(Math.max(1, Math.min(10, Number(e.target.value))))}
-                  />
+                  <Select value={String(sessionsCount)} onValueChange={(v) => setSessionsCount(Number(v))}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {range(1, 10).map((num) => (
+                        <SelectItem key={num} value={String(num)}>
+                          {num} session{num !== 1 ? 's' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <Label>Minutes per session</Label>
-                  <Input
-                    type="number"
-                    min={10}
-                    max={240}
-                    value={sessionMinutes}
-                    onChange={(e) => setSessionMinutes(Math.max(10, Math.min(240, Number(e.target.value))))}
-                    disabled={!!customTimes}
-                  />
+                  <Select value={String(sessionMinutes)} onValueChange={(v) => setSessionMinutes(Number(v))} disabled={!!customTimes}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[20, 25, 30, 35, 40, 45, 50, 60, 80, 90].map((min) => (
+                        <SelectItem key={min} value={String(min)}>
+                          {min} minutes
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
@@ -234,38 +232,51 @@ export default function SparkySheet({ onCreated }: SparkySheetProps) {
                   <Label htmlFor="custom">Custom session time</Label>
                 </div>
                 {customTimes && (
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-3">
                     {timesArray.map((t, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <Label className="w-24">Session {i + 1}</Label>
-                        <Input
-                          type="number"
-                          min={10}
-                          max={240}
-                          value={t}
-                          onChange={(e) => {
+                      <div key={i} className="flex items-center gap-2 group">
+                        <Label className="w-20 text-sm">Session {i + 1}</Label>
+                        <Select 
+                          value={String(t)} 
+                          onValueChange={(v) => {
                             const arr = [...timesArray];
-                            arr[i] = Number(e.target.value);
+                            arr[i] = Number(v);
                             setCustomTimes(arr);
                           }}
-                        />
-                        <span className="text-sm text-muted-foreground">min</span>
+                        >
+                          <SelectTrigger className="flex-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {[20, 25, 30, 35, 40, 45, 50, 60, 80, 90].map((min) => (
+                              <SelectItem key={min} value={String(min)}>
+                                {min} minutes
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => {
+                            if (timesArray.length > 1) {
+                              const arr = timesArray.filter((_, idx) => idx !== i);
+                              setCustomTimes(arr);
+                            }
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
                       </div>
                     ))}
-                    <div className="col-span-2 flex gap-2">
-                      <Button
-                        variant="secondary"
-                        onClick={() => setCustomTimes([...timesArray, sessionMinutes])}
-                      >
-                        Add session
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        onClick={() => setCustomTimes(timesArray.length > 1 ? timesArray.slice(0, -1) : timesArray)}
-                      >
-                        Remove last
-                      </Button>
-                    </div>
+                    <Button
+                      variant="secondary"
+                      onClick={() => setCustomTimes([...timesArray, sessionMinutes])}
+                      className="w-full"
+                    >
+                      Add session
+                    </Button>
                   </div>
                 )}
               </div>
@@ -273,35 +284,6 @@ export default function SparkySheet({ onCreated }: SparkySheetProps) {
               <div className="text-sm text-muted-foreground">
                 You have {timesArray.length} sessions, {customTimes ? "custom" : sessionMinutes} minutes each session, total {totalMinutes} minutes. Coming up with activities to fit your sessions...
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>How do you want to facilitate your class?</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <label className="flex items-center gap-3 rounded-md border p-3 cursor-pointer select-none">
-                <Checkbox checked={styles.teacher} onCheckedChange={(v) => setStyles((s) => ({ ...s, teacher: !!v }))} />
-                <div className="flex items-center gap-2"><BookOpen className="h-4 w-4" /><div>
-                  <div className="text-sm font-medium">Teacher led</div>
-                  <div className="text-xs text-muted-foreground">Teacher led presentation</div>
-                </div></div>
-              </label>
-              <label className="flex items-center gap-3 rounded-md border p-3 cursor-pointer select-none">
-                <Checkbox checked={styles.individual} onCheckedChange={(v) => setStyles((s) => ({ ...s, individual: !!v }))} />
-                <div className="flex items-center gap-2"><User className="h-4 w-4" /><div>
-                  <div className="text-sm font-medium">Individual</div>
-                  <div className="text-xs text-muted-foreground">individual student activity</div>
-                </div></div>
-              </label>
-              <label className="flex items-center gap-3 rounded-md border p-3 cursor-pointer select-none">
-                <Checkbox checked={styles.collaborative} onCheckedChange={(v) => setStyles((s) => ({ ...s, collaborative: !!v }))} />
-                <div className="flex items-center gap-2"><Users className="h-4 w-4" /><div>
-                  <div className="text-sm font-medium">Collaborative</div>
-                  <div className="text-xs text-muted-foreground">small group activity</div>
-                </div></div>
-              </label>
             </CardContent>
           </Card>
 
