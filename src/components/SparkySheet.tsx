@@ -188,7 +188,7 @@ export default function SparkySheet({
       {
         title: "Draft",
         minutes: 20,
-        optional: true,
+        optional: false, // Must-have
         styles: ["individual", "collaborative"]
       },
       {
@@ -199,18 +199,70 @@ export default function SparkySheet({
       }
     ];
 
-    // Select tasks based on available time
-    const essentialTasks = allTasks.filter(task => !task.optional);
+    // Must-have tasks (Develop and Draft are required)
+    const mustHaveTasks = allTasks.filter(task => 
+      task.title === "Develop" || task.title === "Draft"
+    );
+    
+    // Other essential and optional tasks
+    const otherEssentialTasks = allTasks.filter(task => 
+      !task.optional && task.title !== "Develop" && task.title !== "Draft"
+    );
     const optionalTasks = allTasks.filter(task => task.optional);
     
-    let chosen = [...essentialTasks];
-    let totalTaskMinutes = essentialTasks.reduce((sum, task) => sum + task.minutes, 0);
+    let chosen = [...mustHaveTasks]; // Start with must-haves
+    let totalTaskMinutes = mustHaveTasks.reduce((sum, task) => sum + task.minutes, 0);
     
-    // Add optional tasks if we have extra time
+    // Add other essential tasks
+    for (const task of otherEssentialTasks) {
+      chosen.push(task);
+      totalTaskMinutes += task.minutes;
+    }
+    
+    // Add optional tasks if we have time
     for (const task of optionalTasks) {
-      if (totalTaskMinutes + task.minutes <= totalMinutes * 0.9) { // Use 90% of available time
+      if (totalTaskMinutes + task.minutes <= totalMinutes) {
         chosen.push(task);
         totalTaskMinutes += task.minutes;
+      }
+    }
+    
+    // If we exceed available time, remove optional tasks first
+    while (totalTaskMinutes > totalMinutes + 10 && chosen.some(t => t.optional)) {
+      const optionalIndex = chosen.findIndex(t => t.optional);
+      if (optionalIndex !== -1) {
+        const removed = chosen.splice(optionalIndex, 1)[0];
+        totalTaskMinutes -= removed.minutes;
+      }
+    }
+    
+    // If still exceeding, compress non-must-have essential tasks slightly
+    if (totalTaskMinutes > totalMinutes + 10) {
+      const compressibleTasks = chosen.filter(t => 
+        !t.optional && t.title !== "Develop" && t.title !== "Draft"
+      );
+      const excess = totalTaskMinutes - (totalMinutes + 10);
+      const compressionPerTask = Math.floor(excess / compressibleTasks.length);
+      
+      compressibleTasks.forEach(task => {
+        if (task.minutes > 5) { // Don't compress below 5 minutes
+          const reduction = Math.min(compressionPerTask, task.minutes - 5);
+          task.minutes -= reduction;
+          totalTaskMinutes -= reduction;
+        }
+      });
+    }
+    
+    // If still exceeding, remove some essential tasks (except must-haves)
+    while (totalTaskMinutes > totalMinutes + 10) {
+      const removableIndex = chosen.findIndex(t => 
+        !t.optional && t.title !== "Develop" && t.title !== "Draft"
+      );
+      if (removableIndex !== -1) {
+        const removed = chosen.splice(removableIndex, 1)[0];
+        totalTaskMinutes -= removed.minutes;
+      } else {
+        break; // Can't remove any more without touching must-haves
       }
     }
     const sessions = times.map((t, idx) => ({
