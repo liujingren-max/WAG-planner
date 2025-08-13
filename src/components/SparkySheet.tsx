@@ -57,7 +57,8 @@ export default function SparkySheet({
         title: "Preview Key Skills and Concepts",
         minutes: 3,
         optional: true,
-        styles: ["teacher"]
+        styles: ["teacher"],
+        handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_12#slide=id.g3739fcbb8b8_0_12"
       },
       {
         title: "Direct Instruction: Determining Theme and Author's Message in a Personal Narrative",
@@ -76,20 +77,21 @@ export default function SparkySheet({
         minutes: 5,
         optional: true,
         styles: ["individual"],
-        handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g29c977eb948_0_0#slide=id.g29c977eb948_0_0"
+        handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_33#slide=id.g3739fcbb8b8_0_33"
       },
       {
         title: "Build Your Vocabulary - Instruction",
         minutes: 5,
         optional: false,
         styles: ["teacher", "individual", "collaborative"],
-        handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g29c977eb948_0_0#slide=id.g29c977eb948_0_0"
+        handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_43#slide=id.g3739fcbb8b8_0_43"
       },
       {
         title: "Build Your Vocabulary - Collaboration",
         minutes: 10,
         optional: false,
-        styles: ["teacher", "individual", "collaborative"]
+        styles: ["teacher", "individual", "collaborative"],
+        handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_43#slide=id.g3739fcbb8b8_0_43"
       },
       {
         title: "Topic Overview - Read",
@@ -107,20 +109,21 @@ export default function SparkySheet({
         title: "Vocabulary - Engage with Focus Words",
         minutes: 10,
         optional: false,
-        styles: ["collaborative"]
+        styles: ["collaborative"],
+        handoutUrl:"https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_60#slide=id.g3739fcbb8b8_0_60"
       },
       {
         title: "Connect - Write",
         minutes: 3,
         optional: false,
         styles: ["individual"],
-        handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g29c977eb948_0_0#slide=id.g29c977eb948_0_0"
       },
       {
         title: "Connect - Pair and Share",
         minutes: 2,
         optional: false,
-        styles: ["collaborative"]
+        styles: ["collaborative"],
+        handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_72#slide=id.g3739fcbb8b8_0_72"
       },
       {
         title: "Read",
@@ -132,7 +135,8 @@ export default function SparkySheet({
         title: "Share your Reflections",
         minutes: 10,
         optional: true,
-        styles: ["collaborative"]
+        styles: ["collaborative"],
+        handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_83#slide=id.g3739fcbb8b8_0_83"
       },
       {
         title: "Check",
@@ -144,7 +148,8 @@ export default function SparkySheet({
         title: "Apply Your Learning",
         minutes: 12,
         optional: false,
-        styles: ["individual", "collaborative"]
+        styles: ["individual", "collaborative"],
+        handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_97#slide=id.g3739fcbb8b8_0_97"
       },
       {
         title: "Analyze",
@@ -162,19 +167,23 @@ export default function SparkySheet({
         title: "Write to Impress - Review",
         minutes: 7,
         optional: false,
-        styles: ["individual", "collaborative"]
+        styles: ["individual", "collaborative"],
+        handoutUrl:"https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_108#slide=id.g3739fcbb8b8_0_108"
       },
       {
         title: "Write to Impress - Practice",
         minutes: 5,
         optional: false,
-        styles: ["teacher", "individual", "collaborative"]
+        styles: ["teacher", "individual", "collaborative"],
+        handoutUrl:"https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_108#slide=id.g3739fcbb8b8_0_108"
+
       },
       {
         title: "Appreciate Author's Craft",
         minutes: 10,
         optional: true,
-        styles: ["individual"]
+        styles: ["individual"],
+        handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_120#slide=id.g3739fcbb8b8_0_120"
       },
       {
         title: "Develop",
@@ -186,7 +195,8 @@ export default function SparkySheet({
         title: "Share Your Plan",
         minutes: 10,
         optional: true,
-        styles: ["individual", "collaborative"]
+        styles: ["individual", "collaborative"],
+        handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_131#slide=id.g3739fcbb8b8_0_131"
       },
       {
         title: "Draft",
