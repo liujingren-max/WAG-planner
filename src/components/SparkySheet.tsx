@@ -51,46 +51,168 @@ export default function SparkySheet({
     }, () => sessionMinutes);
     const id = crypto.randomUUID();
 
-    // Generate baseline activities. Use short version if total < 180
-    const fullSteps = [{
-      title: "Glossary",
-      minutes: 10,
-      optional: true
-    }, {
-      title: "Connect",
-      minutes: 15
-    }, {
-      title: "Read",
-      minutes: 25
-    }, {
-      title: "Check",
-      minutes: 10
-    }, {
-      title: "Analyze",
-      minutes: 20
-    }, {
-      title: "Summarize",
-      minutes: 15
-    }, {
-      title: "Develop",
-      minutes: 20
-    }, {
-      title: "Draft",
-      minutes: 30
-    }, {
-      title: "Review",
-      minutes: 20
-    }];
-    const shortSteps = [{
-      title: "Draft",
-      minutes: 40,
-      optional: false
-    }, {
-      title: "Review",
-      minutes: 30,
-      optional: false
-    }];
-    const chosen = totalMinutes < 180 ? shortSteps : fullSteps;
+    // All available tasks with their properties
+    const allTasks = [
+      {
+        title: "Preview Key Skills and Concepts",
+        minutes: 3,
+        optional: true,
+        styles: ["teacher"]
+      },
+      {
+        title: "Direct Instruction: Determining Theme and Author's Message in a Personal Narrative",
+        minutes: 15,
+        optional: false,
+        styles: ["teacher"]
+      },
+      {
+        title: "Direct Instruction: Organizing Narrative Writing",
+        minutes: 30,
+        optional: false,
+        styles: ["teacher"]
+      },
+      {
+        title: "Quick Journal - Write",
+        minutes: 5,
+        optional: true,
+        styles: ["individual"]
+      },
+      {
+        title: "Build Your Vocabulary - Instruction",
+        minutes: 5,
+        optional: false,
+        styles: ["teacher", "individual", "collaborative"]
+      },
+      {
+        title: "Build Your Vocabulary - Collaboration",
+        minutes: 10,
+        optional: false,
+        styles: ["teacher", "individual", "collaborative"]
+      },
+      {
+        title: "Topic Overview - Read",
+        minutes: 2,
+        optional: false,
+        styles: ["individual"]
+      },
+      {
+        title: "Vocabulary - Introduce Best Practice",
+        minutes: 5,
+        optional: false,
+        styles: ["teacher"]
+      },
+      {
+        title: "Vocabulary - Engage with Focus Words",
+        minutes: 10,
+        optional: false,
+        styles: ["collaborative"]
+      },
+      {
+        title: "Connect - Write",
+        minutes: 3,
+        optional: false,
+        styles: ["individual"]
+      },
+      {
+        title: "Connect - Pair and Share",
+        minutes: 2,
+        optional: false,
+        styles: ["collaborative"]
+      },
+      {
+        title: "Read",
+        minutes: 20,
+        optional: false,
+        styles: ["individual"]
+      },
+      {
+        title: "Share your Reflections",
+        minutes: 10,
+        optional: true,
+        styles: ["collaborative"]
+      },
+      {
+        title: "Check",
+        minutes: 7,
+        optional: false,
+        styles: ["individual"]
+      },
+      {
+        title: "Apply Your Learning",
+        minutes: 12,
+        optional: false,
+        styles: ["individual", "collaborative"]
+      },
+      {
+        title: "Analyze",
+        minutes: 15,
+        optional: false,
+        styles: ["teacher", "individual", "collaborative"]
+      },
+      {
+        title: "Summarize",
+        minutes: 7,
+        optional: false,
+        styles: ["individual"]
+      },
+      {
+        title: "Write to Impress - Review",
+        minutes: 7,
+        optional: false,
+        styles: ["individual", "collaborative"]
+      },
+      {
+        title: "Write to Impress - Practice",
+        minutes: 5,
+        optional: false,
+        styles: ["teacher", "individual", "collaborative"]
+      },
+      {
+        title: "Appreciate Author's Craft",
+        minutes: 10,
+        optional: true,
+        styles: ["individual"]
+      },
+      {
+        title: "Develop",
+        minutes: 20,
+        optional: false,
+        styles: ["individual"]
+      },
+      {
+        title: "Share Your Plan",
+        minutes: 10,
+        optional: true,
+        styles: ["individual", "collaborative"]
+      },
+      {
+        title: "Draft",
+        minutes: 20,
+        optional: true,
+        styles: ["individual", "collaborative"]
+      },
+      {
+        title: "Review/Revise",
+        minutes: 15,
+        optional: true,
+        styles: ["individual"]
+      }
+    ];
+
+    // Select tasks based on available time
+    const essentialTasks = allTasks.filter(task => !task.optional);
+    const optionalTasks = allTasks.filter(task => task.optional);
+    
+    let chosen = [...essentialTasks];
+    let totalTaskMinutes = essentialTasks.reduce((sum, task) => sum + task.minutes, 0);
+    
+    // Add optional tasks if we have extra time
+    for (const task of optionalTasks) {
+      if (totalTaskMinutes + task.minutes <= totalMinutes * 0.9) { // Use 90% of available time
+        chosen.push(task);
+        totalTaskMinutes += task.minutes;
+      }
+    }
     const sessions = times.map((t, idx) => ({
       id: crypto.randomUUID(),
       name: `Session ${idx + 1}`,
@@ -106,7 +228,7 @@ export default function SparkySheet({
         title: step.title,
         minutes: step.minutes,
         optional: !!step.optional,
-        styles: ["teacher", "individual", "collaborative"] as any
+        styles: step.styles as any
       });
     });
     return {
