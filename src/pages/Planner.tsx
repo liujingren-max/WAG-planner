@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, Trash2, Pencil, BookOpen, User, Users } from "lucide-react";
+import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, Trash2, Pencil, Presentation, User, Users } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button";
@@ -146,7 +146,7 @@ export default function Planner() {
     savePlans(list);
   }
 
-  const styleIcon = (s: FacilitationStyle) => s === "teacher" ? <BookOpen className="h-3.5 w-3.5" /> : s === "individual" ? <User className="h-3.5 w-3.5" /> : <Users className="h-3.5 w-3.5" />;
+  const styleIcon = (s: FacilitationStyle) => s === "teacher" ? <Presentation className="h-3.5 w-3.5" /> : s === "individual" ? <User className="h-3.5 w-3.5" /> : <Users className="h-3.5 w-3.5" />;
 
   if (!plan) return null;
 
