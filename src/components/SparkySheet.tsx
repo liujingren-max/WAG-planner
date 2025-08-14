@@ -462,8 +462,11 @@ export default function SparkySheet({
                 
 
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-sm">
+                  <div>
                     <span>I plan to implement the module in</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+
                     <Select value={String(sessionsCount)} onValueChange={v => setSessionsCount(Number(v))}>
                       <SelectTrigger className="w-auto min-w-[80px]">
                         <SelectValue />
@@ -476,9 +479,12 @@ export default function SparkySheet({
                     </Select>
                     <span>sessions,</span>
                   </div>
-                  
-                  <div className="flex items-center gap-2 text-sm">
+                  <div>
                     <span>and each session has</span>
+                  </div>
+                    
+                  <div className="flex items-center gap-2 text-sm">
+                    
                     <Select value={String(sessionMinutes)} onValueChange={v => setSessionMinutes(Number(v))} disabled={!!customTimes}>
                       <SelectTrigger className="w-auto min-w-[80px]">
                         <SelectValue />
@@ -533,8 +539,8 @@ export default function SparkySheet({
                 </div>
 
                 <div className="space-y-2">
-                  <div className="text-sm text-muted-foreground">
-                    <span className="font-semibold">Recommend total time: 150–250 min.</span>
+                  <div className="text-sm font-medium">
+                    Recommend total time: 150–250 min.
                   </div>
                   <div className="text-sm font-medium">
                     Your Total time: {totalMinutes} min
