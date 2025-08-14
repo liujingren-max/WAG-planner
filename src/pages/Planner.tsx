@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, Trash2, Pencil, Presentation, User, Users, ExternalLink, Clipboard } from "lucide-react";
+import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, Trash2, Pencil, Presentation, User, Users, ExternalLink, Book } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button";
@@ -187,6 +187,15 @@ export default function Planner() {
                 <div className="flex-1 min-w-0">
                   <h2 className="font-semibold text-base">I'm the Greatest</h2>
                   <p className="text-sm text-muted-foreground">by James Bird (Personal Narrative)</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-2"
+                    onClick={() => window.open('https://learn.thinkcerca.com/lessons/206146?preview=true', '_blank')}
+                  >
+                    <ExternalLink className="h-3.5 w-3.5 mr-1" />
+                    Preview Lesson
+                  </Button>
                 </div>
               </div>
               
@@ -200,16 +209,39 @@ export default function Planner() {
                 
                 <div>
                   <div className="text-sm font-semibold mb-1">Direct Instruction:</div>
-                  <p className="text-sm text-muted-foreground">
-                    Determining Theme and Author's Message in a Personal Narrative; Organizing Narrative Writing
-                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Determining Theme and Author's Message in a Personal Narrative</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 px-2 text-xs"
+                        onClick={() => window.open('https://learn.thinkcerca.com/lessons/82431?preview=true', '_blank')}
+                      >
+                        <ExternalLink className="h-3 w-3 mr-1" />
+                        Preview
+                      </Button>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Organizing Narrative Writing</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 px-2 text-xs"
+                        onClick={() => window.open('https://learn.thinkcerca.com/lessons/176389?preview=true', '_blank')}
+                      >
+                        <ExternalLink className="h-3 w-3 mr-1" />
+                        Preview
+                      </Button>
+                    </div>
+                  </div>
                 </div>
                 
                 <div>
                   <div className="text-sm font-semibold mb-2">Resources:</div>
                   <div className="space-y-2">
                     <a 
-                      href="https://learn.thinkcerca.com/lessons/206146?preview=true" 
+                      href="https://learn.thinkcerca.com/teacher/core_curriculum/grades/8/units/1/modules/3" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-sm text-primary hover:underline"
@@ -223,8 +255,8 @@ export default function Planner() {
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-sm text-primary hover:underline"
                     >
-                      <ExternalLink className="h-3.5 w-3.5" />
-                      Student Guide
+                      <Book className="h-3.5 w-3.5" style={{ color: '#FF6900' }} />
+                      Student Guide Available
                     </a>
                     <a 
                       href="https://thinkcerca-prod.s3.amazonaws.com/assets/Core+Guides+Print/Teacher+Guide+-+POU/G8/teacher-guide-unit-1-module-2-grade-8.pdf" 
@@ -232,7 +264,7 @@ export default function Planner() {
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-sm text-primary hover:underline"
                     >
-                      <ExternalLink className="h-3.5 w-3.5" />
+                      <Book className="h-3.5 w-3.5" style={{ color: '#DB2123' }} />
                       Teacher Guide
                     </a>
                   </div>
@@ -305,26 +337,26 @@ export default function Planner() {
                                        <div className="flex items-start justify-between">
                                          <div className="font-medium text-sm flex items-center gap-2">
                                            {a.title}
-                                           {a.handoutUrl && (
-                                             <Tooltip>
-                                               <TooltipTrigger asChild>
-                                                 <Button
-                                                   variant="ghost"
-                                                   size="sm"
-                                                   className="h-5 w-5 p-0 hover:bg-muted"
-                                                   onClick={(e) => {
-                                                     e.stopPropagation();
-                                                     window.open(a.handoutUrl, '_blank');
-                                                   }}
-                                                 >
-                                                   <Clipboard className="h-3.5 w-3.5 text-muted-foreground" />
-                                                 </Button>
-                                               </TooltipTrigger>
-                                               <TooltipContent>
-                                                 <p>handout available</p>
-                                               </TooltipContent>
-                                             </Tooltip>
-                                           )}
+                                            {a.handoutUrl && (
+                                              <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                  <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="h-5 w-5 p-0 hover:bg-muted"
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      window.open(a.handoutUrl, '_blank');
+                                                    }}
+                                                  >
+                                                    <Book className="h-3.5 w-3.5" style={{ color: '#FF6900' }} />
+                                                  </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                  <p>Student Guide Available</p>
+                                                </TooltipContent>
+                                              </Tooltip>
+                                            )}
                                          </div>
                                          <Button variant="ghost" size="icon" onClick={() => deleteActivity(a.id, session.id)} aria-label="Delete activity">
                                            <Trash2 className="h-4 w-4" />
