@@ -468,7 +468,17 @@ export default function SparkySheet({
                 <CardTitle>How many sessions and minutes do you have?</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">We recommend <span className="font-semibold">90–180 minutes</span> total.</p>
+                <div className="space-y-2">
+                  <div className="text-sm text-muted-foreground">
+                    <span className="font-semibold">Recommend total time: 150–250 min.</span>
+                  </div>
+                  <div className="text-sm font-medium">
+                    Your Total time: {totalMinutes} min
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    You can set your own time — we'll help you adjust activities to fit.
+                  </div>
+                </div>
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-sm">

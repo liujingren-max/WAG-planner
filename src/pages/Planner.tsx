@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, X, Pencil, Presentation, User, Users, ExternalLink, Book, ThumbsUp, Trash2 } from "lucide-react";
+import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, X, Pencil, Presentation, User, Users, ExternalLink, Book, ThumbsUp, Trash2, Folder } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ export default function Planner() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null); // session id
   const [lastSessionTime, setLastSessionTime] = useState<number>(60);
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
+  const [showWarning, setShowWarning] = useState(false);
 
   useEffect(() => {
     const list = loadPlans();
@@ -57,6 +58,18 @@ export default function Planner() {
       plan.sessions.map((s) => [s.id, s.activities.reduce((sum, a) => sum + a.minutes, 0)])
     );
   }, [plan]);
+
+  // Check if warning should be shown
+  const totalPlanTime = useMemo(() => {
+    if (!plan) return 0;
+    return plan.sessions.reduce((sum, s) => sum + s.availableMinutes, 0);
+  }, [plan]);
+
+  useEffect(() => {
+    if (plan && totalPlanTime < 125) {
+      setShowWarning(true);
+    }
+  }, [plan, totalPlanTime]);
 
   function onDragEnd(result: DropResult) {
     if (!plan) return;
@@ -220,6 +233,45 @@ export default function Planner() {
         </div>
       </header>
 
+      {/* Warning banner */}
+      {showWarning && (
+        <div className="bg-yellow-50 border border-yellow-200 p-4 mx-4">
+          <div className="flex items-start justify-between">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-yellow-800">
+                  Some essential activities were removed to fit your time.
+                </h3>
+                <div className="mt-2 text-sm text-yellow-700">
+                  <p>
+                    To take full advantage of the lesson, increase your total session time by at least {150 - totalPlanTime} minutes.
+                  </p>
+                  <p className="mt-1">
+                    Current total: {totalPlanTime} min | Recommended minimum: 150 min
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="ml-auto pl-3">
+              <div className="-mx-1.5 -my-1.5">
+                <button
+                  type="button"
+                  className="inline-flex bg-yellow-50 rounded-md p-1.5 text-yellow-500 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600"
+                  onClick={() => setShowWarning(false)}
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="container mx-auto py-6 grid grid-cols-12 gap-4">
         {/* Left settings panel */}
         <aside className="col-span-12 md:col-span-3 space-y-4">
@@ -254,6 +306,30 @@ export default function Planner() {
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     Students will understand the ways theme is conveyed in a literary text and be able to analyze the theme within a personal narrative, supporting their analysis with evidence from the text.
                   </p>
+                </div>
+                
+                <div>
+                  <div className="text-sm font-semibold mb-2">Facilitation Style:</div>
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50">
+                        <Presentation className="h-3.5 w-3.5 text-muted-foreground" />
+                      </div>
+                      <span className="text-sm text-muted-foreground">Teacher-led</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50">
+                        <User className="h-3.5 w-3.5 text-muted-foreground" />
+                      </div>
+                      <span className="text-sm text-muted-foreground">Individual</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50">
+                        <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                      </div>
+                      <span className="text-sm text-muted-foreground">Paired or Small Group</span>
+                    </div>
+                  </div>
                 </div>
                 
                 <div>
@@ -295,7 +371,7 @@ export default function Planner() {
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-sm text-primary hover:underline"
                     >
-                      <ExternalLink className="h-3.5 w-3.5" />
+                      <Folder className="h-3.5 w-3.5" />
                       Module Link
                     </a>
                     <a 
@@ -304,8 +380,8 @@ export default function Planner() {
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-sm text-primary hover:underline"
                     >
-                      <Book className="h-3.5 w-3.5" style={{ color: '#FF6900' }} />
-                      Student Guide Available
+                      <Book className="h-3.5 w-3.5 text-muted-foreground" />
+                      Student Guide
                     </a>
                   </div>
                 </div>
