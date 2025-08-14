@@ -200,7 +200,7 @@ export default function SparkySheet({
       {
         title: "Draft",
         minutes: 20,
-        optional: false,
+        optional: true,
         styles: ["individual", "collaborative"]
       },
       {
@@ -211,11 +211,12 @@ export default function SparkySheet({
       }
     ];
 
-    // Must-have tasks (Develop and Draft are required)
-    const mustHaveTaskNames = ["Develop", "Draft"];
+    // Must-have tasks (Develop is required)
+    const mustHaveTaskNames = ["Develop"];
     
     // Helper function to get time adjustment range for an activity
     const getTimeAdjustmentRange = (minutes: number) => {
+      if (minutes <= 1) return {min:0, max:0};
       if (minutes <= 3) return { min: -1, max: 2 };
       if (minutes <= 5) return { min: -2, max: 2 };
       if (minutes <= 10) return { min: -2, max: 3 };
