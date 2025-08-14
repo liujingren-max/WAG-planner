@@ -31,6 +31,7 @@ export default function Planner() {
   const [lastSessionTime, setLastSessionTime] = useState<number>(60);
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [showWarning, setShowWarning] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     const list = loadPlans();
@@ -71,7 +72,12 @@ export default function Planner() {
     }
   }, [plan, totalPlanTime]);
 
+  function onDragStart() {
+    setIsDragging(true);
+  }
+
   function onDragEnd(result: DropResult) {
+    setIsDragging(false);
     if (!plan) return;
     const { source, destination, draggableId } = result;
     if (!destination) return;
@@ -456,8 +462,8 @@ export default function Planner() {
             <Button variant="secondary" onClick={addSession}><Plus className="h-4 w-4 mr-2" />Add session</Button>
           </div>
 
-          <DragDropContext onDragEnd={onDragEnd}>
-            <div className="flex gap-4 overflow-x-auto pb-4">
+          <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
+            <div className={`flex gap-4 overflow-x-auto pb-4 ${isDragging ? 'dragging-active' : ''}`}>
               {plan.sessions.map((session) => {
                 const used = usedMinutesBySession[session.id] || 0;
                 const remaining = session.availableMinutes - used;
@@ -490,11 +496,11 @@ export default function Planner() {
                               {session.activities.map((a, idx) => (
                                 <Draggable draggableId={a.id} index={idx} key={a.id}>
                                   {(drag) => (
-                                     <div
+                                      <div
                                        ref={drag.innerRef}
                                        {...drag.draggableProps}
                                        {...drag.dragHandleProps}
-                                       className="rounded-md border px-4 py-3 bg-card hover:shadow-sm transition group"
+                                       className="activity-card rounded-md border px-4 py-3 bg-card hover:shadow-sm transition group"
                                       >
                                        <div className="space-y-1">
                                          <div className="flex items-start justify-between">
