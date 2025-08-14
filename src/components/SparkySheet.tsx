@@ -274,6 +274,7 @@ export default function SparkySheet({
             id: crypto.randomUUID(),
             title: task.title,
             minutes: task.minutes,
+            originalMinutes: task.minutes, // Store the original database time
             optional: !!task.optional,
             styles: task.styles as any,
             handoutUrl: task.handoutUrl
@@ -291,6 +292,7 @@ export default function SparkySheet({
           id: crypto.randomUUID(),
           title: task.title,
           minutes: task.minutes,
+          originalMinutes: task.minutes, // Store the original database time
           optional: !!task.optional,
           styles: task.styles as any,
           handoutUrl: task.handoutUrl

@@ -4,6 +4,7 @@ export interface ActivityCard {
   id: string;
   title: string;
   minutes: number;
+  originalMinutes?: number; // The original time estimate from database
   optional?: boolean;
   styles: FacilitationStyle[];
   handoutUrl?: string;

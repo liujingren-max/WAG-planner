@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, Trash2, Pencil, Presentation, User, Users, ExternalLink, Book } from "lucide-react";
+import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, Trash2, Pencil, Presentation, User, Users, ExternalLink, Book, ThumbsUp } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button";
@@ -363,7 +363,7 @@ export default function Planner() {
                                          </Button>
                                        </div>
                                       <div className="mt-2 flex items-center gap-2 flex-wrap">
-                                        <TimeBadge minutes={a.minutes} onChange={(m) => changeTime(a.id, session.id, m)} />
+                                        <TimeBadge minutes={a.minutes} originalMinutes={a.originalMinutes} onChange={(m) => changeTime(a.id, session.id, m)} />
                                         {a.optional && <Badge variant="secondary">Optional</Badge>}
                                         {a.styles.length <= 1 ? (
                                           a.styles.map((s) => (
@@ -464,10 +464,20 @@ function SessionMenu({ onRename, onRemove }: { onRename: () => void; onRemove: (
   );
 }
 
-function TimeBadge({ minutes, onChange }: { minutes: number; onChange: (m: number) => void }) {
+function TimeBadge({ minutes, onChange, originalMinutes }: { minutes: number; onChange: (m: number) => void; originalMinutes?: number }) {
   const [isEditing, setIsEditing] = useState(false);
   const [customValue, setCustomValue] = useState("");
-  const options = [2, 3, 4, 5, 7, 10, 12, 15, 20, 25, 30];
+  const baseOptions = [2, 3, 4, 5, 7, 10, 12, 15, 20, 25, 30];
+  
+  // Add originalMinutes to options if it's not already in the list
+  const options = useMemo(() => {
+    const allOptions = [...baseOptions];
+    if (originalMinutes && !allOptions.includes(originalMinutes)) {
+      allOptions.push(originalMinutes);
+      allOptions.sort((a, b) => a - b);
+    }
+    return allOptions;
+  }, [originalMinutes]);
 
   const handleCustomSelect = () => {
     setCustomValue(minutes.toString());
@@ -525,7 +535,12 @@ function TimeBadge({ minutes, onChange }: { minutes: number; onChange: (m: numbe
             onClick={() => onChange(option)}
             className={minutes === option ? "bg-accent" : ""}
           >
-            {option} min
+            <div className="flex items-center gap-2 w-full">
+              <span>{option} min</span>
+              {originalMinutes === option && (
+                <ThumbsUp className="h-3.5 w-3.5 text-primary ml-auto" />
+              )}
+            </div>
           </DropdownMenuItem>
         ))}
         <DropdownMenuItem onClick={handleCustomSelect} className="text-primary">
