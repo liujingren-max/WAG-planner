@@ -76,12 +76,19 @@ export default function Planner() {
   function removeSession(id: string) {
     if (!plan) return;
     const next: LessonPlan = JSON.parse(JSON.stringify(plan));
+    const session = next.sessions.find((s) => s.id === id);
     const idx = next.sessions.findIndex((s) => s.id === id);
     if (idx >= 0) {
-      // move activities to recently deleted
-      next.deleted.push(...next.sessions[idx].activities);
-      next.sessions.splice(idx, 1);
-      pushHistory(next);
+      // If session is empty, no confirm modal needed
+      if (session?.activities.length === 0) {
+        next.sessions.splice(idx, 1);
+        pushHistory(next);
+      } else {
+        // move activities to recently deleted
+        next.deleted.push(...next.sessions[idx].activities);
+        next.sessions.splice(idx, 1);
+        pushHistory(next);
+      }
     }
   }
 
@@ -300,15 +307,6 @@ export default function Planner() {
                       <Book className="h-3.5 w-3.5" style={{ color: '#FF6900' }} />
                       Student Guide Available
                     </a>
-                    <a 
-                      href="https://thinkcerca-prod.s3.amazonaws.com/assets/Core+Guides+Print/Teacher+Guide+-+POU/G8/teacher-guide-unit-1-module-2-grade-8.pdf" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-primary hover:underline"
-                    >
-                      <Book className="h-3.5 w-3.5" style={{ color: '#DB2123' }} />
-                      Teacher Guide
-                    </a>
                   </div>
                 </div>
               </div>
@@ -342,7 +340,35 @@ export default function Planner() {
                   </div>
                 ))}
               </div>
-              <Button onClick={() => toast({ title: "Regenerated!", description: "Updated settings applied to your plan." })}>Update & Regenerate</Button>
+              <Button onClick={() => {
+                if (!plan) return;
+                // Remove original plan from localStorage
+                const plans = loadPlans().filter(p => p.id !== plan.id);
+                savePlans(plans);
+                
+                // Create new plan with updated session times
+                const newPlan = {
+                  ...plan,
+                  id: crypto.randomUUID(),
+                  sessions: plan.sessions.map(s => ({
+                    ...s,
+                    id: crypto.randomUUID(),
+                    activities: recalculateActivitiesForTime(s.activities, s.availableMinutes).map(a => ({
+                      ...a,
+                      id: crypto.randomUUID()
+                    }))
+                  }))
+                };
+                
+                // Save new plan
+                const updatedPlans = loadPlans();
+                updatedPlans.push(newPlan);
+                savePlans(updatedPlans);
+                
+                // Navigate to new plan
+                navigate(`/plan/${newPlan.id}`);
+                toast({ title: "Regenerated!", description: "New plan created with updated settings." });
+              }}>Update & Regenerate</Button>
             </CardContent>
           </Card>
         </aside>
@@ -369,7 +395,17 @@ export default function Planner() {
                           <CardHeader className="pb-2">
                             <div className="flex items-start justify-between gap-2">
                               <EditableTitle value={session.name} onChange={(v) => renameSession(session.id, v)} isEditing={editingSessionId === session.id} setEditing={(editing) => setEditingSessionId(editing ? session.id : null)} />
-                              <SessionMenu onRename={() => setEditingSessionId(session.id)} onRemove={() => setConfirmDelete(session.id)} />
+                              <SessionMenu 
+                                onRename={() => setEditingSessionId(session.id)} 
+                                onRemove={() => {
+                                  if (session.activities.length === 0) {
+                                    removeSession(session.id);
+                                  } else {
+                                    setConfirmDelete(session.id);
+                                  }
+                                }}
+                                hasActivities={session.activities.length > 0}
+                              />
                             </div>
                             <div className="text-xs text-muted-foreground">Available: {session.availableMinutes} min</div>
                           </CardHeader>
@@ -378,56 +414,79 @@ export default function Planner() {
                               {session.activities.map((a, idx) => (
                                 <Draggable draggableId={a.id} index={idx} key={a.id}>
                                   {(drag) => (
-                                    <div
-                                      ref={drag.innerRef}
-                                      {...drag.draggableProps}
-                                      {...drag.dragHandleProps}
-                                      className="rounded-md border p-3 bg-card hover:shadow-sm transition"
-                                     >
-                                       <div className="group flex items-start justify-between">
-                                        <div className="min-w-0 flex-1">
-                                          <div className="flex items-center gap-2 mb-1">
-                                            <h4 className="text-sm font-semibold">{a.title}</h4>
-                                            {a.optional && <Badge variant="secondary" className="text-xs">Optional</Badge>}
-                                          </div>
-                                        </div>
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => deleteActivity(a.id, session.id)}
-                                          className="flex-shrink-0 h-8 w-8 p-0 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-                                        >
-                                          <X className="h-4 w-4" />
-                                        </Button>
-                                      </div>
-                                      <div className="mt-2 flex items-center gap-2 flex-wrap">
-                                         <TimeBadge minutes={a.minutes} originalMinutes={a.originalMinutes} onChange={(m) => changeTime(a.id, session.id, m)} />
-                                         {a.styles.length <= 1 ? (
-                                           a.styles.map((s) => (
-                                             <Badge key={s} variant="outline" className="gap-1">
-                                               {styleIcon(s)} <span className="capitalize">{s}</span>
-                                             </Badge>
-                                           ))
-                                         ) : (
-                                           <div className="flex items-center gap-1">
-                                             {a.styles.map((s) => (
-                                               <Badge key={s} variant="outline" className="p-1">{styleIcon(s)}</Badge>
-                                             ))}
-                                           </div>
+                                     <div
+                                       ref={drag.innerRef}
+                                       {...drag.draggableProps}
+                                       {...drag.dragHandleProps}
+                                       className="rounded-md border px-4 py-3 bg-card hover:shadow-sm transition group"
+                                      >
+                                       <div className="space-y-1">
+                                         <div className="flex items-start justify-between">
+                                           <h4 className="text-sm font-semibold leading-tight text-left">{a.title}</h4>
+                                           <Button
+                                             variant="ghost"
+                                             size="sm"
+                                             className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground transition-all"
+                                             onClick={() => deleteActivity(a.id, session.id)}
+                                           >
+                                             <X className="h-3 w-3" />
+                                           </Button>
+                                         </div>
+                                         
+                                         {a.optional && (
+                                           <Badge variant="secondary" className="px-2 py-0.5 text-xs font-normal bg-neutral-100 text-muted-foreground">
+                                             Optional
+                                           </Badge>
                                          )}
+                                         
+                                         <div className="flex items-center justify-between pt-1">
+                                           <div className="flex items-center gap-3">
+                                             <div className="flex items-center gap-1">
+                                               <Clock className="h-3 w-3 text-muted-foreground" />
+                                               <DropdownMenu>
+                                                 <DropdownMenuTrigger asChild>
+                                                   <span className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">{a.minutes} min</span>
+                                                 </DropdownMenuTrigger>
+                                                 <DropdownMenuContent align="start">
+                                                   {[3, 5, 7, 10, 12, 15, 20, 25, 30].map((min) => (
+                                                     <DropdownMenuItem key={min} onClick={() => changeTime(a.id, session.id, min)} className="text-sm">
+                                                       {min} minutes
+                                                     </DropdownMenuItem>
+                                                   ))}
+                                                 </DropdownMenuContent>
+                                               </DropdownMenu>
+                                             </div>
+                                             
+                                             <div className="flex items-center gap-1">
+                                               <div className="flex -space-x-0.5">
+                                                 {a.styles.map((s, idx) => (
+                                                   <div key={idx} className="w-5 h-5 rounded-sm bg-muted border border-background flex items-center justify-center">
+                                                     {styleIcon(s)}
+                                                   </div>
+                                                 ))}
+                                               </div>
+                                             </div>
+                                           </div>
+                                           
+                                           {a.handoutUrl && (
+                                             <Tooltip>
+                                               <TooltipTrigger asChild>
+                                                 <Button
+                                                   variant="ghost"
+                                                   size="sm"
+                                                   className="h-6 w-6 p-0"
+                                                   onClick={() => window.open(a.handoutUrl, '_blank')}
+                                                 >
+                                                   <Book className="h-3 w-3 text-muted-foreground" />
+                                                 </Button>
+                                               </TooltipTrigger>
+                                               <TooltipContent>
+                                                 <p>Student Guide Available</p>
+                                               </TooltipContent>
+                                             </Tooltip>
+                                           )}
+                                         </div>
                                        </div>
-                                        <div className="flex items-center justify-end mt-2">
-                                         {a.handoutUrl && (
-                                           <Tooltip>
-                                             <TooltipTrigger asChild>
-                                               <a href={a.handoutUrl} target="_blank" rel="noopener noreferrer">
-                                                 <Book className="h-3.5 w-3.5 cursor-pointer hover:opacity-80" style={{ color: '#FF6900' }} />
-                                               </a>
-                                             </TooltipTrigger>
-                                             <TooltipContent>Student Guide Available</TooltipContent>
-                                           </Tooltip>
-                                        )}
-                                      </div>
                                      </div>
                                   )}
                                 </Draggable>
@@ -528,7 +587,7 @@ function EditableTitle({ value, onChange, isEditing, setEditing }: { value: stri
   );
 }
 
-function SessionMenu({ onRename, onRemove }: { onRename: () => void; onRemove: () => void }) {
+function SessionMenu({ onRename, onRemove, hasActivities }: { onRename: () => void; onRemove: () => void; hasActivities: boolean }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -536,7 +595,19 @@ function SessionMenu({ onRename, onRemove }: { onRename: () => void; onRemove: (
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="z-50">
         <DropdownMenuItem onClick={onRename} className="gap-2"><Pencil className="h-4 w-4" />Rename</DropdownMenuItem>
-        <DropdownMenuItem onClick={onRemove} className="gap-2 text-destructive"><Trash2 className="h-4 w-4" />Remove session</DropdownMenuItem>
+        <DropdownMenuItem 
+          onClick={() => {
+            if (!hasActivities) {
+              onRemove();
+            } else {
+              // Will trigger confirm dialog
+              onRemove();
+            }
+          }} 
+          className="gap-2 text-destructive"
+        >
+          <Trash2 className="h-4 w-4" />Remove session
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
