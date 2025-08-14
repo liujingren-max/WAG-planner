@@ -416,18 +416,16 @@ export default function Planner() {
                                            </div>
                                          )}
                                        </div>
-                                       <div className="flex items-center justify-between mt-2">
-                                        <div className="flex items-center gap-1">
-                                          {a.styles.length > 0 && styleIcon(a.styles[0])}
-                                          <span className="text-xs text-muted-foreground">{a.styles[0]}</span>
-                                        </div>
-                                        {a.handoutUrl && (
-                                          <Tooltip>
-                                            <TooltipTrigger asChild>
-                                              <Book className="h-3.5 w-3.5" style={{ color: '#FF6900' }} />
-                                            </TooltipTrigger>
-                                            <TooltipContent>Student Guide Available</TooltipContent>
-                                          </Tooltip>
+                                        <div className="flex items-center justify-end mt-2">
+                                         {a.handoutUrl && (
+                                           <Tooltip>
+                                             <TooltipTrigger asChild>
+                                               <a href={a.handoutUrl} target="_blank" rel="noopener noreferrer">
+                                                 <Book className="h-3.5 w-3.5 cursor-pointer hover:opacity-80" style={{ color: '#FF6900' }} />
+                                               </a>
+                                             </TooltipTrigger>
+                                             <TooltipContent>Student Guide Available</TooltipContent>
+                                           </Tooltip>
                                         )}
                                       </div>
                                      </div>
