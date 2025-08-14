@@ -33,6 +33,7 @@ export default function Planner() {
   const [showWarning, setShowWarning] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [justGenerated, setJustGenerated] = useState(false);
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
   useEffect(() => {
     const list = loadPlans();
@@ -43,8 +44,13 @@ export default function Planner() {
       return;
     }
     setPlan(found);
-    setJustGenerated(true); // Mark as just loaded/generated
-  }, [planId, navigate]);
+    // Only mark as generated if we're coming from regeneration or it's a new plan
+    if (isRegenerating || sessionStorage.getItem('newPlanGenerated') === planId) {
+      setJustGenerated(true);
+      sessionStorage.removeItem('newPlanGenerated');
+      setIsRegenerating(false);
+    }
+  }, [planId, navigate, isRegenerating]);
 
   function pushHistory(next: LessonPlan) {
     setHistory((h) => [...h, plan!]);
@@ -427,28 +433,34 @@ export default function Planner() {
               </div>
               <Button onClick={() => {
                 if (!plan) return;
+                setIsRegenerating(true);
+                
                 // Remove original plan from localStorage
                 const plans = loadPlans().filter(p => p.id !== plan.id);
                 savePlans(plans);
                 
-                // Create new plan with updated session times
+                // Create new plan with updated session times and properly regenerated activities
                 const newPlan = {
                   ...plan,
                   id: crypto.randomUUID(),
                   sessions: plan.sessions.map(s => ({
                     ...s,
                     id: crypto.randomUUID(),
-                    activities: recalculateActivitiesForTime(s.activities, s.availableMinutes).map(a => ({
+                    activities: recalculateActivitiesForTime([...s.activities, ...plan.deleted], s.availableMinutes).map(a => ({
                       ...a,
                       id: crypto.randomUUID()
                     }))
-                  }))
+                  })),
+                  deleted: [] // Clear deleted activities as they're now redistributed
                 };
                 
                 // Save new plan
                 const updatedPlans = loadPlans();
                 updatedPlans.push(newPlan);
                 savePlans(updatedPlans);
+                
+                // Mark that this is a regenerated plan
+                sessionStorage.setItem('newPlanGenerated', newPlan.id);
                 
                 // Navigate to new plan
                 navigate(`/plan/${newPlan.id}`);
