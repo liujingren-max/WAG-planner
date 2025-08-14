@@ -32,6 +32,7 @@ export default function Planner() {
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [showWarning, setShowWarning] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [justGenerated, setJustGenerated] = useState(false);
 
   useEffect(() => {
     const list = loadPlans();
@@ -42,6 +43,7 @@ export default function Planner() {
       return;
     }
     setPlan(found);
+    setJustGenerated(true); // Mark as just loaded/generated
   }, [planId, navigate]);
 
   function pushHistory(next: LessonPlan) {
@@ -67,10 +69,11 @@ export default function Planner() {
   }, [plan]);
 
   useEffect(() => {
-    if (plan && totalPlanTime < 125) {
+    if (plan && totalPlanTime < 125 && justGenerated) {
       setShowWarning(true);
+      setJustGenerated(false);
     }
-  }, [plan, totalPlanTime]);
+  }, [plan, totalPlanTime, justGenerated]);
 
   function onDragStart() {
     setIsDragging(true);
@@ -463,7 +466,7 @@ export default function Planner() {
           </div>
 
           <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
-            <div className={`flex gap-4 overflow-x-auto pb-4 ${isDragging ? 'dragging-active' : ''}`}>
+            <div className="flex gap-4 overflow-x-auto pb-4">
               {plan.sessions.map((session) => {
                 const used = usedMinutesBySession[session.id] || 0;
                 const remaining = session.availableMinutes - used;
@@ -471,9 +474,13 @@ export default function Planner() {
 
                 return (
                   <Droppable droppableId={session.id} key={session.id}>
-                    {(provided) => (
-                      <div ref={provided.innerRef} {...provided.droppableProps} className="w-80 shrink-0">
-                        <Card>
+                    {(provided, snapshot) => (
+                      <div 
+                        ref={provided.innerRef} 
+                        {...provided.droppableProps} 
+                        className="w-80 shrink-0"
+                      >
+                        <Card className={`transition-all duration-200 ${snapshot.isDraggingOver ? 'ring-2 ring-primary/20 bg-accent/50' : ''}`}>
                           <CardHeader className="pb-2">
                             <div className="flex items-start justify-between gap-2">
                               <EditableTitle value={session.name} onChange={(v) => renameSession(session.id, v)} isEditing={editingSessionId === session.id} setEditing={(editing) => setEditingSessionId(editing ? session.id : null)} />
@@ -492,62 +499,80 @@ export default function Planner() {
                             <div className="text-xs text-muted-foreground">Available: {session.availableMinutes} min</div>
                           </CardHeader>
                           <CardContent>
-                            <div className="space-y-2">
+                            <div 
+                              className={`space-y-2 min-h-[60px] transition-all duration-200 ${
+                                snapshot.isDraggingOver ? 'bg-accent/30 rounded-md p-2' : ''
+                              }`}
+                            >
                               {session.activities.map((a, idx) => (
                                 <Draggable draggableId={a.id} index={idx} key={a.id}>
-                                  {(drag) => (
-                                      <div
-                                       ref={drag.innerRef}
-                                       {...drag.draggableProps}
-                                       {...drag.dragHandleProps}
-                                       className="activity-card rounded-md border px-4 py-3 bg-card hover:shadow-sm transition group"
-                                      >
-                                       <div className="space-y-1">
-                                         <div className="flex items-start justify-between">
-                                           <h4 className="text-sm font-semibold leading-tight text-left">{a.title}</h4>
-                                           <Button
-                                             variant="ghost"
-                                             size="sm"
-                                             className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground transition-all"
-                                             onClick={() => deleteActivity(a.id, session.id)}
-                                           >
-                                             <X className="h-3 w-3" />
-                                           </Button>
-                                         </div>
-                                         
-                                         {a.optional && (
-                                           <Badge variant="secondary" className="px-2 py-0.5 text-xs font-normal bg-neutral-100 text-muted-foreground">
-                                             Optional
-                                           </Badge>
-                                         )}
-                                         
-                                         <div className="flex items-center justify-between pt-1">
-                                           <div className="flex items-center gap-3">
-                                             <div className="flex items-center gap-1">
-                                               <Clock className="h-3 w-3 text-muted-foreground" />
-                                               <DropdownMenu>
-                                                 <DropdownMenuTrigger asChild>
-                                                   <span className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">{a.minutes} min</span>
-                                                 </DropdownMenuTrigger>
-                                                 <DropdownMenuContent align="start">
-                                                   {[3, 5, 7, 10, 12, 15, 20, 25, 30].map((min) => (
-                                                     <DropdownMenuItem key={min} onClick={() => changeTime(a.id, session.id, min)} className="text-sm">
-                                                       {min} minutes
-                                                     </DropdownMenuItem>
-                                                   ))}
-                                                 </DropdownMenuContent>
-                                               </DropdownMenu>
-                                             </div>
-                                             
-                                             <div className="flex items-center gap-1">
-                                               <div className="flex -space-x-0.5">
-                                                 {a.styles.map((s, idx) => (
-                                                   <div key={idx} className="w-5 h-5 rounded-sm bg-muted border border-background flex items-center justify-center">
-                                                     {styleIcon(s)}
-                                                   </div>
-                                                 ))}
-                                               </div>
-                                             </div>
+                                  {(drag, dragSnapshot) => (
+                                    <div
+                                      ref={drag.innerRef}
+                                      {...drag.draggableProps}
+                                      {...drag.dragHandleProps}
+                                      className={`
+                                        rounded-md border px-4 py-3 bg-card group cursor-grab active:cursor-grabbing
+                                        transition-all duration-200 ease-out
+                                        ${dragSnapshot.isDragging 
+                                          ? 'shadow-lg scale-105 rotate-2 bg-card z-50 ring-2 ring-primary/30' 
+                                          : 'hover:shadow-sm hover:bg-accent/30'
+                                        }
+                                        ${!isDragging ? 'hover:shadow-sm' : ''}
+                                      `}
+                                      style={{
+                                        ...drag.draggableProps.style,
+                                        transform: dragSnapshot.isDragging 
+                                          ? `${drag.draggableProps.style?.transform} rotate(2deg)`
+                                          : drag.draggableProps.style?.transform
+                                      }}
+                                    >
+                                      <div className="space-y-1">
+                                        <div className="flex items-start justify-between">
+                                          <h4 className="text-sm font-semibold leading-tight text-left">{a.title}</h4>
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground transition-all"
+                                            onClick={() => deleteActivity(a.id, session.id)}
+                                          >
+                                            <X className="h-3 w-3" />
+                                          </Button>
+                                        </div>
+                                        
+                                        {a.optional && (
+                                          <Badge variant="secondary" className="px-2 py-0.5 text-xs font-normal bg-neutral-100 text-muted-foreground">
+                                            Optional
+                                          </Badge>
+                                        )}
+                                        
+                                        <div className="flex items-center justify-between pt-1">
+                                          <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-1">
+                                              <Clock className="h-3 w-3 text-muted-foreground" />
+                                              <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                  <span className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">{a.minutes} min</span>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="start">
+                                                  {[3, 5, 7, 10, 12, 15, 20, 25, 30].map((min) => (
+                                                    <DropdownMenuItem key={min} onClick={() => changeTime(a.id, session.id, min)} className="text-sm">
+                                                      {min} minutes
+                                                    </DropdownMenuItem>
+                                                  ))}
+                                                </DropdownMenuContent>
+                                              </DropdownMenu>
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-1">
+                                              <div className="flex -space-x-0.5">
+                                                {a.styles.map((s, idx) => (
+                                                  <div key={idx} className="w-5 h-5 rounded-sm bg-muted border border-background flex items-center justify-center">
+                                                    {styleIcon(s)}
+                                                  </div>
+                                                ))}
+                                              </div>
+                                            </div>
                                            </div>
                                            
                                            {a.handoutUrl && (
