@@ -28,6 +28,8 @@ export default function Planner() {
   const [history, setHistory] = useState<LessonPlan[]>([]);
   const [future, setFuture] = useState<LessonPlan[]>([]);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null); // session id
+  const [lastSessionTime, setLastSessionTime] = useState<number>(60);
+  const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
 
   useEffect(() => {
     const list = loadPlans();
@@ -86,7 +88,8 @@ export default function Planner() {
   function addSession() {
     if (!plan) return;
     const next: LessonPlan = JSON.parse(JSON.stringify(plan));
-    next.sessions.push({ id: crypto.randomUUID(), name: `Session ${next.sessions.length + 1}`, availableMinutes: 60, activities: [] });
+    const newSessionTime = plan.sessions.length > 0 ? plan.sessions[plan.sessions.length - 1].availableMinutes : lastSessionTime;
+    next.sessions.push({ id: crypto.randomUUID(), name: `Session ${next.sessions.length + 1}`, availableMinutes: newSessionTime, activities: [] });
     pushHistory(next);
   }
 
@@ -148,6 +151,45 @@ export default function Planner() {
   }
 
   const styleIcon = (s: FacilitationStyle) => s === "teacher" ? <Presentation className="h-3.5 w-3.5" /> : s === "individual" ? <User className="h-3.5 w-3.5" /> : <Users className="h-3.5 w-3.5" />;
+
+  // Auto-recalculate activities function
+  function recalculateActivitiesForTime(activities: any[], targetMinutes: number) {
+    // This is a simplified version of the planning logic from SparkySheet
+    const essentialActivities = activities.filter(a => !a.optional);
+    const optionalActivities = activities.filter(a => a.optional);
+    
+    let currentActivities = [...essentialActivities];
+    let currentTime = currentActivities.reduce((sum, a) => sum + a.minutes, 0);
+    
+    // If we have too much time, add optional activities
+    if (currentTime < targetMinutes) {
+      for (const optional of optionalActivities) {
+        if (currentTime + optional.minutes <= targetMinutes + 5) {
+          currentActivities.push(optional);
+          currentTime += optional.minutes;
+        }
+      }
+    }
+    
+    // If we still don't fit, try to adjust times
+    const timeDiff = targetMinutes - currentTime;
+    if (Math.abs(timeDiff) > 5) {
+      // Adjust activity times to fit better
+      for (const activity of currentActivities) {
+        if (timeDiff > 0 && activity.minutes < 30) {
+          const increase = Math.min(timeDiff, 5);
+          activity.minutes += increase;
+          currentTime += increase;
+        } else if (timeDiff < 0 && activity.minutes > 3) {
+          const decrease = Math.min(Math.abs(timeDiff), activity.minutes - 2);
+          activity.minutes -= decrease;
+          currentTime -= decrease;
+        }
+      }
+    }
+    
+    return currentActivities;
+  }
 
   if (!plan) return null;
 
@@ -284,7 +326,14 @@ export default function Planner() {
                       max={240}
                       value={s.availableMinutes}
                       onChange={(e) => {
-                        const next = { ...plan, sessions: plan.sessions.map((x) => x.id === s.id ? { ...x, availableMinutes: Number(e.target.value) } : x) };
+                        const newTime = Number(e.target.value);
+                        setLastSessionTime(newTime);
+                        const next = { ...plan, sessions: plan.sessions.map((x) => x.id === s.id ? { ...x, availableMinutes: newTime } : x) };
+                        // Auto-recalculate plan for this session
+                        const session = next.sessions.find(session => session.id === s.id);
+                        if (session) {
+                          session.activities = recalculateActivitiesForTime(session.activities, newTime);
+                        }
                         pushHistory(next);
                       }}
                     />
@@ -318,8 +367,8 @@ export default function Planner() {
                         <Card>
                           <CardHeader className="pb-2">
                             <div className="flex items-start justify-between gap-2">
-                              <EditableTitle value={session.name} onChange={(v) => renameSession(session.id, v)} />
-                              <SessionMenu onRename={() => {}} onRemove={() => setConfirmDelete(session.id)} />
+                              <EditableTitle value={session.name} onChange={(v) => renameSession(session.id, v)} isEditing={editingSessionId === session.id} setEditing={(editing) => setEditingSessionId(editing ? session.id : null)} />
+                              <SessionMenu onRename={() => setEditingSessionId(session.id)} onRemove={() => setConfirmDelete(session.id)} />
                             </div>
                             <div className="text-xs text-muted-foreground">Available: {session.availableMinutes} min</div>
                           </CardHeader>
@@ -432,15 +481,44 @@ export default function Planner() {
   );
 }
 
-function EditableTitle({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const [editing, setEditing] = useState(false);
+function EditableTitle({ value, onChange, isEditing, setEditing }: { value: string; onChange: (v: string) => void; isEditing: boolean; setEditing: (editing: boolean) => void }) {
   const [val, setVal] = useState(value);
   useEffect(() => setVal(value), [value]);
 
+  const handleSave = () => {
+    setEditing(false);
+    if (val.trim()) onChange(val.trim());
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSave();
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (isEditing) {
+        handleSave();
+      }
+    };
+
+    if (isEditing) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [isEditing, val]);
+
   return (
     <div className="flex items-center gap-2">
-      {editing ? (
-        <Input autoFocus value={val} onChange={(e) => setVal(e.target.value)} onBlur={() => { setEditing(false); if (val.trim()) onChange(val.trim()); }} />
+      {isEditing ? (
+        <Input 
+          autoFocus 
+          value={val} 
+          onChange={(e) => setVal(e.target.value)} 
+          onKeyDown={handleKeyDown}
+          onClick={(e) => e.stopPropagation()}
+        />
       ) : (
         <button onClick={() => setEditing(true)} className="text-left font-semibold">
           {value}
