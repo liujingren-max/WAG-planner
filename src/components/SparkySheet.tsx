@@ -219,7 +219,8 @@ export default function SparkySheet({
 
     // Step 1: Start with all activities in sequence order
     let workingTasks = allTasks.map(task => ({
-      ...task
+      ...task,
+      originalMinutes: task.minutes // Store the recommended time for thumbs up icon
     })); // Deep copy to avoid mutating original
 
     // Calculate initial total time
@@ -309,7 +310,7 @@ export default function SparkySheet({
           let timeToReduce = difference;
           for (const activity of sortedActivities) {
             if (timeToReduce <= 0) break;
-            const range = getTimeAdjustmentRange(activity.minutes);
+            const range = getTimeAdjustmentRange(activity.originalMinutes || activity.minutes);
             const reduction = Math.min(timeToReduce, Math.abs(range.min));
             if (reduction > 0 && activity.minutes - reduction > 0) {
               activity.minutes -= reduction;
@@ -322,7 +323,7 @@ export default function SparkySheet({
           let timeToAdd = Math.abs(difference);
           for (const activity of sortedActivities) {
             if (timeToAdd <= 0) break;
-            const range = getTimeAdjustmentRange(activity.minutes);
+            const range = getTimeAdjustmentRange(activity.originalMinutes || activity.minutes);
             const addition = Math.min(timeToAdd, range.max);
             if (addition > 0) {
               activity.minutes += addition;

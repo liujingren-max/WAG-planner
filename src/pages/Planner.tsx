@@ -142,6 +142,7 @@ export default function Planner() {
     const s = next.sessions.find((x) => x.id === sessionId)!;
     const a = s.activities.find((y) => y.id === activityId)!;
     a.minutes = minutes;
+    // Preserve originalMinutes - don't change it when user manually adjusts time
     pushHistory(next);
   }
 
@@ -560,21 +561,11 @@ export default function Planner() {
                                         
                                         <div className="flex items-center justify-between pt-1">
                                           <div className="flex items-center gap-3">
-                                            <div className="flex items-center gap-1">
-                                              <Clock className="h-3 w-3 text-muted-foreground" />
-                                              <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                  <span className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">{a.minutes} min</span>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="start">
-                                                  {[3, 5, 7, 10, 12, 15, 20, 25, 30].map((min) => (
-                                                    <DropdownMenuItem key={min} onClick={() => changeTime(a.id, session.id, min)} className="text-sm">
-                                                      {min} minutes
-                                                    </DropdownMenuItem>
-                                                  ))}
-                                                </DropdownMenuContent>
-                                              </DropdownMenu>
-                                            </div>
+                            <TimeBadge 
+                              minutes={a.minutes} 
+                              originalMinutes={a.originalMinutes}
+                              onChange={(newTime) => changeTime(a.id, session.id, newTime)}
+                            />
                                             
                                             <div className="flex items-center gap-1">
                                               <div className="flex -space-x-0.5">
