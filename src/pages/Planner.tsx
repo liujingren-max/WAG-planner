@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, Trash2, Pencil, Presentation, User, Users, ExternalLink, Book, ThumbsUp } from "lucide-react";
+import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, X, Pencil, Presentation, User, Users, ExternalLink, Book, ThumbsUp, Trash2 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button";
@@ -319,12 +319,13 @@ export default function Planner() {
                 <div className="text-sm font-semibold">Session Time</div>
                 {plan.sessions.map((s, i) => (
                   <div key={s.id} className="flex items-center gap-2">
-                    <span className="text-sm w-20">{s.name}</span>
+                    <span className="text-sm w-[70px] truncate">{s.name}</span>
                     <Input
                       type="number"
                       min={10}
                       max={240}
                       value={s.availableMinutes}
+                      className="w-16"
                       onChange={(e) => {
                         const newTime = Number(e.target.value);
                         setLastSessionTime(newTime);
@@ -382,53 +383,54 @@ export default function Planner() {
                                       {...drag.draggableProps}
                                       {...drag.dragHandleProps}
                                       className="rounded-md border p-3 bg-card hover:shadow-sm transition"
-                                    >
-                                       <div className="flex items-start justify-between">
-                                         <div className="font-medium text-sm flex items-center gap-2">
-                                           {a.title}
-                                            {a.handoutUrl && (
-                                              <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                  <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="h-5 w-5 p-0 hover:bg-muted"
-                                                    onClick={(e) => {
-                                                      e.stopPropagation();
-                                                      window.open(a.handoutUrl, '_blank');
-                                                    }}
-                                                  >
-                                                    <Book className="h-3.5 w-3.5" style={{ color: '#FF6900' }} />
-                                                  </Button>
-                                                </TooltipTrigger>
-                                                <TooltipContent>
-                                                  <p>Student Guide Available</p>
-                                                </TooltipContent>
-                                              </Tooltip>
-                                            )}
-                                         </div>
-                                         <Button variant="ghost" size="icon" onClick={() => deleteActivity(a.id, session.id)} aria-label="Delete activity">
-                                           <Trash2 className="h-4 w-4" />
-                                         </Button>
-                                       </div>
-                                      <div className="mt-2 flex items-center gap-2 flex-wrap">
-                                        <TimeBadge minutes={a.minutes} originalMinutes={a.originalMinutes} onChange={(m) => changeTime(a.id, session.id, m)} />
-                                        {a.optional && <Badge variant="secondary">Optional</Badge>}
-                                        {a.styles.length <= 1 ? (
-                                          a.styles.map((s) => (
-                                            <Badge key={s} variant="outline" className="gap-1">
-                                              {styleIcon(s)} <span className="capitalize">{s}</span>
-                                            </Badge>
-                                          ))
-                                        ) : (
-                                          <div className="flex items-center gap-1">
-                                            {a.styles.map((s) => (
-                                              <Badge key={s} variant="outline" className="p-1">{styleIcon(s)}</Badge>
-                                            ))}
+                                     >
+                                       <div className="group flex items-start justify-between">
+                                        <div className="min-w-0 flex-1">
+                                          <div className="flex items-center gap-2 mb-1">
+                                            <h4 className="text-sm font-semibold">{a.title}</h4>
+                                            {a.optional && <Badge variant="secondary" className="text-xs">Optional</Badge>}
                                           </div>
+                                        </div>
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => deleteActivity(a.id, session.id)}
+                                          className="flex-shrink-0 h-8 w-8 p-0 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                          <X className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                      <div className="mt-2 flex items-center gap-2 flex-wrap">
+                                         <TimeBadge minutes={a.minutes} originalMinutes={a.originalMinutes} onChange={(m) => changeTime(a.id, session.id, m)} />
+                                         {a.styles.length <= 1 ? (
+                                           a.styles.map((s) => (
+                                             <Badge key={s} variant="outline" className="gap-1">
+                                               {styleIcon(s)} <span className="capitalize">{s}</span>
+                                             </Badge>
+                                           ))
+                                         ) : (
+                                           <div className="flex items-center gap-1">
+                                             {a.styles.map((s) => (
+                                               <Badge key={s} variant="outline" className="p-1">{styleIcon(s)}</Badge>
+                                             ))}
+                                           </div>
+                                         )}
+                                       </div>
+                                       <div className="flex items-center justify-between mt-2">
+                                        <div className="flex items-center gap-1">
+                                          {a.styles.length > 0 && styleIcon(a.styles[0])}
+                                          <span className="text-xs text-muted-foreground">{a.styles[0]}</span>
+                                        </div>
+                                        {a.handoutUrl && (
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <Book className="h-3.5 w-3.5" style={{ color: '#FF6900' }} />
+                                            </TooltipTrigger>
+                                            <TooltipContent>Student Guide Available</TooltipContent>
+                                          </Tooltip>
                                         )}
                                       </div>
-                                    </div>
+                                     </div>
                                   )}
                                 </Draggable>
                               ))}
