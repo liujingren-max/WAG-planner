@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, X, Pencil, Presentation, User, Users, ExternalLink, Book, ThumbsUp, Trash2 } from "lucide-react";
+import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, X, Pencil, Presentation, User, Users, ExternalLink, Book, ThumbsUp, Trash2, ChevronDown, Folder, TriangleAlert } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,8 @@ export default function Planner() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null); // session id
   const [lastSessionTime, setLastSessionTime] = useState<number>(60);
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
+  const [showTimeWarning, setShowTimeWarning] = useState<boolean>(false);
+  const [editingSessionTime, setEditingSessionTime] = useState<string | null>(null);
 
   useEffect(() => {
     const list = loadPlans();
@@ -158,6 +160,19 @@ export default function Planner() {
   }
 
   const styleIcon = (s: FacilitationStyle) => s === "teacher" ? <Presentation className="h-3.5 w-3.5" /> : s === "individual" ? <User className="h-3.5 w-3.5" /> : <Users className="h-3.5 w-3.5" />;
+  
+  // Check if essential tasks were removed or time is outside recommended range
+  const totalMinutes = plan?.sessions.reduce((sum, s) => sum + s.availableMinutes, 0) || 0;
+  const isUnderTime = totalMinutes < 125;
+  const isOverTime = totalMinutes > 300;
+  const shouldShowWarning = isUnderTime || isOverTime;
+
+  // Time options for dropdown (same as SparkySheet conversation)
+  const timeOptions = [45, 50, 60, 75, 90, 105, 120, 135, 150, 165, 180];
+
+  useEffect(() => {
+    setShowTimeWarning(shouldShowWarning);
+  }, [shouldShowWarning]);
 
   // Auto-recalculate activities function
   function recalculateActivitiesForTime(activities: any[], targetMinutes: number) {
@@ -220,6 +235,26 @@ export default function Planner() {
         </div>
       </header>
 
+      {/* Time Warning Banner */}
+      {showTimeWarning && (
+        <div className="border-b bg-yellow-50 dark:bg-yellow-950/20">
+          <div className="container mx-auto py-3 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <TriangleAlert className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+              <span className="text-sm text-yellow-800 dark:text-yellow-200">
+                {isUnderTime 
+                  ? `Some essential activities may be removed or shortened to fit your time. Current total: ${totalMinutes} min | Recommended minimum: 125 min`
+                  : `Your session time may cause pacing fatigue. Current total: ${totalMinutes} min | Recommended maximum: 300 min`
+                }
+              </span>
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => setShowTimeWarning(false)}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
       <main className="container mx-auto py-6 grid grid-cols-12 gap-4">
         {/* Left settings panel */}
         <aside className="col-span-12 md:col-span-3 space-y-4">
@@ -254,6 +289,24 @@ export default function Planner() {
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     Students will understand the ways theme is conveyed in a literary text and be able to analyze the theme within a personal narrative, supporting their analysis with evidence from the text.
                   </p>
+                </div>
+
+                <div>
+                  <div className="text-sm font-semibold mb-2">Facilitation Style:</div>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <Presentation className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Teacher-led</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <User className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Individual</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Paired or Small Group</span>
+                    </div>
+                  </div>
                 </div>
                 
                 <div>
@@ -295,17 +348,17 @@ export default function Planner() {
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-sm text-primary hover:underline"
                     >
-                      <ExternalLink className="h-3.5 w-3.5" />
+                      <Folder className="h-3.5 w-3.5" />
                       Module Link
                     </a>
                     <a 
                       href="https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g29c977eb948_0_0#slide=id.g29c977eb948_0_0" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-primary hover:underline"
+                      className="flex items-center gap-2 text-sm text-muted-foreground hover:underline"
                     >
-                      <Book className="h-3.5 w-3.5" style={{ color: '#FF6900' }} />
-                      Student Guide Available
+                      <Book className="h-3.5 w-3.5 text-muted-foreground" />
+                      Student Guide
                     </a>
                   </div>
                 </div>
@@ -392,12 +445,22 @@ export default function Planner() {
                     {(provided) => (
                       <div ref={provided.innerRef} {...provided.droppableProps} className="w-80 shrink-0">
                         <Card>
-                          <CardHeader className="pb-2">
-                            <div className="flex items-start justify-between gap-2">
-                              <EditableTitle value={session.name} onChange={(v) => renameSession(session.id, v)} isEditing={editingSessionId === session.id} setEditing={(editing) => setEditingSessionId(editing ? session.id : null)} />
-                              <SessionMenu 
-                                onRename={() => setEditingSessionId(session.id)} 
-                                onRemove={() => {
+                           <CardHeader className="pb-2">
+                             <div className="flex items-start justify-between gap-2">
+                               <div className="flex items-center gap-2">
+                                 <EditableTitle value={session.name} onChange={(v) => renameSession(session.id, v)} isEditing={editingSessionId === session.id} setEditing={(editing) => setEditingSessionId(editing ? session.id : null)} />
+                                 <Button
+                                   variant="ghost"
+                                   size="sm"
+                                   className="h-6 w-6 p-0"
+                                   onClick={() => setEditingSessionId(session.id)}
+                                 >
+                                   <Pencil className="h-3 w-3" />
+                                 </Button>
+                               </div>
+                               <SessionMenu 
+                                 onRename={() => setEditingSessionId(session.id)} 
+                                 onRemove={() => {
                                   if (session.activities.length === 0) {
                                     removeSession(session.id);
                                   } else {
@@ -407,7 +470,34 @@ export default function Planner() {
                                 hasActivities={session.activities.length > 0}
                               />
                             </div>
-                            <div className="text-xs text-muted-foreground">Available: {session.availableMinutes} min</div>
+                             <CardTitle className="text-sm font-medium text-muted-foreground">
+                               Available: 
+                               <DropdownMenu>
+                                 <DropdownMenuTrigger asChild>
+                                   <Button variant="ghost" size="sm" className="h-auto p-0 ml-1 hover:bg-transparent">
+                                     <span className={timeClass}>{remaining >= 0 ? `${remaining} min` : `${Math.abs(remaining)} min over`}</span>
+                                     <ChevronDown className="h-3 w-3 ml-1" />
+                                   </Button>
+                                 </DropdownMenuTrigger>
+                                 <DropdownMenuContent align="start">
+                                   {timeOptions.map((time) => (
+                                     <DropdownMenuItem
+                                       key={time}
+                                       onClick={() => {
+                                         const next = { ...plan, sessions: plan.sessions.map((x) => x.id === session.id ? { ...x, availableMinutes: time } : x) };
+                                         const sessionToUpdate = next.sessions.find(s => s.id === session.id);
+                                         if (sessionToUpdate) {
+                                           sessionToUpdate.activities = recalculateActivitiesForTime(sessionToUpdate.activities, time);
+                                         }
+                                         pushHistory(next);
+                                       }}
+                                     >
+                                       {time} min
+                                     </DropdownMenuItem>
+                                   ))}
+                                 </DropdownMenuContent>
+                               </DropdownMenu>
+                             </CardTitle>
                           </CardHeader>
                           <CardContent>
                             <div className="space-y-2">
@@ -443,10 +533,12 @@ export default function Planner() {
                                            <div className="flex items-center gap-3">
                                              <div className="flex items-center gap-1">
                                                <Clock className="h-3 w-3 text-muted-foreground" />
-                                               <DropdownMenu>
-                                                 <DropdownMenuTrigger asChild>
-                                                   <span className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">{a.minutes} min</span>
-                                                 </DropdownMenuTrigger>
+                                                <DropdownMenu>
+                                                  <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="sm" className="h-auto p-0 font-normal">
+                                                      {a.minutes} min <ChevronDown className="h-3 w-3 ml-1" />
+                                                    </Button>
+                                                  </DropdownMenuTrigger>
                                                  <DropdownMenuContent align="start">
                                                    {[3, 5, 7, 10, 12, 15, 20, 25, 30].map((min) => (
                                                      <DropdownMenuItem key={min} onClick={() => changeTime(a.id, session.id, min)} className="text-sm">
@@ -606,7 +698,7 @@ function SessionMenu({ onRename, onRemove, hasActivities }: { onRename: () => vo
           }} 
           className="gap-2 text-destructive"
         >
-          <Trash2 className="h-4 w-4" />Remove session
+          <X className="h-4 w-4" />Remove session
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
