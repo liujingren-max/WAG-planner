@@ -12,6 +12,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { LessonPlan, SessionColumn, ActivityCard, FacilitationStyle } from "@/state/planTypes";
 import { toast } from "@/hooks/use-toast";
+import { generateLessonPlan } from "@/utils/planningLogic";
 
 function loadPlans(): LessonPlan[] {
   const raw = localStorage.getItem("plans");
@@ -188,43 +189,43 @@ export default function Planner() {
 
   const styleIcon = (s: FacilitationStyle) => s === "teacher" ? <Presentation className="h-3.5 w-3.5" /> : s === "individual" ? <User className="h-3.5 w-3.5" /> : <Users className="h-3.5 w-3.5" />;
 
-  // Auto-recalculate activities function
-  function recalculateActivitiesForTime(activities: any[], targetMinutes: number) {
-    // This is a simplified version of the planning logic from SparkySheet
-    const essentialActivities = activities.filter(a => !a.optional);
-    const optionalActivities = activities.filter(a => a.optional);
+  // Use the same sophisticated planning logic for regeneration
+  function regeneratePlan() {
+    if (!plan) return;
     
-    let currentActivities = [...essentialActivities];
-    let currentTime = currentActivities.reduce((sum, a) => sum + a.minutes, 0);
+    setIsRegenerating(true);
     
-    // If we have too much time, add optional activities
-    if (currentTime < targetMinutes) {
-      for (const optional of optionalActivities) {
-        if (currentTime + optional.minutes <= targetMinutes + 5) {
-          currentActivities.push(optional);
-          currentTime += optional.minutes;
-        }
-      }
-    }
+    // Remove original plan from localStorage
+    const plans = loadPlans().filter(p => p.id !== plan.id);
+    savePlans(plans);
     
-    // If we still don't fit, try to adjust times
-    const timeDiff = targetMinutes - currentTime;
-    if (Math.abs(timeDiff) > 5) {
-      // Adjust activity times to fit better
-      for (const activity of currentActivities) {
-        if (timeDiff > 0 && activity.minutes < 30) {
-          const increase = Math.min(timeDiff, 5);
-          activity.minutes += increase;
-          currentTime += increase;
-        } else if (timeDiff < 0 && activity.minutes > 3) {
-          const decrease = Math.min(Math.abs(timeDiff), activity.minutes - 2);
-          activity.minutes -= decrease;
-          currentTime -= decrease;
-        }
-      }
-    }
+    // Get current session times
+    const sessionTimes = plan.sessions.map(s => s.availableMinutes);
     
-    return currentActivities;
+    // Generate new plan using the same sophisticated algorithm as initial creation
+    const newPlan = generateLessonPlan({
+      times: sessionTimes,
+      grade: plan.grade,
+      unit: plan.unit,
+      module: plan.module,
+      preserveCustomizations: true,
+      existingPlan: plan
+    });
+    
+    // Assign new ID for regenerated plan
+    newPlan.id = crypto.randomUUID();
+    
+    // Save new plan
+    const updatedPlans = loadPlans();
+    updatedPlans.push(newPlan);
+    savePlans(updatedPlans);
+    
+    // Mark that this is a regenerated plan
+    sessionStorage.setItem('newPlanGenerated', newPlan.id);
+    
+    // Navigate to new plan
+    navigate(`/plan/${newPlan.id}`);
+    toast({ title: "Regenerated!", description: "New plan created with updated settings using the same intelligent algorithm." });
   }
 
   if (!plan) return null;
@@ -420,11 +421,6 @@ export default function Planner() {
                         const newTime = Number(e.target.value);
                         setLastSessionTime(newTime);
                         const next = { ...plan, sessions: plan.sessions.map((x) => x.id === s.id ? { ...x, availableMinutes: newTime } : x) };
-                        // Auto-recalculate plan for this session
-                        const session = next.sessions.find(session => session.id === s.id);
-                        if (session) {
-                          session.activities = recalculateActivitiesForTime(session.activities, newTime);
-                        }
                         pushHistory(next);
                       }}
                     />
@@ -433,39 +429,7 @@ export default function Planner() {
                 ))}
               </div>
               <Button onClick={() => {
-                if (!plan) return;
-                setIsRegenerating(true);
-                
-                // Remove original plan from localStorage
-                const plans = loadPlans().filter(p => p.id !== plan.id);
-                savePlans(plans);
-                
-                // Create new plan with updated session times and properly regenerated activities
-                const newPlan = {
-                  ...plan,
-                  id: crypto.randomUUID(),
-                  sessions: plan.sessions.map(s => ({
-                    ...s,
-                    id: crypto.randomUUID(),
-                    activities: recalculateActivitiesForTime([...s.activities, ...plan.deleted], s.availableMinutes).map(a => ({
-                      ...a,
-                      id: crypto.randomUUID()
-                    }))
-                  })),
-                  deleted: [] // Clear deleted activities as they're now redistributed
-                };
-                
-                // Save new plan
-                const updatedPlans = loadPlans();
-                updatedPlans.push(newPlan);
-                savePlans(updatedPlans);
-                
-                // Mark that this is a regenerated plan
-                sessionStorage.setItem('newPlanGenerated', newPlan.id);
-                
-                // Navigate to new plan
-                navigate(`/plan/${newPlan.id}`);
-                toast({ title: "Regenerated!", description: "New plan created with updated settings." });
+                regeneratePlan();
               }}>Update & Regenerate</Button>
             </CardContent>
           </Card>
