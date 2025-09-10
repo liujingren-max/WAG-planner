@@ -156,7 +156,7 @@ export default function SparkySheet({
       minutes: 15,
       optional: false,
       styles: ["teacher", "individual", "collaborative"],
-      teacher: "/lovable-uploads/teacher-guide/analyze-activity.png"
+      teacher: "/lovable-uploads/T-Analyze.png"
     }, {
       title: "Summarize",
       minutes: 7,
