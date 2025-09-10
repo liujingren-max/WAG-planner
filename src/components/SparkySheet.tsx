@@ -57,133 +57,158 @@ export default function SparkySheet({
       minutes: 3,
       optional: true,
       styles: ["teacher"],
-      student: "/lovable-uploads/2a542771-e92a-4362-af19-0669bcb45b9b.png"
+      student: "/lovable-uploads/2a542771-e92a-4362-af19-0669bcb45b9b.png",
+      teacher: "teacher-guide/preview-key-concepts-skills.png"
     }, {
       title: "Direct Instruction: Determining Theme and Author's Message in a Personal Narrative",
       minutes: 15,
       optional: false,
       styles: ["teacher"],
+      teacher: "teacher-guide/direct-instruction-organizing-narrative.png"
     }, {
       title: "Direct Instruction: Organizing Narrative Writing",
       minutes: 30,
       optional: false,
-      styles: ["teacher"]
+      styles: ["teacher"],
+      teacher: "teacher-guide/direct-instruction-organizing-narrative.png"
     }, {
       title: "Quick Journal - Write",
       minutes: 5,
       optional: true,
       styles: ["individual"],
-      student: "/lovable-uploads/733ff7e7-c09e-40c6-a610-254946d51f7b.png"
+      student: "/lovable-uploads/733ff7e7-c09e-40c6-a610-254946d51f7b.png",
+      teacher: "teacher-guide/quick-journal.png"
     }, {
       title: "Build Your Vocabulary - Instruction",
       minutes: 5,
       optional: false,
       styles: ["teacher", "individual", "collaborative"],
-      student: "/lovable-uploads/6b6215cb-94f7-44d1-bfcf-da1d451926e5.png"
+      student: "/lovable-uploads/6b6215cb-94f7-44d1-bfcf-da1d451926e5.png",
+      teacher: "teacher-guide/build-your-vocabulary.png"
     }, {
       title: "Build Your Vocabulary - Collaboration",
       minutes: 10,
       optional: false,
       styles: ["teacher", "individual", "collaborative"],
-      student: "/lovable-uploads/6b6215cb-94f7-44d1-bfcf-da1d451926e5.png"
+      student: "/lovable-uploads/6b6215cb-94f7-44d1-bfcf-da1d451926e5.png",
+      teacher: "teacher-guide/build-your-vocabulary.png"
     }, {
-      title: "Topic Overview - Read",
+      title: "Topic Overview",
       minutes: 2,
       optional: false,
       styles: ["individual"],
+      teacher: "teacher-guide/topic-overview.png"
     }, {
       title: "Vocabulary - Introduce Best Practice",
       minutes: 5,
       optional: false,
-      styles: ["teacher"]
+      styles: ["teacher"],
+      teacher: "teacher-guide/list-group-label.png"
     }, {
       title: "Vocabulary - Engage with Focus Words",
       minutes: 10,
       optional: false,
       styles: ["collaborative"],
-      student: "/lovable-uploads/d0c0bb54-f96a-400e-bfc4-efc6a3b76ea1.png"
+      student: "/lovable-uploads/d0c0bb54-f96a-400e-bfc4-efc6a3b76ea1.png",
+      teacher: "teacher-guide/list-group-label.png"
     }, {
       title: "Connect - Write",
       minutes: 3,
       optional: false,
-      styles: ["individual"]
+      styles: ["individual"],
+      student: "/lovable-uploads/7c9d2a5f-e504-4f1a-a18b-e04bd6f35ce2.png",
+      teacher: "teacher-guide/connect-share-personal-connection.png"
     }, {
       title: "Connect - Pair and Share",
       minutes: 2,
       optional: false,
       styles: ["collaborative"],
-      student: "/lovable-uploads/7c9d2a5f-e504-4f1a-a18b-e04bd6f35ce2.png"
+      student: "/lovable-uploads/7c9d2a5f-e504-4f1a-a18b-e04bd6f35ce2.png",
+      teacher: "teacher-guide/connect-share-personal-connection.png"
     }, {
       title: "Read",
       minutes: 20,
       optional: false,
-      styles: ["individual"]
+      styles: ["individual"],
+      teacher: "teacher-guide/read-activity.png"
     }, {
       title: "Share your Reflections",
       minutes: 10,
       optional: true,
       styles: ["collaborative"],
-      student: "/lovable-uploads/b0ad8338-aae3-4405-9d12-fcd4a8f74e18.png"
+      student: "/lovable-uploads/b0ad8338-aae3-4405-9d12-fcd4a8f74e18.png",
+      teacher: "teacher-guide/share-your-reflections.png"
     }, {
       title: "Check",
       minutes: 7,
       optional: false,
-      styles: ["individual"]
+      styles: ["individual"],
+      teacher: "teacher-guide/check-activity.png"
     }, {
       title: "Apply Your Learning",
       minutes: 12,
       optional: false,
       styles: ["individual", "collaborative"],
-      student: "/lovable-uploads/4b10fece-102f-4966-812c-e5425b4bd012.png"
+      student: "/lovable-uploads/4b10fece-102f-4966-812c-e5425b4bd012.png",
+      teacher: "teacher-guide/apply-your-learning.png"
     }, {
       title: "Analyze",
       minutes: 15,
       optional: false,
-      styles: ["teacher", "individual", "collaborative"]
+      styles: ["teacher", "individual", "collaborative"],
+      teacher: "teacher-guide/analyze-activity.png"
     }, {
       title: "Summarize",
       minutes: 7,
       optional: false,
-      styles: ["individual"]
+      styles: ["individual"],
+      teacher: "teacher-guide/summarize-activity.png"
     }, {
       title: "Write to Impress - Review",
       minutes: 7,
       optional: false,
       styles: ["individual", "collaborative"],
-      student: "/lovable-uploads/fb633020-d3b3-49a0-aff2-4abc93c98da9.png"
+      student: "/lovable-uploads/fb633020-d3b3-49a0-aff2-4abc93c98da9.png",
+      teacher: "/lovable-uploads/6c91bfd8-0d1b-46e5-9e20-2d012e882b55.png"
     }, {
       title: "Write to Impress - Practice",
       minutes: 5,
       optional: false,
       styles: ["teacher", "individual", "collaborative"],
-      student: "/lovable-uploads/fb633020-d3b3-49a0-aff2-4abc93c98da9.png"
+      student: "/lovable-uploads/fb633020-d3b3-49a0-aff2-4abc93c98da9.png",
+      teacher: "/lovable-uploads/6c91bfd8-0d1b-46e5-9e20-2d012e882b55.png"
     }, {
       title: "Appreciate Author's Craft",
       minutes: 10,
       optional: true,
       styles: ["individual"],
-      student: "/lovable-uploads/989994ad-b836-4ebe-8a37-efa2b43dea1c.png"
+      student: "/lovable-uploads/989994ad-b836-4ebe-8a37-efa2b43dea1c.png",
+      teacher: "teacher-guide/appreciate-authors-craft.png"
     }, {
       title: "Develop",
       minutes: 20,
       optional: false,
-      styles: ["individual"]
+      styles: ["individual"],
+      teacher: "teacher-guide/develop-share-plan.png"
     }, {
       title: "Share Your Plan",
       minutes: 10,
       optional: true,
       styles: ["individual", "collaborative"],
-      student: "/lovable-uploads/0358d2c9-d61b-4366-a544-4ee7b7708a92.png"
+      student: "/lovable-uploads/0358d2c9-d61b-4366-a544-4ee7b7708a92.png",
+      teacher: "teacher-guide/develop-share-plan.png"
     }, {
       title: "Draft",
       minutes: 20,
       optional: true,
-      styles: ["individual", "collaborative"]
+      styles: ["individual", "collaborative"],
+      teacher: "teacher-guide/draft-and-review.png"
     }, {
       title: "Review/Revise",
       minutes: 15,
       optional: true,
-      styles: ["individual"]
+      styles: ["individual"],
+      teacher: "teacher-guide/draft-and-review.png"
     }];
 
     // Must-have tasks (Develop is required)
