@@ -11,6 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, } from "@/components/ui/alert-dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { LessonPlan, SessionColumn, ActivityCard, FacilitationStyle } from "@/state/planTypes";
+import ActivityDetailModal from "@/components/ActivityDetailModal";
 import { toast } from "@/hooks/use-toast";
 import { generateLessonPlan } from "@/utils/planningLogic";
 
@@ -35,6 +36,7 @@ export default function Planner() {
   const [isDragging, setIsDragging] = useState(false);
   const [justGenerated, setJustGenerated] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<{ activity: ActivityCard; tab: 'teacher' | 'student' } | null>(null);
 
   useEffect(() => {
     const list = loadPlans();
@@ -506,7 +508,12 @@ export default function Planner() {
                                     >
                                       <div className="space-y-1">
                                         <div className="flex items-start justify-between">
-                                          <h4 className="text-sm font-semibold leading-tight text-left">{a.title}</h4>
+                                           <h4 
+                                             className="text-sm font-semibold leading-tight text-left cursor-pointer hover:text-primary transition-colors"
+                                             onClick={() => setSelectedActivity({ activity: a, tab: 'teacher' })}
+                                           >
+                                             {a.title}
+                                           </h4>
                                           <Button
                                             variant="ghost"
                                             size="sm"
@@ -542,14 +549,14 @@ export default function Planner() {
                                             </div>
                                            </div>
                                            
-                                           {a.handoutUrl && (
+                                           {a.studentGuide && (
                                              <Tooltip>
                                                <TooltipTrigger asChild>
                                                  <Button
                                                    variant="ghost"
                                                    size="sm"
                                                    className="h-6 w-6 p-0"
-                                                   onClick={() => window.open(a.handoutUrl, '_blank')}
+                                                   onClick={() => setSelectedActivity({ activity: a, tab: 'student' })}
                                                  >
                                                    <Book className="h-3 w-3 text-muted-foreground" />
                                                  </Button>
@@ -609,6 +616,12 @@ export default function Planner() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ActivityDetailModal
+        activity={selectedActivity?.activity || null}
+        initialTab={selectedActivity?.tab}
+        onClose={() => setSelectedActivity(null)}
+      />
     </div>
     </TooltipProvider>
   );

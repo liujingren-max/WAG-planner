@@ -234,7 +234,8 @@ export function generateLessonPlan(options: PlanningOptions): LessonPlan {
           originalMinutes: task.originalMinutes,
           optional: !!task.optional,
           styles: task.styles as any,
-          handoutUrl: task.handoutUrl
+          studentGuide: undefined,
+          teacherGuide: undefined
         });
         sessions[i].currentTime += task.minutes;
         currentSessionIndex = i;
@@ -252,7 +253,8 @@ export function generateLessonPlan(options: PlanningOptions): LessonPlan {
         originalMinutes: task.originalMinutes,
         optional: !!task.optional,
         styles: task.styles as any,
-        handoutUrl: task.handoutUrl
+        studentGuide: undefined,
+        teacherGuide: undefined
       });
       lastSession.currentTime += task.minutes;
     }

@@ -7,7 +7,8 @@ export interface ActivityCard {
   originalMinutes?: number; // The original time estimate from database
   optional?: boolean;
   styles: FacilitationStyle[];
-  handoutUrl?: string;
+  studentGuide?: string;
+  teacherGuide?: string;
 }
 
 export interface SessionColumn {

@@ -298,7 +298,8 @@ export default function SparkySheet({
             // Store the original database time
             optional: !!task.optional,
             styles: task.styles as any,
-            handoutUrl: task.handoutUrl
+            studentGuide: task.student,
+            teacherGuide: task.teacher
           });
           sessions[i].currentTime += task.minutes;
           currentSessionIndex = i;
@@ -317,7 +318,8 @@ export default function SparkySheet({
           // Store the original database time
           optional: !!task.optional,
           styles: task.styles as any,
-          handoutUrl: task.handoutUrl
+            studentGuide: task.student,
+            teacherGuide: task.teacher
         });
         lastSession.currentTime += task.minutes;
       }
