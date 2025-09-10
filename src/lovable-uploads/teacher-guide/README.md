@@ -37,6 +37,17 @@ This folder contains teacher guide materials and curriculum resources for Module
 - **Text**: "I Am the Greatest" by James Bird
 - **Publisher**: ThinkCERCA © 2023
 
+### 3. Additional Teacher Guides
+- **Build Your Vocabulary**: `/lovable-uploads/teacher-guide/build-your-vocabulary.png`
+- **List, Group, Label**: `/lovable-uploads/teacher-guide/list-group-label.png`
+- **Read Activity**: `/lovable-uploads/teacher-guide/read-activity.png`
+- **Check Activity**: `/lovable-uploads/teacher-guide/check-activity.png`
+- **Analyze Activity**: `/lovable-uploads/teacher-guide/analyze-activity.png`
+- **Summarize Activity**: `/lovable-uploads/teacher-guide/summarize-activity.png`
+- **Appreciate Author's Craft**: `/lovable-uploads/teacher-guide/appreciate-authors-craft.png`
+- **Draft and Review**: `/lovable-uploads/teacher-guide/draft-and-review.png`
+- **Direct Instruction - Organizing Narrative**: `/lovable-uploads/teacher-guide/direct-instruction-organizing-narrative.png`
+
 ## Implementation Notes
 - All activities are designed to support students in developing writing skills
 - Activities include both individual and collaborative components

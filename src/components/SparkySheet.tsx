@@ -169,14 +169,14 @@ export default function SparkySheet({
       optional: false,
       styles: ["individual", "collaborative"],
       student: "/lovable-uploads/fb633020-d3b3-49a0-aff2-4abc93c98da9.png",
-      teacher: "/lovable-uploads/6c91bfd8-0d1b-46e5-9e20-2d012e882b55.png"
+      teacher: "/lovable-uploads/teacher-guide/write-to-impress.png"
     }, {
       title: "Write to Impress - Practice",
       minutes: 5,
       optional: false,
       styles: ["teacher", "individual", "collaborative"],
       student: "/lovable-uploads/fb633020-d3b3-49a0-aff2-4abc93c98da9.png",
-      teacher: "/lovable-uploads/6c91bfd8-0d1b-46e5-9e20-2d012e882b55.png"
+      teacher: "/lovable-uploads/teacher-guide/write-to-impress.png"
     }, {
       title: "Appreciate Author's Craft",
       minutes: 10,
