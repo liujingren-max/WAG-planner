@@ -1,15 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Clock, User, Users, GraduationCap } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Clock, User, Users, GraduationCap, ThumbsUp } from "lucide-react";
 import { ActivityCard, FacilitationStyle } from "@/state/planTypes";
 
 interface ActivityDetailModalProps {
   activity: ActivityCard | null;
   initialTab?: 'teacher' | 'student';
   onClose: () => void;
+  onTimeChange?: (activityId: string, minutes: number) => void;
 }
 
 const facilityStyleIcons: Record<FacilitationStyle, React.ReactNode> = {
@@ -24,7 +27,94 @@ const facilityStyleLabels: Record<FacilitationStyle, string> = {
   collaborative: "Collaborative"
 };
 
-export default function ActivityDetailModal({ activity, initialTab = 'teacher', onClose }: ActivityDetailModalProps) {
+function TimeBadge({ minutes, onChange, originalMinutes }: { minutes: number; onChange: (m: number) => void; originalMinutes?: number }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [customValue, setCustomValue] = useState("");
+  const baseOptions = [2, 3, 4, 5, 7, 10, 12, 15, 20, 25, 30];
+  
+  // Add originalMinutes to options if it's not already in the list
+  const options = useMemo(() => {
+    const allOptions = [...baseOptions];
+    if (originalMinutes && !allOptions.includes(originalMinutes)) {
+      allOptions.push(originalMinutes);
+      allOptions.sort((a, b) => a - b);
+    }
+    return allOptions;
+  }, [originalMinutes]);
+
+  const handleCustomSelect = () => {
+    setCustomValue(minutes.toString());
+    setIsEditing(true);
+  };
+
+  const handleCustomSave = () => {
+    const value = parseInt(customValue);
+    if (!isNaN(value) && value > 0 && value <= 180) {
+      onChange(value);
+    }
+    setIsEditing(false);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleCustomSave();
+    }
+  };
+
+  if (isEditing) {
+    return (
+      <div className="flex items-center gap-1">
+        <Input
+          type="number"
+          value={customValue}
+          onChange={(e) => setCustomValue(e.target.value)}
+          onBlur={handleCustomSave}
+          onKeyPress={handleKeyPress}
+          className="w-16 h-6 text-xs px-1"
+          min={1}
+          max={180}
+          autoFocus
+        />
+        <span className="text-xs text-muted-foreground">min</span>
+      </div>
+    );
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Badge variant="outline" className="cursor-pointer select-none gap-1 hover:bg-muted">
+          <Clock className="h-3.5 w-3.5" />
+          {minutes} min
+          <svg className="h-3 w-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </Badge>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="z-50">
+        {options.map((option) => (
+          <DropdownMenuItem 
+            key={option} 
+            onClick={() => onChange(option)}
+            className={minutes === option ? "bg-accent" : ""}
+          >
+            <div className="flex items-center gap-2 w-full">
+              <span>{option} min</span>
+              {originalMinutes === option && (
+                <ThumbsUp className="h-3.5 w-3.5 text-primary ml-auto" />
+              )}
+            </div>
+          </DropdownMenuItem>
+        ))}
+        <DropdownMenuItem onClick={handleCustomSelect} className="text-primary">
+          Custom
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+export default function ActivityDetailModal({ activity, initialTab = 'teacher', onClose, onTimeChange }: ActivityDetailModalProps) {
   const [activeTab, setActiveTab] = useState<'teacher' | 'student'>(initialTab);
 
   // Reset tab when activity or initialTab changes
@@ -59,10 +149,11 @@ export default function ActivityDetailModal({ activity, initialTab = 'teacher', 
           </div>
           
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              <span>{activity.minutes} min</span>
-            </div>
+            <TimeBadge 
+              minutes={activity.minutes} 
+              onChange={(minutes) => onTimeChange?.(activity.id, minutes)}
+              originalMinutes={activity.originalMinutes}
+            />
             
             <div className="flex items-center gap-2">
               {activity.styles.map((style) => (
@@ -109,6 +200,7 @@ export default function ActivityDetailModal({ activity, initialTab = 'teacher', 
                     src={activity.teacherGuide}
                     alt={`Teacher guide for ${activity.title}`}
                     className="max-w-full h-auto rounded-lg shadow-sm"
+                    style={{ marginTop: '-3px' }}
                   />
                 </div>
               )}
