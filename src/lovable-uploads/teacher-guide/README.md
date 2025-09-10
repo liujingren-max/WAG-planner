@@ -38,6 +38,12 @@ This folder contains teacher guide materials and curriculum resources for Module
 - **Publisher**: ThinkCERCA © 2023
 
 ### 3. Additional Teacher Guides
+- **Apply Your Learning**: `/lovable-uploads/teacher-guide/apply-your-learning.png`
+- **Share Your Reflections**: `/lovable-uploads/teacher-guide/share-your-reflections.png`
+- **Connect/Share Personal Connection**: `/lovable-uploads/teacher-guide/connect-share-personal-connection.png`
+- **Topic Overview**: `/lovable-uploads/teacher-guide/topic-overview.png`
+- **Quick Journal**: `/lovable-uploads/teacher-guide/quick-journal.png`
+- **Preview Key Concepts and Skills**: `/lovable-uploads/teacher-guide/preview-key-concepts-skills.png`
 - **Build Your Vocabulary**: `/lovable-uploads/teacher-guide/build-your-vocabulary.png`
 - **List, Group, Label**: `/lovable-uploads/teacher-guide/list-group-label.png`
 - **Read Activity**: `/lovable-uploads/teacher-guide/read-activity.png`
