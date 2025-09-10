@@ -84,14 +84,14 @@ export default function SparkySheet({
       optional: false,
       styles: ["teacher", "individual", "collaborative"],
       student: "/lovable-uploads/6b6215cb-94f7-44d1-bfcf-da1d451926e5.png",
-      teacher: "/lovable-uploads/teacher-guide/build-your-vocabulary.png"
+      teacher: "/public/lovable-uploads/teacher-guide/build-your-vocabulary.png"
     }, {
       title: "Build Your Vocabulary - Collaboration",
       minutes: 10,
       optional: false,
       styles: ["teacher", "individual", "collaborative"],
       student: "/lovable-uploads/6b6215cb-94f7-44d1-bfcf-da1d451926e5.png",
-      teacher: "/lovable-uploads/teacher-guide/build-your-vocabulary.png"
+      teacher: "/public/lovable-uploads/teacher-guide/build-your-vocabulary.png"
     }, {
       title: "Topic Overview",
       minutes: 2,
@@ -103,14 +103,14 @@ export default function SparkySheet({
       minutes: 5,
       optional: false,
       styles: ["teacher"],
-      teacher: "/lovable-uploads/teacher-guide/list-group-label.png"
+      teacher: "/public/lovable-uploads/teacher-guide/list-group-label.png"
     }, {
       title: "Vocabulary - Engage with Focus Words",
       minutes: 10,
       optional: false,
       styles: ["collaborative"],
       student: "/lovable-uploads/d0c0bb54-f96a-400e-bfc4-efc6a3b76ea1.png",
-      teacher: "/lovable-uploads/teacher-guide/list-group-label.png"
+      teacher: "/public/lovable-uploads/teacher-guide/list-group-label.png"
     }, {
       title: "Connect - Write",
       minutes: 3,
@@ -130,7 +130,7 @@ export default function SparkySheet({
       minutes: 20,
       optional: false,
       styles: ["individual"],
-      teacher: "/lovable-uploads/teacher-guide/read-activity.png"
+      teacher: "/public/lovable-uploads/teacher-guide/read-activity.png"
     }, {
       title: "Share your Reflections",
       minutes: 10,
@@ -143,7 +143,7 @@ export default function SparkySheet({
       minutes: 7,
       optional: false,
       styles: ["individual"],
-      teacher: "/lovable-uploads/teacher-guide/check-activity.png"
+      teacher: "/public/lovable-uploads/teacher-guide/check-activity.png"
     }, {
       title: "Apply Your Learning",
       minutes: 12,
@@ -156,59 +156,59 @@ export default function SparkySheet({
       minutes: 15,
       optional: false,
       styles: ["teacher", "individual", "collaborative"],
-      teacher: "/lovable-uploads/teacher-guide/analyze-activity.png"
+      teacher: "/public/lovable-uploads/teacher-guide/analyze-activity.png"
     }, {
       title: "Summarize",
       minutes: 7,
       optional: false,
       styles: ["individual"],
-      teacher: "/lovable-uploads/teacher-guide/summarize-activity.png"
+      teacher: "/public/lovable-uploads/teacher-guide/summarize-activity.png"
     }, {
       title: "Write to Impress - Review",
       minutes: 7,
       optional: false,
       styles: ["individual", "collaborative"],
       student: "/lovable-uploads/fb633020-d3b3-49a0-aff2-4abc93c98da9.png",
-      teacher: "/lovable-uploads/teacher-guide/write-to-impress.png"
+      teacher: "/public/lovable-uploads/teacher-guide/write-to-impress.png"
     }, {
       title: "Write to Impress - Practice",
       minutes: 5,
       optional: false,
       styles: ["teacher", "individual", "collaborative"],
       student: "/lovable-uploads/fb633020-d3b3-49a0-aff2-4abc93c98da9.png",
-      teacher: "/lovable-uploads/teacher-guide/write-to-impress.png"
+      teacher: "public/lovable-uploads/teacher-guide/write-to-impress.png"
     }, {
       title: "Appreciate Author's Craft",
       minutes: 10,
       optional: true,
       styles: ["individual"],
       student: "/lovable-uploads/989994ad-b836-4ebe-8a37-efa2b43dea1c.png",
-      teacher: "/lovable-uploads/teacher-guide/appreciate-authors-craft.png"
+      teacher: "public/lovable-uploads/teacher-guide/appreciate-authors-craft.png"
     }, {
       title: "Develop",
       minutes: 20,
       optional: false,
       styles: ["individual"],
-      teacher: "/lovable-uploads/teacher-guide/develop-share-plan.png"
+      teacher: "public/lovable-uploads/teacher-guide/develop-share-plan.png"
     }, {
       title: "Share Your Plan",
       minutes: 10,
       optional: true,
       styles: ["individual", "collaborative"],
       student: "/lovable-uploads/0358d2c9-d61b-4366-a544-4ee7b7708a92.png",
-      teacher: "/lovable-uploads/teacher-guide/develop-share-plan.png"
+      teacher: "public/lovable-uploads/teacher-guide/develop-share-plan.png"
     }, {
       title: "Draft",
       minutes: 20,
       optional: true,
       styles: ["individual", "collaborative"],
-      teacher: "/lovable-uploads/teacher-guide/draft-and-review.png"
+      teacher: "public/lovable-uploads/teacher-guide/draft-and-review.png"
     }, {
       title: "Review/Revise",
       minutes: 15,
       optional: true,
       styles: ["individual"],
-      teacher: "/lovable-uploads/teacher-guide/draft-and-review.png"
+      teacher: "public/lovable-uploads/teacher-guide/draft-and-review.png"
     }];
 
     // Must-have tasks (Develop is required)
