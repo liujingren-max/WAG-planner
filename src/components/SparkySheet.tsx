@@ -84,14 +84,14 @@ export default function SparkySheet({
       optional: false,
       styles: ["teacher", "individual", "collaborative"],
       student: "/lovable-uploads/6b6215cb-94f7-44d1-bfcf-da1d451926e5.png",
-      teacher: "/public/lovable-uploads/teacher-guide/build-your-vocabulary.png"
+      teacher: "/lovable-uploads/teacher-guide/build-your-vocabulary.png"
     }, {
       title: "Build Your Vocabulary - Collaboration",
       minutes: 10,
       optional: false,
       styles: ["teacher", "individual", "collaborative"],
       student: "/lovable-uploads/6b6215cb-94f7-44d1-bfcf-da1d451926e5.png",
-      teacher: "/public/lovable-uploads/teacher-guide/build-your-vocabulary.png"
+      teacher: "/lovable-uploads/teacher-guide/build-your-vocabulary.png"
     }, {
       title: "Topic Overview",
       minutes: 2,
@@ -103,14 +103,14 @@ export default function SparkySheet({
       minutes: 5,
       optional: false,
       styles: ["teacher"],
-      teacher: "/public/lovable-uploads/teacher-guide/list-group-label.png"
+      teacher: "/lovable-uploads/teacher-guide/list-group-label.png"
     }, {
       title: "Vocabulary - Engage with Focus Words",
       minutes: 10,
       optional: false,
       styles: ["collaborative"],
       student: "/lovable-uploads/d0c0bb54-f96a-400e-bfc4-efc6a3b76ea1.png",
-      teacher: "/public/lovable-uploads/teacher-guide/list-group-label.png"
+      teacher: "/lovable-uploads/teacher-guide/list-group-label.png"
     }, {
       title: "Connect - Write",
       minutes: 3,
@@ -130,7 +130,7 @@ export default function SparkySheet({
       minutes: 20,
       optional: false,
       styles: ["individual"],
-      teacher: "/public/lovable-uploads/teacher-guide/read-activity.png"
+      teacher: "/lovable-uploads/teacher-guide/read-activity.png"
     }, {
       title: "Share your Reflections",
       minutes: 10,
