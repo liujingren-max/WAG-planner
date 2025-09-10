@@ -57,12 +57,12 @@ export default function SparkySheet({
       minutes: 3,
       optional: true,
       styles: ["teacher"],
-      handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_12#slide=id.g3739fcbb8b8_0_12"
+      student: "/lovable-uploads/2a542771-e92a-4362-af19-0669bcb45b9b.png"
     }, {
       title: "Direct Instruction: Determining Theme and Author's Message in a Personal Narrative",
       minutes: 15,
       optional: false,
-      styles: ["teacher"]
+      styles: ["teacher"],
     }, {
       title: "Direct Instruction: Organizing Narrative Writing",
       minutes: 30,
@@ -73,24 +73,24 @@ export default function SparkySheet({
       minutes: 5,
       optional: true,
       styles: ["individual"],
-      handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_33#slide=id.g3739fcbb8b8_0_33"
+      student: "/lovable-uploads/733ff7e7-c09e-40c6-a610-254946d51f7b.png"
     }, {
       title: "Build Your Vocabulary - Instruction",
       minutes: 5,
       optional: false,
       styles: ["teacher", "individual", "collaborative"],
-      handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_43#slide=id.g3739fcbb8b8_0_43"
+      student: "/lovable-uploads/6b6215cb-94f7-44d1-bfcf-da1d451926e5.png"
     }, {
       title: "Build Your Vocabulary - Collaboration",
       minutes: 10,
       optional: false,
       styles: ["teacher", "individual", "collaborative"],
-      handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_43#slide=id.g3739fcbb8b8_0_43"
+      student: "/lovable-uploads/6b6215cb-94f7-44d1-bfcf-da1d451926e5.png"
     }, {
       title: "Topic Overview - Read",
       minutes: 2,
       optional: false,
-      styles: ["individual"]
+      styles: ["individual"],
     }, {
       title: "Vocabulary - Introduce Best Practice",
       minutes: 5,
@@ -101,7 +101,7 @@ export default function SparkySheet({
       minutes: 10,
       optional: false,
       styles: ["collaborative"],
-      handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_60#slide=id.g3739fcbb8b8_0_60"
+      student: "/lovable-uploads/d0c0bb54-f96a-400e-bfc4-efc6a3b76ea1.png"
     }, {
       title: "Connect - Write",
       minutes: 3,
@@ -112,7 +112,7 @@ export default function SparkySheet({
       minutes: 2,
       optional: false,
       styles: ["collaborative"],
-      handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_72#slide=id.g3739fcbb8b8_0_72"
+      student: "/lovable-uploads/7c9d2a5f-e504-4f1a-a18b-e04bd6f35ce2.png"
     }, {
       title: "Read",
       minutes: 20,
@@ -123,7 +123,7 @@ export default function SparkySheet({
       minutes: 10,
       optional: true,
       styles: ["collaborative"],
-      handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_83#slide=id.g3739fcbb8b8_0_83"
+      student: "/lovable-uploads/b0ad8338-aae3-4405-9d12-fcd4a8f74e18.png"
     }, {
       title: "Check",
       minutes: 7,
@@ -134,7 +134,7 @@ export default function SparkySheet({
       minutes: 12,
       optional: false,
       styles: ["individual", "collaborative"],
-      handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_97#slide=id.g3739fcbb8b8_0_97"
+      student: "/lovable-uploads/4b10fece-102f-4966-812c-e5425b4bd012.png"
     }, {
       title: "Analyze",
       minutes: 15,
@@ -150,19 +150,19 @@ export default function SparkySheet({
       minutes: 7,
       optional: false,
       styles: ["individual", "collaborative"],
-      handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_108#slide=id.g3739fcbb8b8_0_108"
+      student: "/lovable-uploads/fb633020-d3b3-49a0-aff2-4abc93c98da9.png"
     }, {
       title: "Write to Impress - Practice",
       minutes: 5,
       optional: false,
       styles: ["teacher", "individual", "collaborative"],
-      handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_108#slide=id.g3739fcbb8b8_0_108"
+      student: "/lovable-uploads/fb633020-d3b3-49a0-aff2-4abc93c98da9.png"
     }, {
       title: "Appreciate Author's Craft",
       minutes: 10,
       optional: true,
       styles: ["individual"],
-      handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_120#slide=id.g3739fcbb8b8_0_120"
+      student: "/lovable-uploads/989994ad-b836-4ebe-8a37-efa2b43dea1c.png"
     }, {
       title: "Develop",
       minutes: 20,
@@ -173,7 +173,7 @@ export default function SparkySheet({
       minutes: 10,
       optional: true,
       styles: ["individual", "collaborative"],
-      handoutUrl: "https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g3739fcbb8b8_0_131#slide=id.g3739fcbb8b8_0_131"
+      student: "/lovable-uploads/0358d2c9-d61b-4366-a544-4ee7b7708a92.png"
     }, {
       title: "Draft",
       minutes: 20,
