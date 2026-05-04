@@ -148,22 +148,42 @@ export const getTimeAdjustmentRange = (minutes: number) => {
   return { min: -5, max: 5 };
 };
 
+export interface ActivityTemplate {
+  title: string;
+  minutes: number;
+  optional: boolean;
+  styles: string[];
+}
+
 export interface PlanningOptions {
   times: number[];
   grade?: number;
   unit?: number;
   module?: number;
+  activities?: ActivityTemplate[];
+  mustHave?: string[];
   preserveCustomizations?: boolean;
   existingPlan?: LessonPlan;
 }
 
 export function generateLessonPlan(options: PlanningOptions): LessonPlan {
-  const { times, grade = 8, unit = 1, module = 2, preserveCustomizations = false, existingPlan } = options;
+  const {
+    times,
+    grade = 8,
+    unit = 1,
+    module = 2,
+    activities: inputActivities,
+    mustHave,
+    preserveCustomizations = false,
+    existingPlan,
+  } = options;
   const totalMinutes = times.reduce((a, b) => a + b, 0);
   const id = existingPlan?.id || crypto.randomUUID();
+  const effectiveMustHave = mustHave ?? mustHaveTaskNames;
+  const sourceActivities = inputActivities ?? allTasks;
 
   // Step 1: Start with all activities in sequence order
-  let workingTasks = allTasks.map(task => ({
+  let workingTasks = sourceActivities.map(task => ({
     ...task,
     originalMinutes: task.minutes // Store the recommended time for thumbs up icon
   }));
@@ -303,7 +323,7 @@ export function generateLessonPlan(options: PlanningOptions): LessonPlan {
       let removedIndex = -1;
       for (let i = session.activities.length - 1; i >= 0; i--) {
         const activity = session.activities[i];
-        if (!mustHaveTaskNames.includes(activity.title)) {
+        if (!effectiveMustHave.includes(activity.title)) {
           removedIndex = i;
           break;
         }
@@ -327,7 +347,7 @@ export function generateLessonPlan(options: PlanningOptions): LessonPlan {
 
   return {
     id,
-    title: `Grade ${grade}, Unit ${unit}, Module ${module} – I'm the Greatest`,
+    title: `Grade ${grade}, Unit ${unit}, Module ${module}`,
     grade,
     unit,
     module,

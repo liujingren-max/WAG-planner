@@ -14,6 +14,7 @@ import { LessonPlan, SessionColumn, ActivityCard, FacilitationStyle } from "@/st
 import ActivityDetailModal from "@/components/ActivityDetailModal";
 import { toast } from "@/hooks/use-toast";
 import { generateLessonPlan } from "@/utils/planningLogic";
+import { getModuleData } from "@/utils/activitiesData";
 
 function loadPlans(): LessonPlan[] {
   const raw = localStorage.getItem("plans");
@@ -191,41 +192,28 @@ export default function Planner() {
 
   const styleIcon = (s: FacilitationStyle) => s === "teacher" ? <Presentation className="h-3.5 w-3.5" /> : s === "individual" ? <User className="h-3.5 w-3.5" /> : <Users className="h-3.5 w-3.5" />;
 
-  // Use the same sophisticated planning logic for regeneration
-  function regeneratePlan() {
+  async function regeneratePlan() {
     if (!plan) return;
-    
     setIsRegenerating(true);
-    
-    // Remove original plan from localStorage
     const plans = loadPlans().filter(p => p.id !== plan.id);
     savePlans(plans);
-    
-    // Get current session times
     const sessionTimes = plan.sessions.map(s => s.availableMinutes);
-    
-    // Generate new plan using the same sophisticated algorithm as initial creation
+    const moduleData = await getModuleData(plan.grade, plan.unit, plan.module);
     const newPlan = generateLessonPlan({
       times: sessionTimes,
       grade: plan.grade,
       unit: plan.unit,
       module: plan.module,
+      activities: moduleData?.activities,
+      mustHave: moduleData?.mustHaveTaskNames,
       preserveCustomizations: true,
       existingPlan: plan
     });
-    
-    // Assign new ID for regenerated plan
     newPlan.id = crypto.randomUUID();
-    
-    // Save new plan
     const updatedPlans = loadPlans();
     updatedPlans.push(newPlan);
     savePlans(updatedPlans);
-    
-    // Mark that this is a regenerated plan
     sessionStorage.setItem('newPlanGenerated', newPlan.id);
-    
-    // Navigate to new plan
     navigate(`/plan/${newPlan.id}`);
     toast({ title: "Regenerated!", description: "New plan created with updated settings using the same intelligent algorithm." });
   }
