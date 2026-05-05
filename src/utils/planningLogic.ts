@@ -164,6 +164,9 @@ export interface PlanningOptions {
   mustHave?: string[];
   preserveCustomizations?: boolean;
   existingPlan?: LessonPlan;
+  readLessonName?: string;
+  coverImageUrl?: string;
+  directInstructions?: { name: string; contentId?: string }[];
 }
 
 export function generateLessonPlan(options: PlanningOptions): LessonPlan {
@@ -176,6 +179,9 @@ export function generateLessonPlan(options: PlanningOptions): LessonPlan {
     mustHave,
     preserveCustomizations = false,
     existingPlan,
+    readLessonName,
+    coverImageUrl,
+    directInstructions,
   } = options;
   const totalMinutes = times.reduce((a, b) => a + b, 0);
   const id = existingPlan?.id || crypto.randomUUID();
@@ -255,7 +261,9 @@ export function generateLessonPlan(options: PlanningOptions): LessonPlan {
           optional: !!task.optional,
           styles: task.styles as any,
           studentGuide: undefined,
-          teacherGuide: undefined
+          teacherGuide: undefined,
+          teacherGuideUrl: (task as any).teacherGuideUrl,
+          studentGuideUrl: (task as any).studentGuideUrl,
         });
         sessions[i].currentTime += task.minutes;
         currentSessionIndex = i;
@@ -274,7 +282,9 @@ export function generateLessonPlan(options: PlanningOptions): LessonPlan {
         optional: !!task.optional,
         styles: task.styles as any,
         studentGuide: undefined,
-        teacherGuide: undefined
+        teacherGuide: undefined,
+        teacherGuideUrl: (task as any).teacherGuideUrl,
+        studentGuideUrl: (task as any).studentGuideUrl,
       });
       lastSession.currentTime += task.minutes;
     }
@@ -347,11 +357,14 @@ export function generateLessonPlan(options: PlanningOptions): LessonPlan {
 
   return {
     id,
-    title: `Grade ${grade}, Unit ${unit}, Module ${module}`,
+    title: module === 0 ? `Grade ${grade}, Unit ${unit}, Unit Preview` : `Grade ${grade}, Unit ${unit}, Module ${module}`,
     grade,
     unit,
     module,
     sessions: finalSessions,
-    deleted: existingPlan?.deleted || []
+    deleted: existingPlan?.deleted || [],
+    readLessonName,
+    coverImageUrl,
+    directInstructions,
   } as LessonPlan;
 }

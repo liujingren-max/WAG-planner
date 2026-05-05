@@ -3,11 +3,16 @@ export type ActivityTemplate = {
   minutes: number;
   optional: boolean;
   styles: string[];
+  teacherGuideUrl?: string;
+  studentGuideUrl?: string;
 };
 
 export type ModuleData = {
   activities: ActivityTemplate[];
   mustHaveTaskNames: string[];
+  readLessonName?: string;
+  coverImageUrl?: string;
+  directInstructions?: { name: string; contentId?: string }[];
 };
 
 type ActivitiesIndex = Record<string, Record<string, Record<string, ModuleData>>>;
@@ -44,6 +49,5 @@ export async function getAvailableModules(grade: number, unit: number): Promise<
   if (!unitData) return [];
   return Object.keys(unitData)
     .map(Number)
-    .filter(m => m > 0)
     .sort((a, b) => a - b);
 }

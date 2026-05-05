@@ -1,26 +1,25 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Bot, X } from "lucide-react";
+import { X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { LessonPlan } from "@/state/planTypes";
 import { generateLessonPlan } from "@/utils/planningLogic";
 import { getAvailableGrades, getAvailableUnits, getAvailableModules, getModuleData } from "@/utils/activitiesData";
 
 interface SparkySheetProps {
-  onCreated?: (plan: LessonPlan) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 const range = (start: number, end: number) => Array.from({ length: end - start + 1 }, (_, i) => start + i);
 
-export default function SparkySheet({ onCreated }: SparkySheetProps) {
-  const [open, setOpen] = useState(false);
+export default function SparkySheet({ open, onOpenChange }: SparkySheetProps) {
   const navigate = useNavigate();
 
   const [grade, setGrade] = useState(8);
@@ -67,6 +66,7 @@ export default function SparkySheet({ onCreated }: SparkySheetProps) {
       if (modules.length > 0 && !modules.includes(module)) setModule(modules[0]);
     });
   }, [unit, grade, open, availableUnits.length]);
+
   async function handleGenerate() {
     if (customTimes && customTimes.some(t => t <= 0)) {
       toast({ title: "Invalid session time", description: "Please enter positive minutes for all sessions." });
@@ -81,176 +81,173 @@ export default function SparkySheet({ onCreated }: SparkySheetProps) {
       module,
       activities: moduleData?.activities,
       mustHave: moduleData?.mustHaveTaskNames,
+      readLessonName: moduleData?.readLessonName,
+      coverImageUrl: moduleData?.coverImageUrl,
+      directInstructions: moduleData?.directInstructions,
     });
-    const existingRaw = localStorage.getItem("plans");
-    const list: LessonPlan[] = existingRaw ? JSON.parse(existingRaw) : [];
-    list.push(plan);
-    localStorage.setItem("plans", JSON.stringify(list));
-    onCreated?.(plan);
-    setOpen(false);
+    // Store in sessionStorage (unsaved) — only moves to localStorage when user clicks "Save to Library"
+    sessionStorage.setItem(`plan-temp-${plan.id}`, JSON.stringify(plan));
+    onOpenChange(false);
     navigate(`/plan/${plan.id}`);
   }
 
-  const timesArray = customTimes ?? Array.from({
-    length: sessionsCount
-  }, () => sessionMinutes);
-  return <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button size="lg">Create new lesson plan</Button>
-      </SheetTrigger>
-      <SheetContent side="right" className="w-full sm:w-[560px] flex flex-col">
-        <SheetHeader className="flex-shrink-0">
-          <SheetTitle className="flex items-center gap-2">
-            <Bot className="h-5 w-5" /> Sparky
-          </SheetTitle>
-        </SheetHeader>
+  const timesArray = customTimes ?? Array.from({ length: sessionsCount }, () => sessionMinutes);
 
-        <ScrollArea className="flex-1 mt-6">
-          <div className="space-y-6 pr-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Let's start planning!</CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-3 gap-3">
-                <div>
-                  <Label>Grade</Label>
-                  <Select value={String(grade)} onValueChange={v => { setGrade(Number(v)); setUnit(1); setModule(1); }}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableGrades.map(g => <SelectItem key={g} value={String(g)}>Grade {g}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Unit</Label>
-                  <Select value={String(unit)} onValueChange={v => { setUnit(Number(v)); setModule(1); }}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableUnits.map(u => <SelectItem key={u} value={String(u)}>Unit {u}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Module</Label>
-                  <Select value={String(module)} onValueChange={v => setModule(Number(v))}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableModules.map(m => <SelectItem key={m} value={String(m)}>Module {m}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="w-full sm:w-[514px] flex flex-col p-0 gap-0">
+        {/* Header */}
+        <div className="px-[50px] pt-[95px] pb-6 flex-shrink-0">
+          <SheetHeader className="p-0">
+            <SheetTitle className="text-[34px] font-bold text-[#4a4a4a] tracking-[-1.02px] text-left">
+              New Module Plan
+            </SheetTitle>
+          </SheetHeader>
+        </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>How many sessions and minutes do you have?</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                
+        <ScrollArea className="flex-1">
+          <div className="px-[50px] space-y-5 pb-6">
+            {/* Grade */}
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-medium text-[#4a4a4a]">Grade</Label>
+              <Select value={String(grade)} onValueChange={v => { setGrade(Number(v)); setUnit(1); setModule(1); }}>
+                <SelectTrigger className="h-[50px] border-[#ccc] rounded-[5px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableGrades.map(g => <SelectItem key={g} value={String(g)}>Grade {g}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <span>I plan to implement the module in</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
+            {/* Unit */}
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-medium text-[#4a4a4a]">Unit</Label>
+              <Select value={String(unit)} onValueChange={v => { setUnit(Number(v)); setModule(1); }}>
+                <SelectTrigger className="h-[50px] border-[#ccc] rounded-[5px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableUnits.map(u => <SelectItem key={u} value={String(u)}>Unit {u}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
 
-                    <Select value={String(sessionsCount)} onValueChange={v => setSessionsCount(Number(v))}>
-                      <SelectTrigger className="w-auto min-w-[80px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {range(1, 10).map(num => <SelectItem key={num} value={String(num)}>
-                            {num}
-                          </SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                    <span>sessions,</span>
-                  </div>
-                  <div>
-                    <span>and each session has</span>
-                  </div>
-                    
-                  <div className="flex items-center gap-2 text-sm">
-                    
-                    <Select value={String(sessionMinutes)} onValueChange={v => setSessionMinutes(Number(v))} disabled={!!customTimes}>
-                      <SelectTrigger className="w-auto min-w-[80px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[20, 25, 30, 35, 40, 45, 50, 60, 80, 90].map(min => <SelectItem key={min} value={String(min)}>
-                            {min}
-                          </SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                    <span>minutes.</span>
-                  </div>
-                </div>
+            {/* Module */}
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-medium text-[#4a4a4a]">Module</Label>
+              <Select value={String(module)} onValueChange={v => setModule(Number(v))}>
+                <SelectTrigger className="h-[50px] border-[#ccc] rounded-[5px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableModules.map(m => (
+                    <SelectItem key={m} value={String(m)}>
+                      {m === 0 ? 'Unit Preview' : `Module ${m}`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Checkbox id="custom" checked={!!customTimes} onCheckedChange={v => setCustomTimes(v ? Array.from({
-                    length: sessionsCount
-                  }, () => sessionMinutes) : null)} />
-                    <Label htmlFor="custom">Custom session time</Label>
-                  </div>
-                  {customTimes && <div className="space-y-3">
-                      {timesArray.map((t, i) => <div key={i} className="flex items-center gap-2 group">
-                          <Label className="w-20 text-sm">Session {i + 1}</Label>
-                          <Select value={String(t)} onValueChange={v => {
+            {/* Sessions and Minutes */}
+            <p className="text-[20px] font-bold text-[#4a4a4a] pt-2">Sessions and Minutes</p>
+
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-medium text-[#4a4a4a]">Sessions</Label>
+              <Select value={String(sessionsCount)} onValueChange={v => setSessionsCount(Number(v))}>
+                <SelectTrigger className="h-[50px] border-[#ccc] rounded-[5px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {range(1, 10).map(num => <SelectItem key={num} value={String(num)}>{num}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-medium text-[#4a4a4a]">Minutes</Label>
+              <Select value={String(sessionMinutes)} onValueChange={v => setSessionMinutes(Number(v))} disabled={!!customTimes}>
+                <SelectTrigger className="h-[50px] border-[#ccc] rounded-[5px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[20, 25, 30, 35, 40, 45, 50, 60, 80, 90].map(min => <SelectItem key={min} value={String(min)}>{min}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Custom session time */}
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="custom"
+                checked={!!customTimes}
+                onCheckedChange={v => setCustomTimes(v ? Array.from({ length: sessionsCount }, () => sessionMinutes) : null)}
+              />
+              <Label htmlFor="custom" className="text-base font-medium text-[#4a4a4a] cursor-pointer">Custom session time</Label>
+            </div>
+
+            {customTimes && (
+              <div className="space-y-3">
+                {timesArray.map((t, i) => (
+                  <div key={i} className="flex items-center gap-2 group">
+                    <Label className="w-20 text-sm">Session {i + 1}</Label>
+                    <Select value={String(t)} onValueChange={v => {
                       const arr = [...timesArray];
                       arr[i] = Number(v);
                       setCustomTimes(arr);
                     }}>
-                            <SelectTrigger className="flex-1">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {[20, 25, 30, 35, 40, 45, 50, 60, 80, 90].map(min => <SelectItem key={min} value={String(min)}>
-                                  {min} minutes
-                                </SelectItem>)}
-                            </SelectContent>
-                          </Select>
-                          <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => {
+                      <SelectTrigger className="flex-1 border-[#ccc]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[20, 25, 30, 35, 40, 45, 50, 60, 80, 90].map(min => (
+                          <SelectItem key={min} value={String(min)}>{min} minutes</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100" onClick={() => {
                       if (timesArray.length > 1) {
-                        const arr = timesArray.filter((_, idx) => idx !== i);
-                        setCustomTimes(arr);
+                        setCustomTimes(timesArray.filter((_, idx) => idx !== i));
                       }
                     }}>
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>)}
-                      <Button variant="secondary" onClick={() => setCustomTimes([...timesArray, sessionMinutes])} className="w-full">
-                        Add session
-                      </Button>
-                    </div>}
-                </div>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                <Button variant="secondary" onClick={() => setCustomTimes([...timesArray, sessionMinutes])} className="w-full">
+                  Add session
+                </Button>
+              </div>
+            )}
 
-                <div className="space-y-2">
-                  <div className="text-sm font-medium">
-                    Recommend total time: 150–250 min.
-                  </div>
-                  <div className="text-sm font-medium">
-                    Your Total time: {totalMinutes} min
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    You can set your own time — we'll help you adjust activities to fit.
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="flex justify-end pb-4">
-              <Button size="lg" onClick={handleGenerate}>Confirm & Generate lesson plan</Button>
+            {/* Total time summary */}
+            <div className="bg-[#f5f5f5] rounded-[10px] px-6 py-5">
+              <p className="text-[20px] font-bold text-[#4a4a4a]">
+                Total Time: <span className="font-normal">{totalMinutes} min</span>
+              </p>
+              <p className="text-sm text-[#4a4a4a] mt-1">(Recommended total time: 150-250 min)</p>
             </div>
           </div>
         </ScrollArea>
+
+        {/* Footer */}
+        <div className="bg-[#f5f5f5] h-[100px] flex items-center justify-end gap-3 px-[50px] flex-shrink-0">
+          <Button
+            variant="ghost"
+            className="h-10 px-5 bg-[#ebebeb] hover:bg-[#ddd] text-[#4a4a4a] font-semibold rounded-[4px]"
+            onClick={() => onOpenChange(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            className="h-10 px-5 bg-[#1e6fd4] hover:bg-[#1860ba] text-white font-semibold rounded-[4px]"
+            onClick={handleGenerate}
+          >
+            Generate Module Plan
+          </Button>
+        </div>
       </SheetContent>
-    </Sheet>;
+    </Sheet>
+  );
 }

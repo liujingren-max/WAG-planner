@@ -1,17 +1,18 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Bot, Clock, Plus, Undo2, Redo2, MoreHorizontal, X, Pencil, Presentation, User, Users, ExternalLink, Book, ThumbsUp, Trash2, Folder } from "lucide-react";
+import { Clock, Plus, Undo2, Redo2, MoreHorizontal, X, Pencil, Presentation, User, Users, ExternalLink, Book, Trash2, Folder } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { LessonPlan, SessionColumn, ActivityCard, FacilitationStyle } from "@/state/planTypes";
 import ActivityDetailModal from "@/components/ActivityDetailModal";
+import TopNav from "@/components/TopNav";
 import { toast } from "@/hooks/use-toast";
 import { generateLessonPlan } from "@/utils/planningLogic";
 import { getModuleData } from "@/utils/activitiesData";
@@ -24,13 +25,36 @@ function savePlans(plans: LessonPlan[]) {
   localStorage.setItem("plans", JSON.stringify(plans));
 }
 
+function loadPlan(planId: string): LessonPlan | null {
+  // Check localStorage first (saved plans)
+  const saved = loadPlans().find(p => p.id === planId);
+  if (saved) return saved;
+  // Fall back to sessionStorage (unsaved temp plans)
+  const temp = sessionStorage.getItem(`plan-temp-${planId}`);
+  return temp ? JSON.parse(temp) : null;
+}
+
+function isPlanSaved(planId: string): boolean {
+  return loadPlans().some(p => p.id === planId);
+}
+
+function persistPlan(plan: LessonPlan) {
+  if (isPlanSaved(plan.id)) {
+    // Update in localStorage
+    savePlans(loadPlans().map(p => p.id === plan.id ? plan : p));
+  } else {
+    // Update in sessionStorage
+    sessionStorage.setItem(`plan-temp-${plan.id}`, JSON.stringify(plan));
+  }
+}
+
 export default function Planner() {
   const { planId } = useParams();
   const navigate = useNavigate();
   const [plan, setPlan] = useState<LessonPlan | null>(null);
   const [history, setHistory] = useState<LessonPlan[]>([]);
   const [future, setFuture] = useState<LessonPlan[]>([]);
-  const [confirmDelete, setConfirmDelete] = useState<string | null>(null); // session id
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [lastSessionTime, setLastSessionTime] = useState<number>(60);
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [showWarning, setShowWarning] = useState(false);
@@ -38,17 +62,18 @@ export default function Planner() {
   const [justGenerated, setJustGenerated] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<{ activity: ActivityCard; tab: 'teacher' | 'student' } | null>(null);
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
-    const list = loadPlans();
-    const found = list.find((p) => p.id === planId) || null;
+    if (!planId) return;
+    const found = loadPlan(planId);
     if (!found) {
       toast({ title: "Plan not found", description: "Returning to home" });
       navigate("/");
       return;
     }
     setPlan(found);
-    // Only mark as generated if we're coming from regeneration or it's a new plan
+    setIsSaved(isPlanSaved(planId));
     if (isRegenerating || sessionStorage.getItem('newPlanGenerated') === planId) {
       setJustGenerated(true);
       sessionStorage.removeItem('newPlanGenerated');
@@ -57,22 +82,19 @@ export default function Planner() {
   }, [planId, navigate, isRegenerating]);
 
   function pushHistory(next: LessonPlan) {
-    setHistory((h) => [...h, plan!]);
+    setHistory(h => [...h, plan!]);
     setFuture([]);
     setPlan(next);
-    // persist
-    const list = loadPlans().map((p) => (p.id === next.id ? next : p));
-    savePlans(list);
+    persistPlan(next);
   }
 
   const usedMinutesBySession = useMemo(() => {
     if (!plan) return {} as Record<string, number>;
     return Object.fromEntries(
-      plan.sessions.map((s) => [s.id, s.activities.reduce((sum, a) => sum + a.minutes, 0)])
+      plan.sessions.map(s => [s.id, s.activities.reduce((sum, a) => sum + a.minutes, 0)])
     );
   }, [plan]);
 
-  // Check if warning should be shown
   const totalPlanTime = useMemo(() => {
     if (!plan) return 0;
     return plan.sessions.reduce((sum, s) => sum + s.availableMinutes, 0);
@@ -85,42 +107,43 @@ export default function Planner() {
     }
   }, [plan, totalPlanTime, justGenerated]);
 
-  function onDragStart() {
-    setIsDragging(true);
+  function saveToLibrary() {
+    if (!plan) return;
+    const savedPlan: LessonPlan = { ...plan, savedAt: Date.now() };
+    const list = loadPlans().filter(p => p.id !== plan.id);
+    list.push(savedPlan);
+    savePlans(list);
+    sessionStorage.removeItem(`plan-temp-${plan.id}`);
+    setPlan(savedPlan);
+    setIsSaved(true);
+    toast({ title: "Saved!", description: "Plan saved to your library." });
   }
+
+  function onDragStart() { setIsDragging(true); }
 
   function onDragEnd(result: DropResult) {
     setIsDragging(false);
     if (!plan) return;
-    const { source, destination, draggableId } = result;
+    const { source, destination } = result;
     if (!destination) return;
-
     const next: LessonPlan = JSON.parse(JSON.stringify(plan));
-    const sourceCol = next.sessions.find((s) => s.id === source.droppableId)!;
-    const destCol = next.sessions.find((s) => s.id === destination.droppableId)!;
-
+    const sourceCol = next.sessions.find(s => s.id === source.droppableId)!;
+    const destCol = next.sessions.find(s => s.id === destination.droppableId)!;
     const [moved] = sourceCol.activities.splice(source.index, 1);
     destCol.activities.splice(destination.index, 0, moved);
-
     pushHistory(next);
   }
 
   function removeSession(id: string) {
     if (!plan) return;
     const next: LessonPlan = JSON.parse(JSON.stringify(plan));
-    const session = next.sessions.find((s) => s.id === id);
-    const idx = next.sessions.findIndex((s) => s.id === id);
+    const idx = next.sessions.findIndex(s => s.id === id);
     if (idx >= 0) {
-      // If session is empty, no confirm modal needed
-      if (session?.activities.length === 0) {
-        next.sessions.splice(idx, 1);
-        pushHistory(next);
-      } else {
-        // move activities to recently deleted
+      if (next.sessions[idx].activities.length > 0) {
         next.deleted.push(...next.sessions[idx].activities);
-        next.sessions.splice(idx, 1);
-        pushHistory(next);
       }
+      next.sessions.splice(idx, 1);
+      pushHistory(next);
     }
   }
 
@@ -135,7 +158,7 @@ export default function Planner() {
   function renameSession(id: string, name: string) {
     if (!plan) return;
     const next: LessonPlan = JSON.parse(JSON.stringify(plan));
-    const s = next.sessions.find((x) => x.id === id);
+    const s = next.sessions.find(x => x.id === id);
     if (s) s.name = name;
     pushHistory(next);
   }
@@ -143,18 +166,17 @@ export default function Planner() {
   function changeTime(activityId: string, sessionId: string, minutes: number) {
     if (!plan) return;
     const next: LessonPlan = JSON.parse(JSON.stringify(plan));
-    const s = next.sessions.find((x) => x.id === sessionId)!;
-    const a = s.activities.find((y) => y.id === activityId)!;
+    const s = next.sessions.find(x => x.id === sessionId)!;
+    const a = s.activities.find(y => y.id === activityId)!;
     a.minutes = minutes;
-    // Preserve originalMinutes - don't change it when user manually adjusts time
     pushHistory(next);
   }
 
   function deleteActivity(activityId: string, sessionId: string) {
     if (!plan) return;
     const next: LessonPlan = JSON.parse(JSON.stringify(plan));
-    const s = next.sessions.find((x) => x.id === sessionId)!;
-    const idx = s.activities.findIndex((a) => a.id === activityId);
+    const s = next.sessions.find(x => x.id === sessionId)!;
+    const idx = s.activities.findIndex(a => a.id === activityId);
     if (idx >= 0) {
       const [removed] = s.activities.splice(idx, 1);
       next.deleted.unshift(removed);
@@ -165,8 +187,7 @@ export default function Planner() {
   function restoreActivity(a: ActivityCard) {
     if (!plan) return;
     const next: LessonPlan = JSON.parse(JSON.stringify(plan));
-    next.deleted = next.deleted.filter((x) => x.id !== a.id);
-    // put into first session by default
+    next.deleted = next.deleted.filter(x => x.id !== a.id);
     next.sessions[0]?.activities.push(a);
     pushHistory(next);
   }
@@ -174,23 +195,30 @@ export default function Planner() {
   function undo() {
     if (!history.length || !plan) return;
     const prev = history[history.length - 1];
-    setHistory((h) => h.slice(0, -1));
-    setFuture((f) => [plan, ...f]);
+    setHistory(h => h.slice(0, -1));
+    setFuture(f => [plan, ...f]);
     setPlan(prev);
-    const list = loadPlans().map((p) => (p.id === prev.id ? prev : p));
-    savePlans(list);
+    persistPlan(prev);
   }
+
   function redo() {
     if (!future.length || !plan) return;
     const next = future[0];
-    setFuture((f) => f.slice(1));
-    setHistory((h) => [...h, plan]);
+    setFuture(f => f.slice(1));
+    setHistory(h => [...h, plan]);
     setPlan(next);
-    const list = loadPlans().map((p) => (p.id === next.id ? next : p));
-    savePlans(list);
+    persistPlan(next);
   }
 
-  const styleIcon = (s: FacilitationStyle) => s === "teacher" ? <Presentation className="h-3.5 w-3.5" /> : s === "individual" ? <User className="h-3.5 w-3.5" /> : <Users className="h-3.5 w-3.5" />;
+  const styleIcon = (s: FacilitationStyle) =>
+    s === "teacher" ? <Presentation className="h-3.5 w-3.5" /> :
+    s === "individual" ? <User className="h-3.5 w-3.5" /> :
+    <Users className="h-3.5 w-3.5" />;
+
+  const styleLabel = (s: FacilitationStyle) =>
+    s === "teacher" ? "Teacher-led" :
+    s === "individual" ? "Individual" :
+    "Paired";
 
   async function regeneratePlan() {
     if (!plan) return;
@@ -207,410 +235,410 @@ export default function Planner() {
       activities: moduleData?.activities,
       mustHave: moduleData?.mustHaveTaskNames,
       preserveCustomizations: true,
-      existingPlan: plan
+      existingPlan: plan,
+      readLessonName: moduleData?.readLessonName,
+      coverImageUrl: moduleData?.coverImageUrl,
+      directInstructions: moduleData?.directInstructions,
     });
     newPlan.id = crypto.randomUUID();
-    const updatedPlans = loadPlans();
-    updatedPlans.push(newPlan);
-    savePlans(updatedPlans);
+    // Keep saved state: if original was saved, store new one in localStorage; else in sessionStorage
+    if (isSaved) {
+      const updatedPlans = loadPlans();
+      updatedPlans.push({ ...newPlan, savedAt: Date.now() });
+      savePlans(updatedPlans);
+    } else {
+      sessionStorage.setItem(`plan-temp-${newPlan.id}`, JSON.stringify(newPlan));
+    }
     sessionStorage.setItem('newPlanGenerated', newPlan.id);
     navigate(`/plan/${newPlan.id}`);
-    toast({ title: "Regenerated!", description: "New plan created with updated settings using the same intelligent algorithm." });
+    toast({ title: "Regenerated!", description: "New plan created with updated settings." });
   }
 
   if (!plan) return null;
 
   return (
     <TooltipProvider>
-    <div className="min-h-screen">
-      <Helmet>
-        <title>Lesson Planner – I'm the Greatest</title>
-        <meta name="description" content="Create and edit your lesson plan for I'm the Greatest." />
-        <link rel="canonical" href={window.location.href} />
-      </Helmet>
+      <div className="min-h-screen bg-white">
+        <Helmet>
+          <title>Module Planner – ThinkCERCA</title>
+          <meta name="description" content="Create and edit your module plan." />
+          <link rel="canonical" href={window.location.href} />
+        </Helmet>
 
-      <header className="sticky top-0 z-20 border-b bg-background/80 backdrop-blur">
-        <div className="container mx-auto py-3 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground"><Bot className="h-4 w-4" /> Sparky Planner</div>
-          <div className="flex items-center gap-2">
-            <Button variant="secondary" onClick={undo} disabled={!history.length}><Undo2 className="h-4 w-4 mr-2" />Undo</Button>
-            <Button variant="secondary" onClick={redo} disabled={!future.length}><Redo2 className="h-4 w-4 mr-2" />Redo</Button>
-            <Button onClick={() => navigate("/")}>Home</Button>
-          </div>
-        </div>
-      </header>
+        <TopNav />
 
-      {/* Warning banner */}
-      {showWarning && (
-        <div className="bg-yellow-50 border border-yellow-200 p-4 mx-4">
-          <div className="flex items-start justify-between">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+        {/* Warning banner */}
+        {showWarning && (
+          <div className="bg-yellow-50 border border-yellow-200 p-4 mx-4">
+            <div className="flex items-start justify-between">
+              <div className="flex">
+                <svg className="h-5 w-5 text-yellow-400 mt-0.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800">
-                  Some essential activities were removed to fit your time.
-                </h3>
-                <div className="mt-2 text-sm text-yellow-700">
-                  <p>
-                    To take full advantage of the lesson, increase your total session time by at least {150 - totalPlanTime} minutes.
-                  </p>
-                  <p className="mt-1">
-                    Current total: {totalPlanTime} min | Recommended minimum: 150 min
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-yellow-800">Some essential activities were removed to fit your time.</h3>
+                  <p className="mt-1 text-sm text-yellow-700">
+                    To take full advantage of the lesson, increase your total session time by at least {150 - totalPlanTime} minutes. Current total: {totalPlanTime} min | Recommended minimum: 150 min
                   </p>
                 </div>
               </div>
-            </div>
-            <div className="ml-auto pl-3">
-              <div className="-mx-1.5 -my-1.5">
-                <button
-                  type="button"
-                  className="inline-flex bg-yellow-50 rounded-md p-1.5 text-yellow-500 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600"
-                  onClick={() => setShowWarning(false)}
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
+              <button className="ml-4 p-1 rounded text-yellow-500 hover:bg-yellow-100" onClick={() => setShowWarning(false)}>
+                <X className="h-5 w-5" />
+              </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <main className="container mx-auto py-6 grid grid-cols-12 gap-4">
-        {/* Left settings panel */}
-        <aside className="col-span-12 md:col-span-3 space-y-4">
-          <Card>
-            <CardHeader className="pb-4">
-              <div className="flex items-start gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0">
-                  <img 
-                    src="/lovable-uploads/6c91bfd8-0d1b-46e5-9e20-2d012e882b55.png" 
-                    alt="I'm the Greatest lesson cover"
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h2 className="font-semibold text-base">I'm the Greatest</h2>
-                  <p className="text-sm text-muted-foreground">by James Bird (Personal Narrative)</p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="mt-2"
-                    onClick={() => window.open('https://learn.thinkcerca.com/lessons/206146?preview=true', '_blank')}
-                  >
-                    <ExternalLink className="h-3.5 w-3.5 mr-1" />
-                    Preview Lesson
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="mt-4 space-y-3">
-                <div>
-                  <div className="text-sm font-semibold mb-1">Learning Objective:</div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Students will understand the ways theme is conveyed in a literary text and be able to analyze the theme within a personal narrative, supporting their analysis with evidence from the text.
-                  </p>
-                </div>
-                
-                <div>
-                  <div className="text-sm font-semibold mb-2">Facilitation Style:</div>
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50">
-                        <Presentation className="h-3.5 w-3.5 text-muted-foreground" />
-                      </div>
-                      <span className="text-sm text-muted-foreground">Teacher-led</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50">
-                        <User className="h-3.5 w-3.5 text-muted-foreground" />
-                      </div>
-                      <span className="text-sm text-muted-foreground">Individual</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50">
-                        <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                      </div>
-                      <span className="text-sm text-muted-foreground">Paired or Small Group</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <div className="text-sm font-semibold mb-1">Direct Instruction:</div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Determining Theme and Author's Message in a Personal Narrative</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 px-2 text-xs"
-                        onClick={() => window.open('https://learn.thinkcerca.com/lessons/82431?preview=true', '_blank')}
-                      >
-                        <ExternalLink className="h-3 w-3 mr-1" />
-                        Preview
-                      </Button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Organizing Narrative Writing</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 px-2 text-xs"
-                        onClick={() => window.open('https://learn.thinkcerca.com/lessons/176389?preview=true', '_blank')}
-                      >
-                        <ExternalLink className="h-3 w-3 mr-1" />
-                        Preview
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <div className="text-sm font-semibold mb-2">Resources:</div>
-                  <div className="space-y-2">
-                    <a 
-                      href="https://learn.thinkcerca.com/teacher/core_curriculum/grades/8/units/1/modules/3" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-primary hover:underline"
-                    >
-                      <Folder className="h-3.5 w-3.5" />
-                      Module Link
-                    </a>
-                    <a 
-                      href="https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/edit?slide=id.g29c977eb948_0_0#slide=id.g29c977eb948_0_0" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-primary hover:underline"
-                    >
-                      <Book className="h-3.5 w-3.5 text-muted-foreground" />
-                      Student Guide
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="space-y-4">
-              <div className="space-y-1">
-                <div className="text-sm font-semibold">Session Time</div>
-                {plan.sessions.map((s, i) => (
-                  <div key={s.id} className="flex items-center gap-2">
-                    <span className="text-sm w-[70px] truncate">{s.name}</span>
-                    <Input
-                      type="number"
-                      min={10}
-                      max={240}
-                      value={s.availableMinutes}
-                      className="w-16"
-                      onChange={(e) => {
-                        const newTime = Number(e.target.value);
-                        setLastSessionTime(newTime);
-                        const next = { ...plan, sessions: plan.sessions.map((x) => x.id === s.id ? { ...x, availableMinutes: newTime } : x) };
-                        pushHistory(next);
-                      }}
-                    />
-                    <span className="text-xs text-muted-foreground">min</span>
-                  </div>
-                ))}
-              </div>
-              <Button onClick={() => {
-                regeneratePlan();
-              }}>Update & Regenerate</Button>
-            </CardContent>
-          </Card>
-        </aside>
+        <main className="px-[50px] py-6">
+          {/* Back link */}
+          <button
+            onClick={() => navigate("/")}
+            className="flex items-center gap-1.5 mb-3 text-[#1e6fd4] text-[13px] font-medium hover:opacity-80 transition-opacity"
+          >
+            <svg width="7" height="11" viewBox="0 0 7 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 1L1.5 5.5L6 10" stroke="#1e6fd4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Back
+          </button>
 
-        {/* Board */}
-        <section className="col-span-12 md:col-span-9">
-          <div className="mb-3 flex items-center justify-between">
-            <h1 className="text-xl font-semibold">{plan.title}</h1>
-            <Button variant="secondary" onClick={addSession}><Plus className="h-4 w-4 mr-2" />Add session</Button>
+          {/* Page title row */}
+          <div className="flex items-center justify-between mb-1">
+            <h1 className="text-[34px] font-bold text-[#4a4a4a] tracking-[-1.02px]">Module Planner</h1>
+            <Button
+              className="h-10 bg-[#1e6fd4] hover:bg-[#1860ba] text-white font-semibold rounded-[4px] px-5"
+              onClick={saveToLibrary}
+              disabled={isSaved}
+            >
+              {isSaved ? "Saved" : "Save to Library"}
+            </Button>
           </div>
 
-          <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
-            <div className="flex gap-4 overflow-x-auto pb-4">
-              {plan.sessions.map((session) => {
-                const used = usedMinutesBySession[session.id] || 0;
-                const remaining = session.availableMinutes - used;
-                const timeClass = remaining < 0 ? "text-destructive" : remaining >= 10 ? "text-[hsl(var(--warning))]" : "text-muted-foreground";
+          {/* Action row */}
+          <div className="flex items-center justify-end gap-2 mb-6">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="secondary" size="icon" className="h-10 w-10 bg-[#ebebeb] rounded-[4px]" onClick={undo} disabled={!history.length}>
+                  <Undo2 className="h-5 w-5 text-[#4a4a4a]" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Undo</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="secondary" size="icon" className="h-10 w-10 bg-[#ebebeb] rounded-[4px]" onClick={redo} disabled={!future.length}>
+                  <Redo2 className="h-5 w-5 text-[#4a4a4a]" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Redo</TooltipContent>
+            </Tooltip>
+            <Button
+              variant="secondary"
+              className="h-10 bg-[#ebebeb] hover:bg-[#ddd] text-[#4a4a4a] font-semibold rounded-[4px]"
+              onClick={addSession}
+            >
+              Add Session
+            </Button>
+          </div>
 
-                return (
-                  <Droppable droppableId={session.id} key={session.id}>
-                    {(provided, snapshot) => (
-                      <div 
-                        ref={provided.innerRef} 
-                        {...provided.droppableProps} 
-                        className="w-80 shrink-0"
-                      >
-                        <Card className={`transition-all duration-200 ${snapshot.isDraggingOver ? 'ring-2 ring-primary/20 bg-accent/50' : ''}`}>
-                          <CardHeader className="pb-2">
-                            <div className="flex items-start justify-between gap-2">
-                              <EditableTitle value={session.name} onChange={(v) => renameSession(session.id, v)} isEditing={editingSessionId === session.id} setEditing={(editing) => setEditingSessionId(editing ? session.id : null)} />
-                              <SessionMenu 
-                                onRename={() => setEditingSessionId(session.id)} 
-                                onRemove={() => {
-                                  if (session.activities.length === 0) {
-                                    removeSession(session.id);
-                                  } else {
-                                    setConfirmDelete(session.id);
-                                  }
-                                }}
-                                hasActivities={session.activities.length > 0}
-                              />
-                            </div>
-                            <div className="text-xs text-muted-foreground">Available: {session.availableMinutes} min</div>
-                          </CardHeader>
-                          <CardContent>
-                            <div 
-                              className={`space-y-2 min-h-[60px] transition-all duration-200 ${
-                                snapshot.isDraggingOver ? 'bg-accent/30 rounded-md p-2' : ''
-                              }`}
-                            >
-                              {session.activities.map((a, idx) => (
-                                <Draggable draggableId={a.id} index={idx} key={a.id}>
-                                  {(drag, dragSnapshot) => (
-                                    <div
-                                      ref={drag.innerRef}
-                                      {...drag.draggableProps}
-                                      {...drag.dragHandleProps}
-                                      className={`
-                                        rounded-md border px-4 py-3 bg-card group cursor-grab active:cursor-grabbing
-                                        transition-all duration-200 ease-out
-                                        ${dragSnapshot.isDragging 
-                                          ? 'shadow-lg scale-105 rotate-2 bg-card z-50 ring-2 ring-primary/30' 
-                                          : 'hover:shadow-sm hover:bg-accent/30'
-                                        }
-                                        ${!isDragging ? 'hover:shadow-sm' : ''}
-                                      `}
-                                      style={{
-                                        ...drag.draggableProps.style,
-                                        transform: dragSnapshot.isDragging 
-                                          ? `${drag.draggableProps.style?.transform} rotate(2deg)`
-                                          : drag.draggableProps.style?.transform
-                                      }}
-                                    >
-                                      <div className="space-y-1">
-                                        <div className="flex items-start justify-between">
-                                           <h4 
-                                             className="text-sm font-semibold leading-tight text-left cursor-pointer hover:text-primary transition-colors"
-                                             onClick={() => setSelectedActivity({ activity: a, tab: 'teacher' })}
-                                           >
-                                             {a.title}
-                                           </h4>
+          <div className="grid grid-cols-12 gap-6">
+            {/* Left sidebar */}
+            <aside className="col-span-12 lg:col-span-4">
+              <div className="border border-[#ccc] rounded-[10px] overflow-hidden">
+                {/* Cover image with title overlay */}
+                <div className="h-[160px] bg-gradient-to-br from-blue-400 to-blue-600 relative overflow-hidden">
+                  {plan.coverImageUrl ? (
+                    <img src={plan.coverImageUrl} alt="Module cover" className="absolute inset-0 w-full h-full object-cover" />
+                  ) : (
+                    <img src="/lovable-uploads/6c91bfd8-0d1b-46e5-9e20-2d012e882b55.png" alt="Module cover" className="absolute inset-0 w-full h-full object-cover" />
+                  )}
+                  {/* Solid white overlay at bottom */}
+                  <div className="absolute bottom-0 left-0 right-0 h-[72px] flex flex-col justify-center items-center px-[15px]" style={{ background: 'rgba(255,255,255,0.9)' }}>
+                    <h2 className="text-[16px] font-bold text-[#4a4a4a] leading-tight truncate w-full text-center">
+                      {plan.readLessonName || plan.title}
+                    </h2>
+                    <p className="text-[11px] text-[#707070] truncate mt-0.5 w-full text-center">{plan.title}</p>
+                  </div>
+                </div>
+
+                <div className="px-[15px] pb-6">
+
+                  <div className="mt-4 space-y-4 text-[14px]">
+                    <div>
+                      <p className="font-bold text-[#4a4a4a] mb-1">Learning Objective:</p>
+                      <p className="text-[#4a4a4a] leading-[20px]">
+                        Students will understand the ways theme is conveyed in a literary text and be able to analyze the theme within a personal narrative, supporting their analysis with evidence from the text.
+                      </p>
+                    </div>
+
+                    {(plan.directInstructions && plan.directInstructions.length > 0) && (
+                      <div>
+                        <p className="font-bold text-[#4a4a4a] mb-1">Direct Instruction:</p>
+                        <div className="space-y-1">
+                          {plan.directInstructions.map((di, i) => (
+                            <a key={i}
+                              href={di.contentId ? `https://learn.thinkcerca.com/lessons/${di.contentId}?preview=true` : '#'}
+                              target="_blank" rel="noopener noreferrer"
+                              className="flex items-center gap-1.5 text-[#4a4a4a] hover:underline">
+                              <ExternalLink className="h-3.5 w-3.5 shrink-0 text-[#707070]" />
+                              {di.name}
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div>
+                      <p className="font-bold text-[#4a4a4a] mb-1">Facilitation Style:</p>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2"><Presentation className="h-4 w-4 text-[#4a4a4a]" /><span className="text-[#4a4a4a]">Teacher-led</span></div>
+                        <div className="flex items-center gap-2"><Users className="h-4 w-4 text-[#4a4a4a]" /><span className="text-[#4a4a4a]">Paired</span></div>
+                        <div className="flex items-center gap-2"><User className="h-4 w-4 text-[#4a4a4a]" /><span className="text-[#4a4a4a]">Individual</span></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="font-bold text-[#4a4a4a] mb-1">Resources:</p>
+                      <div className="space-y-1">
+                        <a href="https://learn.thinkcerca.com/teacher/core_curriculum/grades/8/units/1/modules/3" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[#4a4a4a] hover:underline">
+                          <ExternalLink className="h-3.5 w-3.5 shrink-0 text-[#707070]" />
+                          Module Link
+                        </a>
+                        <a href="https://docs.google.com/presentation/d/1g3UFX1ovp_k9WZ918LDh0fcaO2cMXgjXNZ5nb2s9YQg/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[#4a4a4a] hover:underline">
+                          <ExternalLink className="h-3.5 w-3.5 shrink-0 text-[#707070]" />
+                          Student Guide
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Session times */}
+                    <div className="border-t border-dashed border-[#ccc] pt-4">
+                      <p className="font-bold text-[#4a4a4a] mb-2">Session Time:</p>
+                      {plan.sessions.map((s) => (
+                        <div key={s.id} className="group/sessionrow flex items-center gap-2 mb-2">
+                          <span className="text-[#4a4a4a] font-bold w-[70px] shrink-0 text-[13px]">{s.name}</span>
+                          <div className="border border-[#ccc] rounded-[5px] w-[52px] shrink-0 focus-within:border-[#1e6fd4] focus-within:bg-[#e8f0fb] transition-colors">
+                            <Input
+                              type="number"
+                              min={10}
+                              max={240}
+                              value={s.availableMinutes}
+                              className="h-[28px] border-0 focus-visible:ring-0 text-[13px] px-2 bg-transparent w-full"
+                              onChange={e => {
+                                const newTime = Number(e.target.value);
+                                setLastSessionTime(newTime);
+                                const next = { ...plan, sessions: plan.sessions.map(x => x.id === s.id ? { ...x, availableMinutes: newTime } : x) };
+                                pushHistory(next);
+                              }}
+                            />
+                          </div>
+                          <span className="text-[12px] text-[#707070]">min</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-5 w-5 p-0 ml-auto opacity-0 group-hover/sessionrow:opacity-100 transition-opacity shrink-0"
+                            onClick={() => {
+                              if (s.activities.length === 0) removeSession(s.id);
+                              else setConfirmDelete(s.id);
+                            }}
+                            aria-label="Remove session"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Update & Regenerate */}
+                  <div className="mt-6">
+                    <Button
+                      className="w-full h-10 bg-[#1e6fd4] hover:bg-[#1860ba] text-white font-semibold rounded-[4px]"
+                      onClick={regeneratePlan}
+                    >
+                      Update and Regenerate
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            {/* Board */}
+            <section className="col-span-12 lg:col-span-8">
+              <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
+                <div className="flex gap-4 overflow-x-auto pb-4">
+                  {plan.sessions.map(session => {
+                    const used = usedMinutesBySession[session.id] || 0;
+                    const over = used > session.availableMinutes;
+
+                    return (
+                      <Droppable droppableId={session.id} key={session.id}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                            className="w-[331px] shrink-0"
+                          >
+                            <div className={`bg-[#f5f5f5] rounded-[10px] p-5 transition-all ${snapshot.isDraggingOver ? 'ring-2 ring-[#1e6fd4]/30' : ''}`}>
+                              {/* Session header */}
+                              <div className="flex items-center justify-between mb-4">
+                                <EditableTitle
+                                  value={session.name}
+                                  onChange={v => renameSession(session.id, v)}
+                                  isEditing={editingSessionId === session.id}
+                                  setEditing={editing => setEditingSessionId(editing ? session.id : null)}
+                                />
+                                <SessionMenu
+                                  onRename={() => setEditingSessionId(session.id)}
+                                  onRemove={() => {
+                                    if (session.activities.length === 0) removeSession(session.id);
+                                    else setConfirmDelete(session.id);
+                                  }}
+                                  hasActivities={session.activities.length > 0}
+                                />
+                              </div>
+
+                              {/* Activities */}
+                              <div className={`space-y-[10px] min-h-[60px] ${snapshot.isDraggingOver ? 'bg-blue-50/30 rounded-md p-1' : ''}`}>
+                                {session.activities.map((a, idx) => (
+                                  <Draggable draggableId={a.id} index={idx} key={a.id}>
+                                    {(drag, dragSnapshot) => (
+                                      <div
+                                        ref={drag.innerRef}
+                                        {...drag.draggableProps}
+                                        {...drag.dragHandleProps}
+                                        className={`
+                                          bg-white rounded-[5px] shadow-[0px_0px_3px_0px_rgba(0,0,0,0.15)] px-5 py-3 group cursor-grab active:cursor-grabbing
+                                          transition-all duration-200
+                                          ${dragSnapshot.isDragging ? 'shadow-lg scale-105 ring-2 ring-[#1e6fd4]/30 z-50' : 'hover:shadow-md'}
+                                        `}
+                                        style={drag.draggableProps.style}
+                                      >
+                                        {/* Title row */}
+                                        <div className="flex items-start justify-between gap-2">
+                                          <button
+                                            className="text-[16px] font-bold text-[#4a4a4a] leading-normal text-left hover:text-[#1e6fd4] transition-colors flex-1"
+                                            onClick={() => setSelectedActivity({ activity: a, tab: 'teacher' })}
+                                          >
+                                            {a.title}
+                                          </button>
                                           <Button
                                             variant="ghost"
                                             size="sm"
-                                            className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground transition-all"
+                                            className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 shrink-0"
                                             onClick={() => deleteActivity(a.id, session.id)}
                                           >
                                             <X className="h-3 w-3" />
                                           </Button>
                                         </div>
-                                        
-                                        {a.optional && (
-                                          <Badge variant="secondary" className="px-2 py-0.5 text-xs font-normal bg-neutral-100 text-muted-foreground">
-                                            Optional
-                                          </Badge>
-                                        )}
-                                        
-                                        <div className="flex items-center justify-between pt-1">
-                                          <div className="flex items-center gap-3">
-                            <TimeBadge 
-                              minutes={a.minutes} 
-                              originalMinutes={a.originalMinutes}
-                              onChange={(newTime) => changeTime(a.id, session.id, newTime)}
-                            />
-                                            
-                                            <div className="flex items-center gap-1">
-                                              <div className="flex -space-x-0.5">
-                                                {a.styles.map((s, idx) => (
-                                                  <div key={idx} className="w-5 h-5 rounded-sm bg-muted border border-background flex items-center justify-center">
-                                                    {styleIcon(s)}
-                                                  </div>
-                                                ))}
-                                              </div>
-                                            </div>
-                                           </div>
-                                           
-                                           {a.studentGuide && (
-                                             <Tooltip>
-                                               <TooltipTrigger asChild>
-                                                 <Button
-                                                   variant="ghost"
-                                                   size="sm"
-                                                   className="h-6 w-6 p-0"
-                                                   onClick={() => setSelectedActivity({ activity: a, tab: 'student' })}
-                                                 >
-                                                   <Book className="h-3 w-3 text-muted-foreground" />
-                                                 </Button>
-                                               </TooltipTrigger>
-                                               <TooltipContent>
-                                                 <p>Student Guide Available</p>
-                                               </TooltipContent>
-                                             </Tooltip>
-                                           )}
-                                         </div>
-                                       </div>
-                                     </div>
-                                  )}
-                                </Draggable>
-                              ))}
-                              {provided.placeholder}
+
+                                        {/* Bottom row */}
+                                        <div className="flex items-center justify-between mt-2">
+                                          <div className="flex items-center gap-2">
+                                            <TimeBadge
+                                              minutes={a.minutes}
+                                              originalMinutes={a.originalMinutes}
+                                              onChange={newTime => changeTime(a.id, session.id, newTime)}
+                                            />
+                                            {a.optional && (
+                                              <span className="text-[12px] font-medium text-[#4a4a4a] bg-[#f5f5f5] rounded-[10px] px-3 py-0.5">Optional</span>
+                                            )}
+                                          </div>
+                                          <div className="flex items-center gap-1">
+                                            {a.styles.map((s, idx) => (
+                                              <FacilitationTooltip key={idx} label={styleLabel(s)}>
+                                                <div className="w-5 h-5 rounded-sm bg-transparent flex items-center justify-center text-[#4a4a4a]">
+                                                  {styleIcon(s)}
+                                                </div>
+                                              </FacilitationTooltip>
+                                            ))}
+                                            {a.studentGuide && (
+                                              <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                  <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="h-6 w-6 p-0"
+                                                    onClick={() => setSelectedActivity({ activity: a, tab: 'student' })}
+                                                  >
+                                                    <Book className="h-3 w-3 text-[#707070]" />
+                                                  </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>Student Guide</TooltipContent>
+                                              </Tooltip>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                ))}
+                                {provided.placeholder}
+                              </div>
+
+                              {/* Session total */}
+                              <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#ccc]">
+                                <span className={`text-[16px] font-bold ${over ? 'text-[#e2231a]' : 'text-[#4a4a4a]'}`}>
+                                  Total: {used} min
+                                </span>
+                                <span className="text-[14px] text-[#4a4a4a]">
+                                  Planned Time: {session.availableMinutes} min
+                                </span>
+                              </div>
                             </div>
-                            <div className={`mt-3 text-xs ${timeClass}`}>Total: {used} min</div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    )}
-                  </Droppable>
-                );
-              })}
-            </div>
-          </DragDropContext>
+                          </div>
+                        )}
+                      </Droppable>
+                    );
+                  })}
+                </div>
+              </DragDropContext>
 
-          {/* Recently deleted */}
-          {!!plan.deleted.length && (
-            <div className="mt-6">
-              <div className="text-sm font-medium mb-2">Recently deleted</div>
-              <div className="flex flex-wrap gap-2">
-                {plan.deleted.map((a) => (
-                  <Badge key={a.id} variant="secondary" className="gap-2">
-                    {a.title}
-                    <Button size="sm" variant="ghost" onClick={() => restoreActivity(a)}>Restore</Button>
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-        </section>
-      </main>
+              {/* Recently deleted */}
+              {!!plan.deleted.length && (
+                <div className="mt-6">
+                  <p className="text-sm font-medium mb-2 text-[#4a4a4a]">Recently deleted</p>
+                  <div className="flex flex-wrap gap-2">
+                    {plan.deleted.map(a => (
+                      <Badge key={a.id} variant="secondary" className="gap-2">
+                        {a.title}
+                        <Button size="sm" variant="ghost" className="h-4 px-1 text-xs" onClick={() => restoreActivity(a)}>Restore</Button>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </section>
+          </div>
+        </main>
 
-      <AlertDialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove this session?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will remove the entire session and move its activities to Recently deleted. You can restore them later.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => { if (confirmDelete) removeSession(confirmDelete); setConfirmDelete(null); }}>Remove session</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        <AlertDialog open={!!confirmDelete} onOpenChange={o => !o && setConfirmDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Remove this session?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will remove the entire session and move its activities to Recently deleted. You can restore them later.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={() => { if (confirmDelete) removeSession(confirmDelete); setConfirmDelete(null); }}>
+                Remove session
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
-      <ActivityDetailModal
-        activity={selectedActivity?.activity || null}
-        initialTab={selectedActivity?.tab}
-        onClose={() => setSelectedActivity(null)}
-      />
-    </div>
+        <ActivityDetailModal
+          activity={selectedActivity?.activity || null}
+          initialTab={selectedActivity?.tab}
+          onClose={() => setSelectedActivity(null)}
+          onTimeChange={(activityId, minutes) => {
+            if (selectedActivity) {
+              changeTime(activityId, plan.sessions.find(s => s.activities.some(a => a.id === activityId))?.id || '', minutes);
+            }
+          }}
+        />
+      </div>
     </TooltipProvider>
   );
 }
@@ -624,39 +652,56 @@ function EditableTitle({ value, onChange, isEditing, setEditing }: { value: stri
     if (val.trim()) onChange(val.trim());
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSave();
-    }
-  };
-
   useEffect(() => {
-    const handleClickOutside = () => {
-      if (isEditing) {
-        handleSave();
-      }
-    };
-
-    if (isEditing) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
-    }
+    if (!isEditing) return;
+    const handleClick = () => handleSave();
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
   }, [isEditing, val]);
 
   return (
     <div className="flex items-center gap-2">
       {isEditing ? (
-        <Input 
-          autoFocus 
-          value={val} 
-          onChange={(e) => setVal(e.target.value)} 
-          onKeyDown={handleKeyDown}
-          onClick={(e) => e.stopPropagation()}
+        <Input
+          autoFocus
+          value={val}
+          onChange={e => setVal(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleSave()}
+          onClick={e => e.stopPropagation()}
+          className="font-bold text-[20px] text-[#4a4a4a] h-8 bg-[#e8f0fb] border-[#1e6fd4] focus-visible:ring-0 focus-visible:border-[#1e6fd4]"
         />
       ) : (
-        <button onClick={() => setEditing(true)} className="text-left font-semibold">
+        <button onClick={() => setEditing(true)} className="text-[20px] font-bold text-[#4a4a4a] text-left leading-[20px]">
           {value}
         </button>
+      )}
+    </div>
+  );
+}
+
+function FacilitationTooltip({ children, label }: { children: React.ReactNode; label: string }) {
+  const [show, setShow] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  return (
+    <div
+      ref={ref}
+      className="relative flex items-center"
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      {children}
+      {show && (
+        <div
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 whitespace-nowrap pointer-events-none z-50 px-[15px] py-1 rounded-[4px] text-[12px] text-white font-medium"
+          style={{
+            background: 'rgba(74,74,74,0.9)',
+            boxShadow: '0 3px 6px rgba(30,38,42,0.1)',
+            fontFamily: 'Montserrat, sans-serif',
+          }}
+        >
+          {label}
+        </div>
       )}
     </div>
   );
@@ -666,23 +711,13 @@ function SessionMenu({ onRename, onRemove, hasActivities }: { onRename: () => vo
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="icon" variant="ghost" aria-label="Session actions"><MoreHorizontal className="h-4 w-4" /></Button>
+        <Button size="icon" variant="ghost" className="h-6 w-6" aria-label="Session actions">
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="z-50">
         <DropdownMenuItem onClick={onRename} className="gap-2"><Pencil className="h-4 w-4" />Rename</DropdownMenuItem>
-        <DropdownMenuItem 
-          onClick={() => {
-            if (!hasActivities) {
-              onRemove();
-            } else {
-              // Will trigger confirm dialog
-              onRemove();
-            }
-          }} 
-          className="gap-2 text-destructive"
-        >
-          <Trash2 className="h-4 w-4" />Remove session
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onRemove} className="gap-2 text-destructive"><Trash2 className="h-4 w-4" />Remove session</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -692,34 +727,20 @@ function TimeBadge({ minutes, onChange, originalMinutes }: { minutes: number; on
   const [isEditing, setIsEditing] = useState(false);
   const [customValue, setCustomValue] = useState("");
   const baseOptions = [2, 3, 4, 5, 7, 10, 12, 15, 20, 25, 30];
-  
-  // Add originalMinutes to options if it's not already in the list
-  const options = useMemo(() => {
-    const allOptions = [...baseOptions];
-    if (originalMinutes && !allOptions.includes(originalMinutes)) {
-      allOptions.push(originalMinutes);
-      allOptions.sort((a, b) => a - b);
-    }
-    return allOptions;
-  }, [originalMinutes]);
 
-  const handleCustomSelect = () => {
-    setCustomValue(minutes.toString());
-    setIsEditing(true);
-  };
+  const options = useMemo(() => {
+    const all = [...baseOptions];
+    if (originalMinutes && !all.includes(originalMinutes)) {
+      all.push(originalMinutes);
+      all.sort((a, b) => a - b);
+    }
+    return all;
+  }, [originalMinutes]);
 
   const handleCustomSave = () => {
     const value = parseInt(customValue);
-    if (!isNaN(value) && value > 0 && value <= 180) {
-      onChange(value);
-    }
+    if (!isNaN(value) && value > 0 && value <= 180) onChange(value);
     setIsEditing(false);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleCustomSave();
-    }
   };
 
   if (isEditing) {
@@ -728,15 +749,13 @@ function TimeBadge({ minutes, onChange, originalMinutes }: { minutes: number; on
         <Input
           type="number"
           value={customValue}
-          onChange={(e) => setCustomValue(e.target.value)}
+          onChange={e => setCustomValue(e.target.value)}
           onBlur={handleCustomSave}
-          onKeyPress={handleKeyPress}
-          className="w-16 h-6 text-xs px-1"
-          min={1}
-          max={180}
-          autoFocus
+          onKeyPress={e => e.key === 'Enter' && handleCustomSave()}
+          className="w-16 h-[30px] text-xs px-1 border-[#ccc] rounded-[5px]"
+          min={1} max={180} autoFocus
         />
-        <span className="text-xs text-muted-foreground">min</span>
+        <span className="text-xs text-[#707070]">min</span>
       </div>
     );
   }
@@ -744,30 +763,24 @@ function TimeBadge({ minutes, onChange, originalMinutes }: { minutes: number; on
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Badge variant="outline" className="cursor-pointer select-none gap-1 hover:bg-muted">
-          <Clock className="h-3.5 w-3.5" />
-          {minutes} min
-          <svg className="h-3 w-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        <button className="flex items-center gap-1 h-[30px] px-3 border border-[#ccc] rounded-[5px] text-[14px] font-medium text-[#4a4a4a] hover:bg-gray-50 whitespace-nowrap">
+          {minutes} Minutes
+          <svg className="h-2.5 w-3.5 ml-1" viewBox="0 0 14 8" fill="none">
+            <path d="M1 1l6 6 6-6" stroke="#4a4a4a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-        </Badge>
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="z-50">
-        {options.map((option) => (
-          <DropdownMenuItem 
-            key={option} 
+        {options.map(option => (
+          <DropdownMenuItem
+            key={option}
             onClick={() => onChange(option)}
             className={minutes === option ? "bg-accent" : ""}
           >
-            <div className="flex items-center gap-2 w-full">
-              <span>{option} min</span>
-              {originalMinutes === option && (
-                <ThumbsUp className="h-3.5 w-3.5 text-primary ml-auto" />
-              )}
-            </div>
+            <span>{option} Minutes{option === 10 ? ' (Recommended)' : ''}</span>
           </DropdownMenuItem>
         ))}
-        <DropdownMenuItem onClick={handleCustomSelect} className="text-primary">
+        <DropdownMenuItem onClick={() => { setCustomValue(minutes.toString()); setIsEditing(true); }} className="text-primary">
           Custom
         </DropdownMenuItem>
       </DropdownMenuContent>

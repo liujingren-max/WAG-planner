@@ -1,12 +1,13 @@
 import { useEffect, useState, useMemo } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Clock, User, Users, GraduationCap, ThumbsUp } from "lucide-react";
+import { Presentation, User, Users } from "lucide-react";
 import { ActivityCard, FacilitationStyle } from "@/state/planTypes";
+
+// Placeholder guide URL (Google Drive preview)
+const GUIDE_PLACEHOLDER_URL = "https://drive.google.com/file/d/1dOsP_gLdcMIuLi2ZwzFELX-e-6YdmAMg/preview";
 
 interface ActivityDetailModalProps {
   activity: ActivityCard | null;
@@ -16,9 +17,9 @@ interface ActivityDetailModalProps {
 }
 
 const facilityStyleIcons: Record<FacilitationStyle, React.ReactNode> = {
-  teacher: <GraduationCap className="h-3 w-3" />,
-  individual: <User className="h-3 w-3" />,
-  collaborative: <Users className="h-3 w-3" />
+  teacher: <Presentation className="h-4 w-4" />,
+  individual: <User className="h-4 w-4" />,
+  collaborative: <Users className="h-4 w-4" />
 };
 
 const facilityStyleLabels: Record<FacilitationStyle, string> = {
@@ -31,34 +32,20 @@ function TimeBadge({ minutes, onChange, originalMinutes }: { minutes: number; on
   const [isEditing, setIsEditing] = useState(false);
   const [customValue, setCustomValue] = useState("");
   const baseOptions = [2, 3, 4, 5, 7, 10, 12, 15, 20, 25, 30];
-  
-  // Add originalMinutes to options if it's not already in the list
-  const options = useMemo(() => {
-    const allOptions = [...baseOptions];
-    if (originalMinutes && !allOptions.includes(originalMinutes)) {
-      allOptions.push(originalMinutes);
-      allOptions.sort((a, b) => a - b);
-    }
-    return allOptions;
-  }, [originalMinutes]);
 
-  const handleCustomSelect = () => {
-    setCustomValue(minutes.toString());
-    setIsEditing(true);
-  };
+  const options = useMemo(() => {
+    const all = [...baseOptions];
+    if (originalMinutes && !all.includes(originalMinutes)) {
+      all.push(originalMinutes);
+      all.sort((a, b) => a - b);
+    }
+    return all;
+  }, [originalMinutes]);
 
   const handleCustomSave = () => {
     const value = parseInt(customValue);
-    if (!isNaN(value) && value > 0 && value <= 180) {
-      onChange(value);
-    }
+    if (!isNaN(value) && value > 0 && value <= 180) onChange(value);
     setIsEditing(false);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleCustomSave();
-    }
   };
 
   if (isEditing) {
@@ -67,15 +54,13 @@ function TimeBadge({ minutes, onChange, originalMinutes }: { minutes: number; on
         <Input
           type="number"
           value={customValue}
-          onChange={(e) => setCustomValue(e.target.value)}
+          onChange={e => setCustomValue(e.target.value)}
           onBlur={handleCustomSave}
-          onKeyPress={handleKeyPress}
-          className="w-16 h-6 text-xs px-1"
-          min={1}
-          max={180}
-          autoFocus
+          onKeyPress={e => e.key === 'Enter' && handleCustomSave()}
+          className="w-16 h-[30px] text-xs px-1 border-[#ccc] rounded-[5px]"
+          min={1} max={180} autoFocus
         />
-        <span className="text-xs text-muted-foreground">min</span>
+        <span className="text-xs text-[#707070]">min</span>
       </div>
     );
   }
@@ -83,30 +68,24 @@ function TimeBadge({ minutes, onChange, originalMinutes }: { minutes: number; on
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Badge variant="outline" className="cursor-pointer select-none gap-1 hover:bg-muted">
-          <Clock className="h-3.5 w-3.5" />
-          {minutes} min
-          <svg className="h-3 w-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        <button className="flex items-center gap-1 h-[30px] px-3 border border-[#ccc] rounded-[5px] text-[14px] font-medium text-[#4a4a4a] hover:bg-gray-50 whitespace-nowrap">
+          {minutes} Minutes
+          <svg className="h-2.5 w-3.5 ml-1" viewBox="0 0 14 8" fill="none">
+            <path d="M1 1l6 6 6-6" stroke="#4a4a4a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-        </Badge>
+        </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="z-50">
-        {options.map((option) => (
-          <DropdownMenuItem 
-            key={option} 
+      <DropdownMenuContent align="start" className="z-[200]">
+        {options.map(option => (
+          <DropdownMenuItem
+            key={option}
             onClick={() => onChange(option)}
             className={minutes === option ? "bg-accent" : ""}
           >
-            <div className="flex items-center gap-2 w-full">
-              <span>{option} min</span>
-              {originalMinutes === option && (
-                <ThumbsUp className="h-3.5 w-3.5 text-primary ml-auto" />
-              )}
-            </div>
+            <span>{option} Minutes{option === 10 ? ' (Recommended)' : ''}</span>
           </DropdownMenuItem>
         ))}
-        <DropdownMenuItem onClick={handleCustomSelect} className="text-primary">
+        <DropdownMenuItem onClick={() => { setCustomValue(minutes.toString()); setIsEditing(true); }} className="text-primary">
           Custom
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -117,111 +96,114 @@ function TimeBadge({ minutes, onChange, originalMinutes }: { minutes: number; on
 export default function ActivityDetailModal({ activity, initialTab = 'teacher', onClose, onTimeChange }: ActivityDetailModalProps) {
   const [activeTab, setActiveTab] = useState<'teacher' | 'student'>(initialTab);
 
-  // Reset tab when activity or initialTab changes
   useEffect(() => {
-    if (initialTab) {
-      setActiveTab(initialTab);
-    }
+    if (initialTab) setActiveTab(initialTab);
   }, [activity?.id, initialTab]);
 
   if (!activity) return null;
 
-  const hasTeacherGuide = !!activity.teacherGuide;
-  const hasStudentGuide = !!activity.studentGuide;
+  const hasTeacherGuide = true; // use placeholder for all
+  const hasStudentGuide = true; // use placeholder for all
 
-  // Set active tab to available tab if current tab is not available
-  const effectiveTab = activeTab === 'teacher' && !hasTeacherGuide 
-    ? 'student' 
-    : activeTab === 'student' && !hasStudentGuide 
-      ? 'teacher' 
-      : activeTab;
+  const guideUrl = GUIDE_PLACEHOLDER_URL;
 
   return (
-    <Dialog open={!!activity} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0">
-        {/* Header with title and metadata */}
-        <div className="p-6 pb-0 flex-shrink-0">
-          <div className="flex items-center gap-2 mb-3">
-            <h2 className="text-xl font-semibold">{activity.title}</h2>
-            {activity.optional && (
-              <Badge variant="secondary" className="text-xs">Optional</Badge>
-            )}
-          </div>
-          
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <TimeBadge 
-              minutes={activity.minutes} 
-              onChange={(minutes) => onTimeChange?.(activity.id, minutes)}
-              originalMinutes={activity.originalMinutes}
-            />
-            
+    <Dialog open={!!activity} onOpenChange={open => !open && onClose()}>
+      <DialogContent className="max-w-[900px] h-[870px] flex flex-col p-0 rounded-[20px] overflow-hidden gap-0">
+        {/* Sticky header */}
+        <div className="flex-shrink-0 bg-white px-[50px] pt-8 pb-0">
+          {/* Optional badge */}
+          {activity.optional && (
+            <div className="mb-2">
+              <span className="inline-block bg-[#f5f5f5] text-[#4a4a4a] text-[12px] font-medium rounded-[10px] px-3 py-1">
+                Optional
+              </span>
+            </div>
+          )}
+
+          {/* Title */}
+          <h2 className="text-[34px] font-bold text-[#4a4a4a] tracking-[-1.02px] leading-tight mb-4">
+            {activity.title}
+          </h2>
+
+          {/* Metadata row */}
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              {activity.styles.map((style) => (
-                <div key={style} className="flex items-center gap-1">
+              <span className="text-[16px] font-bold text-[#4a4a4a]">Facilitation Style:</span>
+              {activity.styles.map(style => (
+                <div key={style} className="flex items-center gap-1 text-[16px] text-[#4a4a4a]">
                   {facilityStyleIcons[style]}
-                  <span className="text-xs">{facilityStyleLabels[style]}</span>
+                  <span>{facilityStyleLabels[style]}</span>
                 </div>
               ))}
             </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[16px] font-bold text-[#4a4a4a]">Time:</span>
+              <TimeBadge
+                minutes={activity.minutes}
+                onChange={minutes => onTimeChange?.(activity.id, minutes)}
+                originalMinutes={activity.originalMinutes}
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Tabs that stick out */}
-        <div className="px-6 flex-shrink-0">
-          <div className="flex border-b">
+          {/* Tabs */}
+          <div className="flex border-b border-[#ccc] relative">
             {hasTeacherGuide && (
-              <Button
-                variant={effectiveTab === 'teacher' ? 'default' : 'ghost'}
-                className="rounded-b-none px-4 py-2"
+              <button
+                className={`text-[14px] px-1 mr-8 pb-2 font-medium transition-colors ${
+                  activeTab === 'teacher'
+                    ? 'text-[#222] font-semibold'
+                    : 'text-[#707070] hover:text-[#4a4a4a]'
+                }`}
                 onClick={() => setActiveTab('teacher')}
               >
                 Teacher Guide
-              </Button>
+              </button>
             )}
             {hasStudentGuide && (
-              <Button
-                variant={effectiveTab === 'student' ? 'default' : 'ghost'}
-                className="rounded-b-none px-4 py-2"
+              <button
+                className={`text-[14px] px-1 pb-2 font-medium transition-colors ${
+                  activeTab === 'student'
+                    ? 'text-[#222] font-semibold'
+                    : 'text-[#707070] hover:text-[#4a4a4a]'
+                }`}
                 onClick={() => setActiveTab('student')}
               >
                 Student Guide
-              </Button>
+              </button>
             )}
+            {/* Active tab underline */}
+            <div
+              className="absolute bottom-0 h-[3px] bg-[#1e6fd4] transition-all"
+              style={{
+                left: activeTab === 'teacher' ? 0 : '144px',
+                width: activeTab === 'teacher' ? '120px' : '108px',
+              }}
+            />
           </div>
         </div>
 
-        {/* Scrollable content */}
-        <div className="flex-1 overflow-hidden">
-          <ScrollArea className="h-full">
-            <div className="p-6">
-              {effectiveTab === 'teacher' && hasTeacherGuide && (
-                <div className="flex justify-center">
-                  <img
-                    src={activity.teacherGuide}
-                    alt={`Teacher guide for ${activity.title}`}
-                    className="max-w-full h-auto rounded-lg shadow-sm"
-                    style={{ marginTop: '-3px' }}
-                  />
-                </div>
-              )}
+        {/* Scrollable iframe content */}
+        <div className="flex-1 overflow-hidden px-[50px] py-4">
+          <iframe
+            key={`${activity.id}-${activeTab}`}
+            src={guideUrl}
+            title={`${activeTab === 'teacher' ? 'Teacher' : 'Student'} Guide for ${activity.title}`}
+            className="w-full h-full rounded-lg border border-[#eee]"
+            allow="autoplay"
+          />
+        </div>
 
-              {effectiveTab === 'student' && hasStudentGuide && (
-                <div className="flex justify-center">
-                  <img
-                    src={activity.studentGuide}
-                    alt={`Student guide for ${activity.title}`}
-                    className="max-w-full h-auto rounded-lg shadow-sm"
-                  />
-                </div>
-              )}
-
-              {(!hasTeacherGuide && !hasStudentGuide) && (
-                <div className="flex items-center justify-center h-full text-muted-foreground">
-                  No guides available for this activity
-                </div>
-              )}
-            </div>
-          </ScrollArea>
+        {/* Footer */}
+        <div className="flex-shrink-0 bg-[#f5f5f5] h-[100px] flex items-center justify-end px-[30px] rounded-b-[20px]">
+          <Button
+            className="h-10 bg-[#ebebeb] hover:bg-[#ddd] text-[#4a4a4a] font-semibold rounded-[4px] px-5"
+            variant="ghost"
+            onClick={onClose}
+          >
+            Close
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

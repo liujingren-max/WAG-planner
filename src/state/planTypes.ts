@@ -9,6 +9,8 @@ export interface ActivityCard {
   styles: FacilitationStyle[];
   studentGuide?: string;
   teacherGuide?: string;
+  teacherGuideUrl?: string;
+  studentGuideUrl?: string;
 }
 
 export interface SessionColumn {
@@ -26,4 +28,8 @@ export interface LessonPlan {
   module: number; // 1-8
   sessions: SessionColumn[];
   deleted: ActivityCard[]; // recently deleted
+  savedAt?: number; // timestamp when saved to library; undefined = not yet saved
+  readLessonName?: string;
+  coverImageUrl?: string;
+  directInstructions?: { name: string; contentId?: string }[];
 }

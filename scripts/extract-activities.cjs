@@ -5,7 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const CSV_PATH = path.join(process.env.HOME, 'Downloads', 'Clean Progressions 11_2024 - FL Copy of Master Progressions.csv');
+const CSV_PATH = path.join(process.env.HOME, 'Downloads', '[AI Lab Copy] Clean Progressions 12_2025 - FL Copy of Master Progressions.csv');
 const OUTPUT_PATH = path.join(__dirname, '..', 'public', 'activities-data.json');
 
 function parseCSVLine(line) {
@@ -94,12 +94,15 @@ for (const line of dataLines) {
   const time = parseInt(row[7]);
   const optional = (row[8] || '').trim() === 'Optional';
   const facilitation = row[9] || '';
+  const contentId = row[13] || '';
+  const teacherGuideUrl = row[18] || '';
+  const studentGuideUrl = row[19] || '';
 
   if (isNaN(time) || !steps) continue;
 
   const key = `${grade}|${unit}|${module}`;
   if (!moduleRows[key]) moduleRows[key] = { grade, unit, module, rows: [] };
-  moduleRows[key].rows.push({ task, online, steps, time, optional, facilitation });
+  moduleRows[key].rows.push({ task, online, steps, time, optional, facilitation, contentId, teacherGuideUrl, studentGuideUrl });
 }
 
 // Build output indexed by grade → unit → module
@@ -115,18 +118,71 @@ for (const { grade, unit, module, rows } of Object.values(moduleRows)) {
     }
   }
 
-  const activities = rows.map(({ task, online, steps, time, optional, facilitation }) => ({
-    title: buildTitle(task, online, steps, taskCount[task] || 1),
-    minutes: time,
-    optional,
-    styles: parseStyles(facilitation),
-  }));
+  const activities = rows.map(({ task, online, steps, time, optional, facilitation, teacherGuideUrl, studentGuideUrl }) => {
+    const activity = {
+      title: buildTitle(task, online, steps, taskCount[task] || 1),
+      minutes: time,
+      optional,
+      styles: parseStyles(facilitation),
+    };
+    if (teacherGuideUrl) activity.teacherGuideUrl = teacherGuideUrl;
+    if (studentGuideUrl) activity.studentGuideUrl = studentGuideUrl;
+    return activity;
+  });
 
   const mustHaveTaskNames = activities.some(a => a.title === 'Develop') ? ['Develop'] : [];
 
+  // Extract readLessonName and coverImageUrl — prefer Read row, fall back to first DI with contentId
+  let readLessonName;
+  let coverImageUrl;
+  for (const row of rows) {
+    if (row.task === 'Read' && row.online) {
+      readLessonName = row.online;
+      if (row.contentId) {
+        coverImageUrl = `http://thinkcerca-prod.s3.amazonaws.com/lessons/${row.contentId}/cover.jpg`;
+      }
+      break;
+    }
+  }
+  // Fallback: use the first row whose Steps contains "Direct Instruction" and has a contentId
+  if (!coverImageUrl) {
+    for (const row of rows) {
+      if (row.contentId && (row.task === 'Direct Instruction' || row.steps.toLowerCase().includes('direct instruction'))) {
+        coverImageUrl = `http://thinkcerca-prod.s3.amazonaws.com/lessons/${row.contentId}/cover.jpg`;
+        break;
+      }
+    }
+  }
+  // Last resort: first row with any contentId
+  if (!coverImageUrl) {
+    for (const row of rows) {
+      if (row.contentId && row.task !== 'Topic Overview') {
+        coverImageUrl = `http://thinkcerca-prod.s3.amazonaws.com/lessons/${row.contentId}/cover.jpg`;
+        break;
+      }
+    }
+  }
+
+  // Extract Direct Instruction lessons (unique by name)
+  const diSeen = new Set();
+  const directInstructions = [];
+  for (const row of rows) {
+    if (row.task === 'Direct Instruction' && row.online && !diSeen.has(row.online)) {
+      diSeen.add(row.online);
+      const di = { name: row.online };
+      if (row.contentId) di.contentId = row.contentId;
+      directInstructions.push(di);
+    }
+  }
+
+  const moduleData = { activities, mustHaveTaskNames };
+  if (readLessonName) moduleData.readLessonName = readLessonName;
+  if (coverImageUrl) moduleData.coverImageUrl = coverImageUrl;
+  if (directInstructions.length > 0) moduleData.directInstructions = directInstructions;
+
   if (!output[grade]) output[grade] = {};
   if (!output[grade][unit]) output[grade][unit] = {};
-  output[grade][unit][module] = { activities, mustHaveTaskNames };
+  output[grade][unit][module] = moduleData;
   moduleCount++;
 }
 
