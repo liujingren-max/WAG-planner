@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Clock, Plus, Undo2, Redo2, MoreHorizontal, X, Pencil, Presentation, User, Users, ExternalLink, Book, Trash2, Folder } from "lucide-react";
+import { Clock, Plus, Undo2, Redo2, MoreHorizontal, X, Pencil, Presentation, User, Users, ExternalLink, Book, Trash2, Folder, ChevronDown } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button";
@@ -17,35 +17,13 @@ import { toast } from "@/hooks/use-toast";
 import { generateLessonPlan } from "@/utils/planningLogic";
 import { getModuleData } from "@/utils/activitiesData";
 
-function loadPlans(): LessonPlan[] {
-  const raw = localStorage.getItem("plans");
-  return raw ? JSON.parse(raw) : [];
-}
-function savePlans(plans: LessonPlan[]) {
-  localStorage.setItem("plans", JSON.stringify(plans));
-}
-
 function loadPlan(planId: string): LessonPlan | null {
-  // Check localStorage first (saved plans)
-  const saved = loadPlans().find(p => p.id === planId);
-  if (saved) return saved;
-  // Fall back to sessionStorage (unsaved temp plans)
   const temp = sessionStorage.getItem(`plan-temp-${planId}`);
   return temp ? JSON.parse(temp) : null;
 }
 
-function isPlanSaved(planId: string): boolean {
-  return loadPlans().some(p => p.id === planId);
-}
-
 function persistPlan(plan: LessonPlan) {
-  if (isPlanSaved(plan.id)) {
-    // Update in localStorage
-    savePlans(loadPlans().map(p => p.id === plan.id ? plan : p));
-  } else {
-    // Update in sessionStorage
-    sessionStorage.setItem(`plan-temp-${plan.id}`, JSON.stringify(plan));
-  }
+  sessionStorage.setItem(`plan-temp-${plan.id}`, JSON.stringify(plan));
 }
 
 export default function Planner() {
@@ -62,7 +40,6 @@ export default function Planner() {
   const [justGenerated, setJustGenerated] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<{ activity: ActivityCard; tab: 'teacher' | 'student' } | null>(null);
-  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     if (!planId) return;
@@ -73,7 +50,6 @@ export default function Planner() {
       return;
     }
     setPlan(found);
-    setIsSaved(isPlanSaved(planId));
     if (isRegenerating || sessionStorage.getItem('newPlanGenerated') === planId) {
       setJustGenerated(true);
       sessionStorage.removeItem('newPlanGenerated');
@@ -107,16 +83,99 @@ export default function Planner() {
     }
   }, [plan, totalPlanTime, justGenerated]);
 
-  function saveToLibrary() {
+  function handleExportPlan() {
     if (!plan) return;
-    const savedPlan: LessonPlan = { ...plan, savedAt: Date.now() };
-    const list = loadPlans().filter(p => p.id !== plan.id);
-    list.push(savedPlan);
-    savePlans(list);
-    sessionStorage.removeItem(`plan-temp-${plan.id}`);
-    setPlan(savedPlan);
-    setIsSaved(true);
-    toast({ title: "Saved!", description: "Plan saved to your library." });
+    const title = plan.readLessonName || plan.title;
+    const subtitle = plan.title;
+    const sessionsHtml = plan.sessions.map(s => {
+      const activitiesHtml = s.activities.map(a =>
+        `<div class="activity-row">
+          <span class="activity-title">${a.title}</span>
+          <span class="activity-time">${a.minutes} min</span>
+        </div>`
+      ).join('');
+      const used = s.activities.reduce((sum, a) => sum + a.minutes, 0);
+      return `<div class="session-col">
+        <div class="session-header">${s.name}</div>
+        ${activitiesHtml}
+        <div class="session-total">Total: ${used} min / ${s.availableMinutes} min</div>
+      </div>`;
+    }).join('');
+
+    const win = window.open('', '_blank');
+    if (!win) return;
+    win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>${title}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Montserrat', sans-serif; box-sizing: border-box; }
+    body { margin: 24px; color: #4a4a4a; }
+    .plan-title { font-size: 22px; font-weight: 700; margin-bottom: 2px; }
+    .plan-subtitle { font-size: 13px; color: #707070; margin-bottom: 16px; }
+    .sessions-wrap { display: flex; flex-wrap: wrap; gap: 16px; }
+    .session-col { border: 1px solid #ccc; border-radius: 8px; padding: 14px; min-width: 200px; flex: 1; page-break-inside: avoid; }
+    .session-header { font-size: 14px; font-weight: 700; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 6px; }
+    .activity-row { display: flex; justify-content: space-between; align-items: baseline; padding: 4px 0; border-bottom: 1px dotted #eee; font-size: 12px; gap: 8px; }
+    .activity-title { flex: 1; }
+    .activity-time { font-weight: 600; white-space: nowrap; color: #707070; }
+    .session-total { font-size: 11px; font-weight: 700; margin-top: 8px; color: #4a4a4a; }
+    @media print { @page { size: A4 landscape; margin: 15mm; } body { margin: 0; } }
+  </style>
+</head>
+<body>
+  <div class="plan-title">${title}</div>
+  <div class="plan-subtitle">${subtitle}</div>
+  <div class="sessions-wrap">${sessionsHtml}</div>
+  <script>window.onload = () => setTimeout(() => window.print(), 400);<\/script>
+</body>
+</html>`);
+    win.document.close();
+  }
+
+  function handleExportGuides(type: 'teacher' | 'student') {
+    if (!plan) return;
+    const allActivities = plan.sessions.flatMap(s => s.activities);
+    const urlKey = type === 'teacher' ? 'teacherGuideUrl' : 'studentGuideUrl';
+    const seen = new Set<string>();
+    const fileIds: string[] = [];
+    for (const a of allActivities) {
+      const url = (a as any)[urlKey] as string | undefined;
+      if (url && !seen.has(url)) {
+        seen.add(url);
+        const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if (match) fileIds.push(match[1]);
+      }
+    }
+    if (fileIds.length === 0) {
+      toast({ title: "No guides available", description: `No ${type} guides found for this plan.` });
+      return;
+    }
+    const iframesHtml = fileIds.map(id =>
+      `<iframe class="guide-frame" src="https://drive.google.com/file/d/${id}/preview"></iframe>`
+    ).join('\n');
+    const win = window.open('', '_blank');
+    if (!win) return;
+    win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>${type === 'teacher' ? 'Teacher' : 'Student'} Guide</title>
+  <style>
+    body { margin: 0; }
+    .guide-frame { width: 100%; height: 100vh; border: none; display: block; page-break-after: always; }
+    @media print { @page { margin: 0; } }
+  </style>
+</head>
+<body>
+  ${iframesHtml}
+  <script>window.addEventListener('load', () => setTimeout(() => window.print(), 1500));<\/script>
+</body>
+</html>`);
+    win.document.close();
   }
 
   function onDragStart() { setIsDragging(true); }
@@ -223,8 +282,6 @@ export default function Planner() {
   async function regeneratePlan() {
     if (!plan) return;
     setIsRegenerating(true);
-    const plans = loadPlans().filter(p => p.id !== plan.id);
-    savePlans(plans);
     const sessionTimes = plan.sessions.map(s => s.availableMinutes);
     const moduleData = await getModuleData(plan.grade, plan.unit, plan.module);
     const newPlan = generateLessonPlan({
@@ -241,14 +298,7 @@ export default function Planner() {
       directInstructions: moduleData?.directInstructions,
     });
     newPlan.id = crypto.randomUUID();
-    // Keep saved state: if original was saved, store new one in localStorage; else in sessionStorage
-    if (isSaved) {
-      const updatedPlans = loadPlans();
-      updatedPlans.push({ ...newPlan, savedAt: Date.now() });
-      savePlans(updatedPlans);
-    } else {
-      sessionStorage.setItem(`plan-temp-${newPlan.id}`, JSON.stringify(newPlan));
-    }
+    sessionStorage.setItem(`plan-temp-${newPlan.id}`, JSON.stringify(newPlan));
     sessionStorage.setItem('newPlanGenerated', newPlan.id);
     navigate(`/plan/${newPlan.id}`);
     toast({ title: "Regenerated!", description: "New plan created with updated settings." });
@@ -304,13 +354,18 @@ export default function Planner() {
           {/* Page title row */}
           <div className="flex items-center justify-between mb-1">
             <h1 className="text-[34px] font-bold text-[#4a4a4a] tracking-[-1.02px]">Module Planner</h1>
-            <Button
-              className="h-10 bg-[#1e6fd4] hover:bg-[#1860ba] text-white font-semibold rounded-[4px] px-5"
-              onClick={saveToLibrary}
-              disabled={isSaved}
-            >
-              {isSaved ? "Saved" : "Save to Library"}
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="h-10 bg-[#1e6fd4] hover:bg-[#1860ba] text-white font-semibold rounded-[4px] px-5 gap-2">
+                  Export <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleExportPlan}>Export Plan</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExportGuides('teacher')}>Export Teacher Guide</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExportGuides('student')}>Export Student Guide</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Action row */}

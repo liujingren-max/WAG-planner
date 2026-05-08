@@ -6,8 +6,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Presentation, User, Users } from "lucide-react";
 import { ActivityCard, FacilitationStyle } from "@/state/planTypes";
 
-// Placeholder guide URL (Google Drive preview)
-const GUIDE_PLACEHOLDER_URL = "https://drive.google.com/file/d/1dOsP_gLdcMIuLi2ZwzFELX-e-6YdmAMg/preview";
+function toPreviewUrl(url: string): string {
+  return url.replace(/\/view.*$/, '/preview');
+}
 
 interface ActivityDetailModalProps {
   activity: ActivityCard | null;
@@ -97,15 +98,26 @@ export default function ActivityDetailModal({ activity, initialTab = 'teacher', 
   const [activeTab, setActiveTab] = useState<'teacher' | 'student'>(initialTab);
 
   useEffect(() => {
-    if (initialTab) setActiveTab(initialTab);
+    if (!activity) return;
+    // If the requested tab has no guide, fall back to the other tab
+    const wantTeacher = initialTab === 'teacher';
+    if (wantTeacher && !activity.teacherGuideUrl && activity.studentGuideUrl) {
+      setActiveTab('student');
+    } else if (!wantTeacher && !activity.studentGuideUrl && activity.teacherGuideUrl) {
+      setActiveTab('teacher');
+    } else {
+      setActiveTab(initialTab);
+    }
   }, [activity?.id, initialTab]);
 
   if (!activity) return null;
 
-  const hasTeacherGuide = true; // use placeholder for all
-  const hasStudentGuide = true; // use placeholder for all
+  const hasTeacherGuide = !!activity.teacherGuideUrl;
+  const hasStudentGuide = !!activity.studentGuideUrl;
 
-  const guideUrl = GUIDE_PLACEHOLDER_URL;
+  const teacherGuideUrl = activity.teacherGuideUrl ? toPreviewUrl(activity.teacherGuideUrl) : null;
+  const studentGuideUrl = activity.studentGuideUrl ? toPreviewUrl(activity.studentGuideUrl) : null;
+  const guideUrl = activeTab === 'teacher' ? teacherGuideUrl : studentGuideUrl;
 
   return (
     <Dialog open={!!activity} onOpenChange={open => !open && onClose()}>
@@ -186,13 +198,19 @@ export default function ActivityDetailModal({ activity, initialTab = 'teacher', 
 
         {/* Scrollable iframe content */}
         <div className="flex-1 overflow-hidden px-[50px] py-4">
-          <iframe
-            key={`${activity.id}-${activeTab}`}
-            src={guideUrl}
-            title={`${activeTab === 'teacher' ? 'Teacher' : 'Student'} Guide for ${activity.title}`}
-            className="w-full h-full rounded-lg border border-[#eee]"
-            allow="autoplay"
-          />
+          {guideUrl ? (
+            <iframe
+              key={`${activity.id}-${activeTab}`}
+              src={guideUrl}
+              title={`${activeTab === 'teacher' ? 'Teacher' : 'Student'} Guide for ${activity.title}`}
+              className="w-full h-full rounded-lg border border-[#eee]"
+              allow="autoplay"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center rounded-lg border border-[#eee] bg-[#f9f9f9]">
+              <p className="text-[#9b9b9b] text-[15px] font-medium">No guide available</p>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
