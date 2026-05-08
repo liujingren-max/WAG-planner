@@ -141,41 +141,38 @@ export default function Planner() {
     const allActivities = plan.sessions.flatMap(s => s.activities);
     const urlKey = type === 'teacher' ? 'teacherGuideUrl' : 'studentGuideUrl';
     const seen = new Set<string>();
-    const fileIds: string[] = [];
+    const entries: { fileId: string; title: string }[] = [];
     for (const a of allActivities) {
       const url = (a as any)[urlKey] as string | undefined;
       if (url && !seen.has(url)) {
         seen.add(url);
         const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-        if (match) fileIds.push(match[1]);
+        if (match) entries.push({ fileId: match[1], title: a.title });
       }
     }
-    if (fileIds.length === 0) {
+    if (entries.length === 0) {
       toast({ title: "No guides available", description: `No ${type} guides found for this plan.` });
       return;
     }
-    const iframesHtml = fileIds.map(id =>
-      `<iframe class="guide-frame" src="https://drive.google.com/file/d/${id}/preview"></iframe>`
-    ).join('\n');
-    const win = window.open('', '_blank');
-    if (!win) return;
-    win.document.write(`<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>${type === 'teacher' ? 'Teacher' : 'Student'} Guide</title>
-  <style>
-    body { margin: 0; }
-    .guide-frame { width: 100%; height: 100vh; border: none; display: block; page-break-after: always; }
-    @media print { @page { margin: 0; } }
-  </style>
-</head>
-<body>
-  ${iframesHtml}
-  <script>window.addEventListener('load', () => setTimeout(() => window.print(), 1500));<\/script>
-</body>
-</html>`);
-    win.document.close();
+
+    // Stagger downloads so the browser doesn't block them
+    entries.forEach(({ fileId }, i) => {
+      setTimeout(() => {
+        const a = document.createElement('a');
+        a.href = `https://drive.google.com/uc?export=download&id=${fileId}`;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }, i * 600);
+    });
+
+    const label = type === 'teacher' ? 'teacher' : 'student';
+    toast({
+      title: `Downloading ${entries.length} ${label} guide${entries.length > 1 ? 's' : ''}`,
+      description: "Files will download from Google Drive. Make sure pop-ups are allowed.",
+    });
   }
 
   function onDragStart() { setIsDragging(true); }
@@ -362,8 +359,8 @@ export default function Planner() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={handleExportPlan}>Export Plan</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleExportGuides('teacher')}>Export Teacher Guide</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleExportGuides('student')}>Export Student Guide</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExportGuides('teacher')}>Download Teacher Guides</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExportGuides('student')}>Download Student Guides</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
