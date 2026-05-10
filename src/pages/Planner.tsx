@@ -40,6 +40,7 @@ export default function Planner() {
   const [justGenerated, setJustGenerated] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<{ activity: ActivityCard; tab: 'teacher' | 'student' } | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     if (!planId) return;
@@ -136,43 +137,72 @@ export default function Planner() {
     win.document.close();
   }
 
-  function handleExportGuides(type: 'teacher' | 'student') {
-    if (!plan) return;
+  async function handleExportGuides(type: 'teacher' | 'student') {
+    if (!plan || isExporting) return;
     const allActivities = plan.sessions.flatMap(s => s.activities);
     const urlKey = type === 'teacher' ? 'teacherGuideUrl' : 'studentGuideUrl';
     const seen = new Set<string>();
-    const entries: { fileId: string; title: string }[] = [];
+    const fileIds: string[] = [];
     for (const a of allActivities) {
       const url = (a as any)[urlKey] as string | undefined;
       if (url && !seen.has(url)) {
         seen.add(url);
         const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-        if (match) entries.push({ fileId: match[1], title: a.title });
+        if (match) fileIds.push(match[1]);
       }
     }
-    if (entries.length === 0) {
+    if (fileIds.length === 0) {
       toast({ title: "No guides available", description: `No ${type} guides found for this plan.` });
       return;
     }
 
-    // Stagger downloads so the browser doesn't block them
-    entries.forEach(({ fileId }, i) => {
-      setTimeout(() => {
-        const a = document.createElement('a');
-        a.href = `https://drive.google.com/uc?export=download&id=${fileId}`;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      }, i * 600);
-    });
+    const label = type === 'teacher' ? 'Teacher' : 'Student';
+    const filename = `${type}-guides-${(plan.readLessonName || plan.title).replace(/[^a-zA-Z0-9]/g, '-')}`;
 
-    const label = type === 'teacher' ? 'teacher' : 'student';
-    toast({
-      title: `Downloading ${entries.length} ${label} guide${entries.length > 1 ? 's' : ''}`,
-      description: "Files will download from Google Drive. Make sure pop-ups are allowed.",
-    });
+    setIsExporting(true);
+    toast({ title: `Preparing ${label} Guides PDF…`, description: "Merging guides into a single file, this may take a few seconds." });
+
+    try {
+      const response = await fetch('/api/merge-guides', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileIds, label: filename }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`merge-api: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objectUrl;
+      a.download = `${filename}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(objectUrl);
+      toast({ title: "Downloaded!", description: `${label} guides saved as a single PDF.` });
+    } catch {
+      // Fall back to staggered individual downloads
+      toast({
+        title: `Downloading ${fileIds.length} ${label.toLowerCase()} guide${fileIds.length > 1 ? 's' : ''} separately`,
+        description: "Combined PDF unavailable — files will download individually from Google Drive.",
+      });
+      fileIds.forEach((fileId, i) => {
+        setTimeout(() => {
+          const a = document.createElement('a');
+          a.href = `https://drive.google.com/uc?export=download&id=${fileId}`;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }, i * 600);
+      });
+    } finally {
+      setIsExporting(false);
+    }
   }
 
   function onDragStart() { setIsDragging(true); }
@@ -353,14 +383,17 @@ export default function Planner() {
             <h1 className="text-[34px] font-bold text-[#4a4a4a] tracking-[-1.02px]">Module Planner</h1>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className="h-10 bg-[#1e6fd4] hover:bg-[#1860ba] text-white font-semibold rounded-[4px] px-5 gap-2">
-                  Export <ChevronDown className="h-4 w-4" />
+                <Button
+                  className="h-10 bg-[#1e6fd4] hover:bg-[#1860ba] text-white font-semibold rounded-[4px] px-5 gap-2"
+                  disabled={isExporting}
+                >
+                  {isExporting ? "Preparing…" : "Export"} <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleExportPlan}>Export Plan</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleExportGuides('teacher')}>Download Teacher Guides</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleExportGuides('student')}>Download Student Guides</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportPlan} disabled={isExporting}>Export Plan</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExportGuides('teacher')} disabled={isExporting}>Download Teacher Guides</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExportGuides('student')} disabled={isExporting}>Download Student Guides</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

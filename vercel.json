@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ],
+  "functions": {
+    "api/merge-guides.ts": { "maxDuration": 30 }
+  }
+}
