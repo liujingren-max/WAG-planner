@@ -51,7 +51,7 @@ async function appendFileToPdf(
   try {
     if (kind === "pdf") {
       const donor = await PDFDocument.load(bytes, { ignoreEncryption: true });
-      const pages = await doc.copyPagesFrom(donor, donor.getPageIndices());
+      const pages = await doc.copyPages(donor, donor.getPageIndices());
       pages.forEach((p) => doc.addPage(p));
       return { ok: true };
     }
