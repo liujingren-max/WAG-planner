@@ -16,6 +16,7 @@ import TopNav from "@/components/TopNav";
 import { toast } from "@/hooks/use-toast";
 import { generateLessonPlan } from "@/utils/planningLogic";
 import { getModuleData } from "@/utils/activitiesData";
+import { mergeStudentGuides, mergeTeacherGuides } from "@/utils/guideMerger";
 
 function loadPlan(planId: string): LessonPlan | null {
   const temp = sessionStorage.getItem(`plan-temp-${planId}`);
@@ -142,16 +143,12 @@ export default function Planner() {
     const allActivities = plan.sessions.flatMap(s => s.activities);
     const urlKey = type === 'teacher' ? 'teacherGuideUrl' : 'studentGuideUrl';
     const seen = new Set<string>();
-    const fileIds: string[] = [];
+    const urls: string[] = [];
     for (const a of allActivities) {
       const url = (a as any)[urlKey] as string | undefined;
-      if (url && !seen.has(url)) {
-        seen.add(url);
-        const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-        if (match) fileIds.push(match[1]);
-      }
+      if (url && !seen.has(url)) { seen.add(url); urls.push(url); }
     }
-    if (fileIds.length === 0) {
+    if (urls.length === 0) {
       toast({ title: "No guides available", description: `No ${type} guides found for this plan.` });
       return;
     }
@@ -160,20 +157,17 @@ export default function Planner() {
     const filename = `${type}-guides-${(plan.readLessonName || plan.title).replace(/[^a-zA-Z0-9]/g, '-')}`;
 
     setIsExporting(true);
-    toast({ title: `Preparing ${label} Guides PDF…`, description: "Merging guides into a single file, this may take a few seconds." });
+    toast({
+      title: `Preparing ${label} Guides PDF…`,
+      description: `Merging ${urls.length} guide${urls.length > 1 ? 's' : ''} — this may take a few seconds.`,
+    });
 
     try {
-      const response = await fetch('/api/merge-guides', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileIds, label: filename }),
-      });
+      const pdfBytes = type === 'student'
+        ? await mergeStudentGuides(urls)
+        : await mergeTeacherGuides(urls);
 
-      if (!response.ok) {
-        throw new Error(`merge-api: ${response.status}`);
-      }
-
-      const blob = await response.blob();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
       const objectUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = objectUrl;
@@ -183,23 +177,16 @@ export default function Planner() {
       document.body.removeChild(a);
       URL.revokeObjectURL(objectUrl);
       toast({ title: "Downloaded!", description: `${label} guides saved as a single PDF.` });
-    } catch {
-      // Fall back to staggered individual downloads
-      toast({
-        title: `Downloading ${fileIds.length} ${label.toLowerCase()} guide${fileIds.length > 1 ? 's' : ''} separately`,
-        description: "Combined PDF unavailable — files will download individually from Google Drive.",
-      });
-      fileIds.forEach((fileId, i) => {
-        setTimeout(() => {
-          const a = document.createElement('a');
-          a.href = `https://drive.google.com/uc?export=download&id=${fileId}`;
-          a.target = '_blank';
-          a.rel = 'noopener noreferrer';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        }, i * 600);
-      });
+    } catch (err: any) {
+      const msg = err?.message ?? String(err);
+      if (msg.includes('VITE_GOOGLE_CLIENT_ID')) {
+        toast({
+          title: "Google OAuth not configured",
+          description: "Set VITE_GOOGLE_CLIENT_ID in your .env file to enable teacher guide export.",
+        });
+      } else {
+        toast({ title: "Export failed", description: msg, variant: "destructive" });
+      }
     } finally {
       setIsExporting(false);
     }
