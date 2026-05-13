@@ -163,20 +163,41 @@ export default function Planner() {
     });
 
     try {
-      const pdfBytes = type === 'student'
+      const result = type === 'student'
         ? await mergeStudentGuides(urls)
         : await mergeTeacherGuides(urls);
 
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      if (result.succeeded === 0) {
+        const firstReason = result.failures[0]?.reason ?? "no readable files";
+        toast({
+          title: "Nothing to export",
+          description: `Tried ${result.attempted} ${label.toLowerCase()} guide${result.attempted === 1 ? '' : 's'}, all failed. First error: ${firstReason}`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const blob = new Blob([result.pdfBytes], { type: 'application/pdf' });
       const objectUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = objectUrl;
       a.download = `${filename}.pdf`;
+      a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(objectUrl);
-      toast({ title: "Downloaded!", description: `${label} guides saved as a single PDF.` });
+      // Defer cleanup so Safari/Firefox have time to start the download
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(objectUrl);
+      }, 1000);
+
+      const partial = result.succeeded < result.attempted
+        ? ` (${result.attempted - result.succeeded} failed — check console)`
+        : '';
+      toast({
+        title: "Downloaded!",
+        description: `${result.pageCount}-page PDF from ${result.succeeded}/${result.attempted} ${label.toLowerCase()} guide${result.attempted === 1 ? '' : 's'}${partial}.`,
+      });
     } catch (err: any) {
       const msg = err?.message ?? String(err);
       toast({ title: "Export failed", description: msg, variant: "destructive" });
