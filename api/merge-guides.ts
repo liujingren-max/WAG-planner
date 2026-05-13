@@ -36,24 +36,18 @@ export default async function handler(
 
   for (const fileId of fileIds) {
     try {
-      // Google Drive direct download URL (works for "Anyone with the link" files)
-      const url = `https://drive.google.com/uc?export=download&id=${fileId}&confirm=t`;
+      // export=pdf forces PDF output for any Google file type (Slides, Docs,
+      // or uploaded PDF). Works for files shared as "Anyone with the link".
+      const url = `https://drive.google.com/uc?export=pdf&id=${fileId}`;
       const response = await fetch(url, {
         redirect: "follow",
         headers: {
-          "User-Agent":
-            "Mozilla/5.0 (compatible; ThinkCERCA-Planner/1.0)",
+          "User-Agent": "Mozilla/5.0 (compatible; ThinkCERCA-Planner/1.0)",
         },
       });
 
       if (!response.ok) {
         console.warn(`Drive fetch failed for ${fileId}: ${response.status}`);
-        continue;
-      }
-
-      const contentType = response.headers.get("content-type") ?? "";
-      if (!contentType.includes("pdf")) {
-        console.warn(`Unexpected content-type for ${fileId}: ${contentType}`);
         continue;
       }
 

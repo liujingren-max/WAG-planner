@@ -461,7 +461,7 @@ export default function Planner() {
                         <div className="space-y-1">
                           {plan.directInstructions.map((di, i) => (
                             <a key={i}
-                              href={di.contentId ? `https://learn.thinkcerca.com/lessons/${di.contentId}?preview=true` : '#'}
+                              href={di.contentId ? `https://learn.thinkcerca.com/content/lessons/${di.contentId}` : '#'}
                               target="_blank" rel="noopener noreferrer"
                               className="flex items-center gap-1.5 text-[#4a4a4a] hover:underline">
                               <ExternalLink className="h-3.5 w-3.5 shrink-0 text-[#707070]" />
