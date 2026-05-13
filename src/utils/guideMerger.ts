@@ -81,53 +81,12 @@ export async function mergeStudentGuides(urls: string[]): Promise<Uint8Array> {
   return doc.save();
 }
 
-// ─── teacher guides (auth required – Drive API + OAuth) ──────────────────────
-
-/** Cached token (valid for ~1 hour within the same browser session). */
-let cachedToken: string | null = null;
-
-/** Request a Google OAuth access token with drive.readonly scope via GIS. */
-function getGoogleToken(): Promise<string> {
-  if (cachedToken) return Promise.resolve(cachedToken);
-
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
-  if (!clientId) {
-    return Promise.reject(
-      new Error(
-        "VITE_GOOGLE_CLIENT_ID is not set. Add it to your .env file and redeploy."
-      )
-    );
-  }
-
-  return new Promise<string>((resolve, reject) => {
-    const gis = (window as any).google?.accounts?.oauth2;
-    if (!gis) {
-      reject(new Error("Google Identity Services script not loaded."));
-      return;
-    }
-
-    const client = gis.initTokenClient({
-      client_id: clientId,
-      scope: "https://www.googleapis.com/auth/drive.readonly",
-      callback: (response: { access_token?: string; error?: string }) => {
-        if (response.error || !response.access_token) {
-          reject(new Error(response.error ?? "OAuth failed"));
-        } else {
-          cachedToken = response.access_token;
-          // Expire the cache after 55 minutes (tokens last 60 min)
-          setTimeout(() => { cachedToken = null; }, 55 * 60 * 1000);
-          resolve(response.access_token);
-        }
-      },
-    });
-
-    // prompt: '' = silent if already consented, shows popup the first time
-    client.requestAccessToken({ prompt: "" });
-  });
-}
+// ─── teacher guides (public "Anyone with the link" Drive files) ──────────────
+// Files must be shared as "Anyone with the link can view" in Google Drive.
+// Once public, drive.usercontent.google.com returns CORS: * just like student
+// guides, so we can fetch them directly in the browser — no OAuth needed.
 
 export async function mergeTeacherGuides(urls: string[]): Promise<Uint8Array> {
-  const token = await getGoogleToken();
   const doc = await PDFDocument.create();
   const seen = new Set<string>();
 
@@ -138,10 +97,8 @@ export async function mergeTeacherGuides(urls: string[]): Promise<Uint8Array> {
     if (!fileId) continue;
 
     try {
-      const resp = await fetch(`${DRIVE_API}/${fileId}?alt=media`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!resp.ok) { console.warn("guideMerger: Drive API failed", fileId, resp.status); continue; }
+      const resp = await fetch(`${DRIVE_DOWNLOAD}?id=${fileId}`);
+      if (!resp.ok) { console.warn("guideMerger: fetch failed", fileId, resp.status); continue; }
       const bytes = await resp.arrayBuffer();
       const ct = resp.headers.get("content-type") ?? "";
       await appendFileToPdf(doc, bytes, ct);

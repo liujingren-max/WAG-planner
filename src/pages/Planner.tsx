@@ -179,14 +179,7 @@ export default function Planner() {
       toast({ title: "Downloaded!", description: `${label} guides saved as a single PDF.` });
     } catch (err: any) {
       const msg = err?.message ?? String(err);
-      if (msg.includes('VITE_GOOGLE_CLIENT_ID')) {
-        toast({
-          title: "Google OAuth not configured",
-          description: "Set VITE_GOOGLE_CLIENT_ID in your .env file to enable teacher guide export.",
-        });
-      } else {
-        toast({ title: "Export failed", description: msg, variant: "destructive" });
-      }
+      toast({ title: "Export failed", description: msg, variant: "destructive" });
     } finally {
       setIsExporting(false);
     }
