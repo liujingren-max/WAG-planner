@@ -1,17 +1,28 @@
 /**
  * Client-side guide PDF merger.
  *
- * Student guides  – publicly accessible PNGs (CORS: *).
- *                   Fetched directly from the browser, embedded as image pages.
+ * Student guides – publicly-shared PNG files on Google Drive (CORS: *).
+ *                  Embedded directly as PNG image pages.
  *
- * Teacher guides  – PDFs behind Google login.
- *                   Fetched via the Drive API using a GIS OAuth token
- *                   (scope: drive.readonly).  Requires VITE_GOOGLE_CLIENT_ID.
+ * Teacher guides – publicly-shared PDFs on Google Drive (CORS: *).
+ *                  Each donor page is re-rendered through pdfjs-dist to a
+ *                  JPEG at ~150 DPI then embedded — keeps the output as a
+ *                  real PDF while shrinking it 20–30x versus copying pages
+ *                  byte-for-byte (the source PDFs embed enormous high-res
+ *                  rasters).
  */
 import { PDFDocument } from "pdf-lib";
+import * as pdfjsLib from "pdfjs-dist";
+// Vite resolves this to a static asset URL for the worker bundle.
+import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 const DRIVE_DOWNLOAD = "https://drive.usercontent.google.com/download";
-const DRIVE_API = "https://www.googleapis.com/drive/v3/files";
+
+/** Target render resolution and JPEG quality when recompressing PDF pages. */
+const RENDER_DPI = 150;
+const JPEG_QUALITY = 0.85;
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -50,12 +61,29 @@ async function appendFileToPdf(
 
   try {
     if (kind === "pdf") {
-      const donor = await PDFDocument.load(bytes, { ignoreEncryption: true });
-      const pages = await doc.copyPages(donor, donor.getPageIndices());
-      pages.forEach((p) => doc.addPage(p));
+      // Re-render each donor page to a compressed JPEG, then embed.
+      // This shrinks output ~20-30x vs copying pages byte-for-byte.
+      const pdf = await pdfjsLib.getDocument({ data: bytes }).promise;
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const viewport = page.getViewport({ scale: RENDER_DPI / 72 });
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(viewport.width);
+        canvas.height = Math.round(viewport.height);
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("canvas 2d context unavailable");
+        await page.render({ canvasContext: ctx, viewport, canvas }).promise;
+        const jpegBytes = await canvasToJpegBytes(canvas, JPEG_QUALITY);
+        const img = await doc.embedJpg(jpegBytes);
+        const outPage = doc.addPage([viewport.width, viewport.height]);
+        outPage.drawImage(img, { x: 0, y: 0, width: viewport.width, height: viewport.height });
+        // Free up canvas memory between pages
+        canvas.width = 0; canvas.height = 0;
+      }
       return { ok: true };
     }
     if (kind === "png") {
+      // Student guides are already small (~200 KB) and contain text — keep as PNG.
       const img = await doc.embedPng(bytes);
       const { width, height } = img.scale(1);
       const page = doc.addPage([width, height]);
@@ -73,6 +101,20 @@ async function appendFileToPdf(
     return { ok: false, reason: `embed ${kind} failed: ${err?.message ?? err}` };
   }
   return { ok: false, reason: "unreachable" };
+}
+
+/** Convert a canvas to JPEG bytes via the async toBlob API. */
+function canvasToJpegBytes(canvas: HTMLCanvasElement, quality: number): Promise<ArrayBuffer> {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) { reject(new Error("canvas.toBlob returned null")); return; }
+        blob.arrayBuffer().then(resolve, reject);
+      },
+      "image/jpeg",
+      quality
+    );
+  });
 }
 
 /** Result of a merge: page count + per-file outcomes for diagnostics. */
