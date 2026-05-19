@@ -17,6 +17,7 @@ import { toast } from "@/hooks/use-toast";
 import { generateLessonPlan } from "@/utils/planningLogic";
 import { getModuleData } from "@/utils/activitiesData";
 import { mergeStudentGuides, mergeTeacherGuides } from "@/utils/guideMerger";
+import { buildPlanPdf } from "@/utils/planPdfBuilder";
 
 function loadPlan(planId: string): LessonPlan | null {
   const temp = sessionStorage.getItem(`plan-temp-${planId}`);
@@ -85,57 +86,23 @@ export default function Planner() {
     }
   }, [plan, totalPlanTime, justGenerated]);
 
-  function handleExportPlan() {
+  async function handleExportPlan() {
     if (!plan) return;
-    const title = plan.readLessonName || plan.title;
-    const subtitle = plan.title;
-    const sessionsHtml = plan.sessions.map(s => {
-      const activitiesHtml = s.activities.map(a =>
-        `<div class="activity-row">
-          <span class="activity-title">${a.title}</span>
-          <span class="activity-time">${a.minutes} min</span>
-        </div>`
-      ).join('');
-      const used = s.activities.reduce((sum, a) => sum + a.minutes, 0);
-      return `<div class="session-col">
-        <div class="session-header">${s.name}</div>
-        ${activitiesHtml}
-        <div class="session-total">Total: ${used} min / ${s.availableMinutes} min</div>
-      </div>`;
-    }).join('');
-
-    const win = window.open('', '_blank');
-    if (!win) return;
-    win.document.write(`<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>${title}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    * { font-family: 'Montserrat', sans-serif; box-sizing: border-box; }
-    body { margin: 24px; color: #4a4a4a; }
-    .plan-title { font-size: 22px; font-weight: 700; margin-bottom: 2px; }
-    .plan-subtitle { font-size: 13px; color: #707070; margin-bottom: 16px; }
-    .sessions-wrap { display: flex; flex-wrap: wrap; gap: 16px; }
-    .session-col { border: 1px solid #ccc; border-radius: 8px; padding: 14px; min-width: 200px; flex: 1; page-break-inside: avoid; }
-    .session-header { font-size: 14px; font-weight: 700; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 6px; }
-    .activity-row { display: flex; justify-content: space-between; align-items: baseline; padding: 4px 0; border-bottom: 1px dotted #eee; font-size: 12px; gap: 8px; }
-    .activity-title { flex: 1; }
-    .activity-time { font-weight: 600; white-space: nowrap; color: #707070; }
-    .session-total { font-size: 11px; font-weight: 700; margin-top: 8px; color: #4a4a4a; }
-    @media print { @page { size: A4 landscape; margin: 15mm; } body { margin: 0; } }
-  </style>
-</head>
-<body>
-  <div class="plan-title">${title}</div>
-  <div class="plan-subtitle">${subtitle}</div>
-  <div class="sessions-wrap">${sessionsHtml}</div>
-  <script>window.onload = () => setTimeout(() => window.print(), 400);<\/script>
-</body>
-</html>`);
-    win.document.close();
+    try {
+      const pdfBytes = await buildPlanPdf(plan);
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const filename = (plan.readLessonName || plan.title).replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '');
+      a.href = url;
+      a.download = `${filename || 'plan'}-plan.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err: any) {
+      toast({ title: "Export failed", description: err?.message ?? String(err), variant: "destructive" });
+    }
   }
 
   async function handleExportGuides(type: 'teacher' | 'student') {
