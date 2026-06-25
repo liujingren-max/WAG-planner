@@ -416,12 +416,7 @@ export default function Planner() {
                 <div className="px-[15px] pb-6">
 
                   <div className="mt-4 space-y-4 text-[14px]">
-                    <div>
-                      <p className="font-bold text-[#4a4a4a] mb-1">Learning Objective:</p>
-                      <p className="text-[#4a4a4a] leading-[20px]">
-                        Students will understand the ways theme is conveyed in a literary text and be able to analyze the theme within a personal narrative, supporting their analysis with evidence from the text.
-                      </p>
-                    </div>
+                    {/* TODO: Learning Objective — hidden until data is available per module */}
 
                     {(plan.directInstructions && plan.directInstructions.length > 0) && (
                       <div>

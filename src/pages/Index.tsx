@@ -25,8 +25,8 @@ export default function Index() {
   const [unitNames, setUnitNames] = useState<Record<number, string>>({});
   const [moduleNames, setModuleNames] = useState<Record<number, string>>({});
 
-  const [sessionsCount, setSessionsCount] = useState(4);
-  const [sessionMinutes, setSessionMinutes] = useState(50);
+  const [sessionsCount, setSessionsCount] = useState(6);
+  const [sessionMinutes, setSessionMinutes] = useState(45);
   const [customTimes, setCustomTimes] = useState<number[] | null>(null);
 
   const totalMinutes = useMemo(() => {
@@ -228,7 +228,7 @@ export default function Index() {
               <p className="text-[20px] font-bold text-[#4a4a4a]">
                 Total Time: <span className="font-normal">{totalMinutes} min</span>
               </p>
-              <p className="text-sm text-[#4a4a4a] mt-1">(Recommended total time: 150-250 min)</p>
+              <p className="text-sm text-[#4a4a4a] mt-1">(Recommended total time: 220-300 min)</p>
             </div>
 
             {/* CTA */}
