@@ -35,9 +35,6 @@ export default function Index() {
   }, [customTimes, sessionMinutes, sessionsCount]);
 
   useEffect(() => {
-    setSessionsCount(4);
-    setSessionMinutes(50);
-    setCustomTimes(null);
     getAvailableGrades().then(grades => {
       setAvailableGrades(grades);
       if (grades.length > 0 && !grades.includes(grade)) {
@@ -91,8 +88,8 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Helmet>
-        <title>New WAG Plan – ThinkCERCA</title>
-        <meta name="description" content="Create a new ThinkCERCA WAG plan." />
+        <title>New Writing Across Genre Plan – ThinkCERCA</title>
+        <meta name="description" content="Create a new ThinkCERCA Writing Across Genre plan." />
         <link rel="canonical" href={window.location.origin} />
       </Helmet>
 
@@ -101,7 +98,7 @@ export default function Index() {
       <div className="flex-1 flex justify-center px-6 py-12">
         <div className="w-full max-w-[514px]">
           <h1 className="text-[34px] font-bold text-[#4a4a4a] tracking-[-1.02px] mb-8">
-            New WAG Plan
+            New Writing Across Genre Plan
           </h1>
 
           <div className="space-y-5">
