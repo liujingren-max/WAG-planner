@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { generateLessonPlan } from "@/utils/planningLogic";
-import { getAvailableGrades, getAvailableUnits, getAvailableModules, getModuleData, getAllModuleNames } from "@/utils/activitiesData";
+import { getAvailableGrades, getAvailableUnits, getAvailableModules, getModuleData, getAllModuleNames, getAllUnitNames } from "@/utils/activitiesData";
 import TopNav from "@/components/TopNav";
 
 const range = (start: number, end: number) => Array.from({ length: end - start + 1 }, (_, i) => start + i);
@@ -22,6 +22,7 @@ export default function Index() {
   const [availableGrades, setAvailableGrades] = useState<number[]>([]);
   const [availableUnits, setAvailableUnits] = useState<number[]>([]);
   const [availableModules, setAvailableModules] = useState<number[]>([]);
+  const [unitNames, setUnitNames] = useState<Record<number, string>>({});
   const [moduleNames, setModuleNames] = useState<Record<number, string>>({});
 
   const [sessionsCount, setSessionsCount] = useState(4);
@@ -51,6 +52,7 @@ export default function Index() {
       setAvailableUnits(units);
       if (units.length > 0 && !units.includes(unit)) setUnit(units[0]);
     });
+    getAllUnitNames(grade).then(setUnitNames);
   }, [grade, availableGrades.length]);
 
   useEffect(() => {
@@ -116,6 +118,23 @@ export default function Index() {
               </Select>
             </div>
 
+            {/* Unit */}
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-medium text-[#4a4a4a]">Unit</Label>
+              <Select value={String(unit)} onValueChange={v => { setUnit(Number(v)); setModule(1); }}>
+                <SelectTrigger className="h-[50px] border-[#ccc] rounded-[5px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableUnits.map(u => (
+                    <SelectItem key={u} value={String(u)}>
+                      Unit {u}{unitNames[u] ? ` ${unitNames[u]}` : ''}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Module */}
             <div className="space-y-1.5">
               <Label className="text-[11px] font-medium text-[#4a4a4a]">Module</Label>
@@ -126,7 +145,7 @@ export default function Index() {
                 <SelectContent>
                   {availableModules.map(m => (
                     <SelectItem key={m} value={String(m)}>
-                      {moduleNames[m] ?? `Module ${m}`}
+                      Module {m}{moduleNames[m] ? ` ${moduleNames[m]}` : ''}
                     </SelectItem>
                   ))}
                 </SelectContent>
