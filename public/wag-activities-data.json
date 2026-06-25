@@ -223,15 +223,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_MaryMusgroveUsesTwoLanguagestoBridgeTwoNations_G3/cover.jpg",
         "directInstructions": [
           {
-            "name": "PurposeofNarrativeWriting",
+            "name": "The Purpose of Narrative Writing",
             "contentId": "DI_PurposeofNarrativeWriting_G3"
           },
           {
-            "name": "OrganizingNarrativeWriting",
+            "name": "Organizing Narrative Writing",
             "contentId": "DI_OrganizingNarrativeWriting_G3"
           },
           {
-            "name": "TypesofNarrativeWriting",
+            "name": "Types of Narrative Writing",
             "contentId": "DI_TypesofNarrativeWriting_G3"
           }
         ],
@@ -428,15 +428,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_Friends_Grade3/cover.jpg",
         "directInstructions": [
           {
-            "name": "BeginningsinNarrativeWriting",
+            "name": "Beginnings in Narrative Writing",
             "contentId": "DI_BeginningsinNarrativeWriting_G3"
           },
           {
-            "name": "SettinginNarrativeWriting",
+            "name": "Setting in Narrative Writing",
             "contentId": "DI_SettinginNarrativeWriting_G3"
           },
           {
-            "name": "CharactersinNarrativeWriting",
+            "name": "Characters in Narrative Writing",
             "contentId": "DI_CharactersinNarrativeWriting_G3"
           }
         ],
@@ -633,15 +633,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_AutoPoetry_Grade3_Rewrite/cover.jpg",
         "directInstructions": [
           {
-            "name": "UsingDescriptionandDetailsinNarrativeWriting",
+            "name": "Using Description and Details in Narrative Writing",
             "contentId": "DI_UsingDescriptionandDetailsinNarrativeWriting_G3"
           },
           {
-            "name": "DevelopingEventsinNarrativeWriting",
+            "name": "Developing Events in Narrative Writing",
             "contentId": "DI_DevelopingEventsinNarrativeWriting_G3"
           },
           {
-            "name": "TransitionsandLinkingWordsinNarrativeWriting",
+            "name": "Transitions and Linking Words in Narrative Writing",
             "contentId": "DI_TransitionsandLinkingWordsinNarrativeWriting_G3"
           }
         ],
@@ -829,11 +829,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_OvercomingObstacles_Grade3/cover.jpg",
         "directInstructions": [
           {
-            "name": "DialogueinNarrativeWriting",
+            "name": "Dialogue in Narrative Writing",
             "contentId": "DI_DialogueinNarrativeWriting_G3"
           },
           {
-            "name": "EndingsinNarrativeWriting",
+            "name": "Endings in Narrative Writing",
             "contentId": "DI_EndingsinNarrativeWriting_G3"
           }
         ],
@@ -1043,15 +1043,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_SocialMedia_3_Rewrite/cover.jpg",
         "directInstructions": [
           {
-            "name": "PurposeofOpinions",
+            "name": "Purpose of Opinions",
             "contentId": "DI_PurposeofOpinions_Grade3"
           },
           {
-            "name": "OrganizingOpinionPieces",
+            "name": "Organizing Opinion Pieces",
             "contentId": "DI_OrganizingOpinionPieces_Grade3"
           },
           {
-            "name": "WhatIsCERCA-12",
+            "name": "An Introduction: What Is CERCA?",
             "contentId": "ML_WhatIsCERCA_Grade3-12"
           }
         ],
@@ -1259,15 +1259,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_GovernmentRoleinHealthyEating_Grade3_Revised/cover.jpg",
         "directInstructions": [
           {
-            "name": "SummaryinOpinionPieces",
+            "name": "Summary in Opinion Pieces",
             "contentId": "DI_SummaryinOpinionPieces_Grade3"
           },
           {
-            "name": "IntroductionsinOpinionPieces",
+            "name": "Introductions in Opinion Pieces",
             "contentId": "DI_IntroductionsinOpinionPieces_Grade3"
           },
           {
-            "name": "OpinionStatements",
+            "name": "Opinion Statements",
             "contentId": "DI_OpinionStatements_Grade3"
           }
         ],
@@ -1475,15 +1475,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_VideoGames_3_Rewrite/cover.jpg",
         "directInstructions": [
           {
-            "name": "SupportingOpinionswithReasons",
+            "name": "Supporting Opinions with Reasons",
             "contentId": "DI_SupportingOpinionswithReasons_Grade3"
           },
           {
-            "name": "Evidence",
+            "name": "Supporting Opinions with Evidence",
             "contentId": "DI_Evidence_G3"
           },
           {
-            "name": "EvaluatingEvidence",
+            "name": "Evaluating Evidence",
             "contentId": "DI_EvaluatingEvidence_Grade3"
           }
         ],
@@ -1695,11 +1695,11 @@
             "contentId": "DI_Reasoning_G3"
           },
           {
-            "name": "ConclusionsinOpinionPieces",
+            "name": "Conclusions in Opinion Pieces",
             "contentId": "DI_ConclusionsinOpinionPieces_G3"
           },
           {
-            "name": "MyGrandmothersRobot Vocab",
+            "name": "Think Vocabulary - My Grandmother's Robot",
             "contentId": "DI_MyGrandmothersRobot_Vocab"
           }
         ],
@@ -1898,7 +1898,7 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_CharacterChoices_G3/cover.jpg",
         "directInstructions": [
           {
-            "name": "TransitionsandLinkingWords",
+            "name": "Transitions and Linking Words",
             "contentId": "DI_TransitionsandLinkingWords_G3"
           },
           {
@@ -2103,11 +2103,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_FeedingTikal_G3/cover.jpg",
         "directInstructions": [
           {
-            "name": "IntroductionsandOrganizationinInformativeWriting",
+            "name": "Introductions and Organization in Informative Writing",
             "contentId": "DI_IntroductionsandOrganizationinInformativeWriting_G3"
           },
           {
-            "name": "DevelopParagraphs-5",
+            "name": "Developing Effective Paragraphs",
             "contentId": "ML_DevelopParagraphs_Grade3-5"
           }
         ],
@@ -2306,11 +2306,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_PlantLife_G3/cover.jpg",
         "directInstructions": [
           {
-            "name": "SupportingaThesisorClaimwithEvidenceinInformationalTexts",
+            "name": "Supporting a Thesis or Claim with Evidence in Informational Texts",
             "contentId": "DI_SupportingaThesisorClaimwithEvidenceinInformationalTexts_G3"
           },
           {
-            "name": "SupportingaThesisorClaimwithReasonsinInformationalExpositoryWriting",
+            "name": "Supporting a Thesis or Claim with Reasons in Informational/Expository Writing",
             "contentId": "DI_SupportingaThesisorClaimwithReasonsinInformationalExpositoryWriting_G3"
           }
         ],
@@ -2509,11 +2509,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_FoodandSociety_G3/cover.jpg",
         "directInstructions": [
           {
-            "name": "LinkingIdeaswithTransitionsinInformativeWriting",
+            "name": "Linking Ideas with Transitions in Informative Writing",
             "contentId": "DI_LinkingIdeaswithTransitionsinInformativeWriting_G3"
           },
           {
-            "name": "ConclusionsinInformativeWriting",
+            "name": "Conclusions in Informative Writing",
             "contentId": "DI_ConclusionsinInformativeWriting_G3"
           }
         ],
@@ -2714,15 +2714,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_GrowingUp_Grade4/cover.jpg",
         "directInstructions": [
           {
-            "name": "PurposeofNarrativeWriting-5",
+            "name": "The Purpose of Narrative Writing",
             "contentId": "DI_PurposeofNarrativeWriting_G4-5"
           },
           {
-            "name": "OrganizingNarrativeWriting-5",
+            "name": "Organizing Narrative Writing",
             "contentId": "DI_OrganizingNarrativeWriting_G4-5"
           },
           {
-            "name": "TypesofNarrativeWriting-5",
+            "name": "Types of Narrative Writing",
             "contentId": "DI_TypesofNarrativeWriting_G4-5"
           }
         ],
@@ -2919,15 +2919,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_Friends_Grade4/cover.jpg",
         "directInstructions": [
           {
-            "name": "BeginningsinNarrativeWriting-5",
+            "name": "Beginnings in Narrative Writing",
             "contentId": "DI_BeginningsinNarrativeWriting_G4-5"
           },
           {
-            "name": "SettinginNarrativeWriting-5",
+            "name": "Setting in Narrative Writing",
             "contentId": "DI_SettinginNarrativeWriting_G4-5"
           },
           {
-            "name": "CharactersinNarrativeWriting-5",
+            "name": "Characters in Narrative Writing",
             "contentId": "DI_CharactersinNarrativeWriting_G4-5"
           }
         ],
@@ -3124,15 +3124,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_AutoPoetry_Grade4/cover.jpg",
         "directInstructions": [
           {
-            "name": "UsingDescriptionandDetailsinNarrativeWriting-5",
+            "name": "Using Description and Details in Narrative Writing",
             "contentId": "DI_UsingDescriptionandDetailsinNarrativeWriting_G4-5"
           },
           {
-            "name": "DevelopingEventsinNarrativeWriting-5",
+            "name": "Developing Events in Narrative Writing",
             "contentId": "DI_DevelopingEventsinNarrativeWriting_G4-5"
           },
           {
-            "name": "TransitionsandLinkingWordsinNarrativeWriting-5",
+            "name": "Transitions and Linking Words in Narrative Writing",
             "contentId": "DI_TransitionsandLinkingWordsinNarrativeWriting_G4-5"
           }
         ],
@@ -3320,11 +3320,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_OvercomingObstacles_Grade4/cover.jpg",
         "directInstructions": [
           {
-            "name": "DialogueinNarrativeWriting-5",
+            "name": "Dialogue in Narrative Writing",
             "contentId": "DI_DialogueinNarrativeWriting_G4-5"
           },
           {
-            "name": "EndingsinNarrativeWriting-5",
+            "name": "Endings in Narrative Writing",
             "contentId": "DI_EndingsinNarrativeWriting_G4-5"
           }
         ],
@@ -3534,15 +3534,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_SocialMedia_4_Rewrite/cover.jpg",
         "directInstructions": [
           {
-            "name": "PurposeOfOpinions-5",
+            "name": "Purpose of Opinions",
             "contentId": "DI_PurposeOfOpinions_Grade4-5"
           },
           {
-            "name": "OrganizingOpinionPieces-5",
+            "name": "Organizing Opinion Pieces",
             "contentId": "DI_OrganizingOpinionPieces_Grade4-5"
           },
           {
-            "name": "WhatIsCERCA Grade3-12",
+            "name": "An Introduction: What Is CERCA?",
             "contentId": "ML_WhatIsCERCA_Grade3-12"
           }
         ],
@@ -3750,15 +3750,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_GovtHealth_Grade4/cover.jpg",
         "directInstructions": [
           {
-            "name": "SummaryinOpinionPieces-5",
+            "name": "Summary in Opinion Pieces",
             "contentId": "DI_SummaryinOpinionPieces_Grade4-5"
           },
           {
-            "name": "IntroductionsinOpinionPieces-5",
+            "name": "Introductions in Opinion Pieces",
             "contentId": "DI_IntroductionsinOpinionPieces_Grade4-5"
           },
           {
-            "name": "OpinionStatements-5",
+            "name": "Opinion Statements",
             "contentId": "DI_OpinionStatements_Grade4-5"
           }
         ],
@@ -3966,15 +3966,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_VideoGames_4_Rewrite/cover.jpg",
         "directInstructions": [
           {
-            "name": "SupportingOpinionswithReasons-5",
+            "name": "Supporting Opinions with Reasons",
             "contentId": "DI_SupportingOpinionswithReasons_Grade4-5"
           },
           {
-            "name": "Evidence-5",
+            "name": "Supporting Opinions with Evidence",
             "contentId": "DI_Evidence_G4-5"
           },
           {
-            "name": "EvaluatingEvidence-5",
+            "name": "Evaluating Evidence",
             "contentId": "DI_EvaluatingEvidence_Grade4-5"
           }
         ],
@@ -4173,11 +4173,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_Machines_Grade4/cover.jpg",
         "directInstructions": [
           {
-            "name": "Reasoning-5",
+            "name": "Reasoning",
             "contentId": "DI_Reasoning_G4-5"
           },
           {
-            "name": "ConclusionsinOpinionPieces-5",
+            "name": "Conclusions in Opinion Pieces",
             "contentId": "DI_ConclusionsinOpinionPieces_G4-5"
           }
         ],
@@ -4376,11 +4376,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_CharacterChoices_G4/cover.jpg",
         "directInstructions": [
           {
-            "name": "TransitionsandLinkingWords-5",
+            "name": "Transitions and Linking Words",
             "contentId": "DI_TransitionsandLinkingWords_G4-5"
           },
           {
-            "name": "Audience-5",
+            "name": "Audience",
             "contentId": "DI_Audience_G4-5"
           }
         ],
@@ -4581,11 +4581,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_BuildingGreen_G4/cover.jpg",
         "directInstructions": [
           {
-            "name": "IntroductionsandOrganizationinInformativeWriting-5",
+            "name": "Introductions and Organization in Informative Writing",
             "contentId": "DI_IntroductionsandOrganizationinInformativeWriting_G4-5"
           },
           {
-            "name": "DevelopParagraphs Grade3-5",
+            "name": "Developing Effective Paragraphs",
             "contentId": "ML_DevelopParagraphs_Grade3-5"
           }
         ],
@@ -4784,11 +4784,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_PlantLife_G4/cover.jpg",
         "directInstructions": [
           {
-            "name": "SupportingaThesisorClaimwithEvidenceinInformationalTexts-5",
+            "name": "Supporting a Thesis or Claim with Evidence in Informational Texts",
             "contentId": "DI_SupportingaThesisorClaimwithEvidenceinInformationalTexts_G4-5"
           },
           {
-            "name": "SupportingaThesisorClaimwithReasonsinInformationalExpositoryWriting-5",
+            "name": "Supporting a Thesis or Claim with Reasons in Informational/Expository Writing",
             "contentId": "DI_SupportingaThesisorClaimwithReasonsinInformationalExpositoryWriting_G4-5"
           }
         ],
@@ -4987,11 +4987,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_FoodandSociety_G4/cover.jpg",
         "directInstructions": [
           {
-            "name": "LinkingIdeaswithTransitionsinInformativeWriting-5",
+            "name": "Linking Ideas with Transitions in Informative Writing",
             "contentId": "DI_LinkingIdeaswithTransitionsinInformativeWriting_G4-5"
           },
           {
-            "name": "ConclusionsinInformativeWriting-5",
+            "name": "Conclusions in Informative Writing",
             "contentId": "DI_ConclusionsinInformativeWriting_G4-5"
           }
         ],
@@ -5173,15 +5173,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_GrowingUp_Grade5/cover.jpg",
         "directInstructions": [
           {
-            "name": "PurposeofNarrativeWriting G4-5",
+            "name": "The Purpose of Narrative Writing",
             "contentId": "DI_PurposeofNarrativeWriting_G4-5"
           },
           {
-            "name": "OrganizingNarrativeWriting G4-5",
+            "name": "Organizing Narrative Writing",
             "contentId": "DI_OrganizingNarrativeWriting_G4-5"
           },
           {
-            "name": "TypesofNarrativeWriting G4-5",
+            "name": "Types of Narrative Writing",
             "contentId": "DI_TypesofNarrativeWriting_G4-5"
           }
         ]
@@ -5358,15 +5358,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_Friends_Grade5/cover.jpg",
         "directInstructions": [
           {
-            "name": "BeginningsinNarrativeWriting G4-5",
+            "name": "Beginnings in Narrative Writing",
             "contentId": "DI_BeginningsinNarrativeWriting_G4-5"
           },
           {
-            "name": "SettinginNarrativeWriting G4-5",
+            "name": "Setting in Narrative Writing",
             "contentId": "DI_SettinginNarrativeWriting_G4-5"
           },
           {
-            "name": "CharactersinNarrativeWriting G4-5",
+            "name": "Characters in Narrative Writing",
             "contentId": "DI_CharactersinNarrativeWriting_G4-5"
           }
         ]
@@ -5543,15 +5543,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_AutoPoetry_Grade5/cover.jpg",
         "directInstructions": [
           {
-            "name": "UsingDescriptionandDetailsinNarrativeWriting G4-5",
+            "name": "Using Description and Details in Narrative Writing",
             "contentId": "DI_UsingDescriptionandDetailsinNarrativeWriting_G4-5"
           },
           {
-            "name": "DevelopingEventsinNarrativeWriting G4-5",
+            "name": "Developing Events in Narrative Writing",
             "contentId": "DI_DevelopingEventsinNarrativeWriting_G4-5"
           },
           {
-            "name": "TransitionsandLinkingWordsinNarrativeWriting G4-5",
+            "name": "Transitions and Linking Words in Narrative Writing",
             "contentId": "DI_TransitionsandLinkingWordsinNarrativeWriting_G4-5"
           }
         ]
@@ -5720,11 +5720,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_OvercomingObstacles_Grade5/cover.jpg",
         "directInstructions": [
           {
-            "name": "DialogueinNarrativeWriting G4-5",
+            "name": "Dialogue in Narrative Writing",
             "contentId": "DI_DialogueinNarrativeWriting_G4-5"
           },
           {
-            "name": "EndingsinNarrativeWriting G4-5",
+            "name": "Endings in Narrative Writing",
             "contentId": "DI_EndingsinNarrativeWriting_G4-5"
           }
         ]
@@ -5913,15 +5913,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_SocialMedia_G5_2022/cover.jpg",
         "directInstructions": [
           {
-            "name": "PurposeOfOpinions Grade4-5",
+            "name": "Purpose of Opinions",
             "contentId": "DI_PurposeOfOpinions_Grade4-5"
           },
           {
-            "name": "OrganizingOpinionPieces Grade4-5",
+            "name": "Organizing Opinion Pieces",
             "contentId": "DI_OrganizingOpinionPieces_Grade4-5"
           },
           {
-            "name": "WhatIsCERCA Grade3-12",
+            "name": "An Introduction: What Is CERCA?",
             "contentId": "ML_WhatIsCERCA_Grade3-12"
           }
         ]
@@ -6108,15 +6108,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_GovtHealth_Grade5/cover.jpg",
         "directInstructions": [
           {
-            "name": "SummaryinOpinionPieces Grade4-5",
+            "name": "Summary in Opinion Pieces",
             "contentId": "DI_SummaryinOpinionPieces_Grade4-5"
           },
           {
-            "name": "IntroductionsinOpinionPieces Grade4-5",
+            "name": "Introductions in Opinion Pieces",
             "contentId": "DI_IntroductionsinOpinionPieces_Grade4-5"
           },
           {
-            "name": "OpinionStatements Grade4-5",
+            "name": "Opinion Statements",
             "contentId": "DI_OpinionStatements_Grade4-5"
           }
         ]
@@ -6303,15 +6303,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_VideoGames_5_Rewrite/cover.jpg",
         "directInstructions": [
           {
-            "name": "SupportingOpinionswithReasons Grade4-5",
+            "name": "Supporting Opinions with Reasons",
             "contentId": "DI_SupportingOpinionswithReasons_Grade4-5"
           },
           {
-            "name": "Evidence G4-5",
+            "name": "Supporting Opinions with Evidence",
             "contentId": "DI_Evidence_G4-5"
           },
           {
-            "name": "EvaluatingEvidence Grade4-5",
+            "name": "Evaluating Evidence",
             "contentId": "DI_EvaluatingEvidence_Grade4-5"
           }
         ]
@@ -6490,11 +6490,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_Machines_Grade5/cover.jpg",
         "directInstructions": [
           {
-            "name": "Reasoning G4-5",
+            "name": "Reasoning",
             "contentId": "DI_Reasoning_G4-5"
           },
           {
-            "name": "ConclusionsinOpinionPieces G4-5",
+            "name": "Conclusions in Opinion Pieces",
             "contentId": "DI_ConclusionsinOpinionPieces_G4-5"
           }
         ]
@@ -6673,11 +6673,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_CharacterChoices_G5/cover.jpg",
         "directInstructions": [
           {
-            "name": "TransitionsandLinkingWords G4-5",
+            "name": "Transitions and Linking Words",
             "contentId": "DI_TransitionsandLinkingWords_G4-5"
           },
           {
-            "name": "Audience G4-5",
+            "name": "Audience",
             "contentId": "DI_Audience_G4-5"
           }
         ]
@@ -6858,15 +6858,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_GrowingUp_Grade6/cover.jpg",
         "directInstructions": [
           {
-            "name": "PurposeofNarrativeWriting-8",
+            "name": "The Purpose of Narrative Writing",
             "contentId": "DI_PurposeofNarrativeWriting_G6-8"
           },
           {
-            "name": "OrganizingNarrativeWriting-8",
+            "name": "Organizing Narrative Writing",
             "contentId": "DI_OrganizingNarrativeWriting_G6-8"
           },
           {
-            "name": "TypesofNarrativeWriting-8",
+            "name": "Types of Narrative Writing",
             "contentId": "DI_TypesofNarrativeWriting_G6-8"
           }
         ]
@@ -7043,15 +7043,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_Friends_Grade6/cover.jpg",
         "directInstructions": [
           {
-            "name": "BeginningsinNarrativeWriting-8",
+            "name": "Beginnings in Narrative Writing",
             "contentId": "DI_BeginningsinNarrativeWriting_G6-8"
           },
           {
-            "name": "SettinginNarrativeWriting-8",
+            "name": "Setting in Narrative Writing",
             "contentId": "DI_SettinginNarrativeWriting_G6-8"
           },
           {
-            "name": "CharactersinNarrativeWriting-8",
+            "name": "Characters in Narrative Writing",
             "contentId": "DI_CharactersinNarrativeWriting_G6-8"
           }
         ]
@@ -7228,15 +7228,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_AutoPoetry_Grade6/cover.jpg",
         "directInstructions": [
           {
-            "name": "UsingConcreteSensoryDetailsinNarrativeWriting-8",
+            "name": "Using Concrete, Sensory Details in Narrative Writing",
             "contentId": "DI_UsingConcreteSensoryDetailsinNarrativeWriting_G6-8"
           },
           {
-            "name": "DevelopingEventsinNarrativeWriting-8",
+            "name": "Developing Events in Narrative Writing",
             "contentId": "DI_DevelopingEventsinNarrativeWriting_G6-8"
           },
           {
-            "name": "TransitionsandLinkingWordsinNarrativeWriting-8",
+            "name": "Transitions and Linking Words in Narrative Writing",
             "contentId": "DI_TransitionsandLinkingWordsinNarrativeWriting_G6-8"
           }
         ]
@@ -7405,11 +7405,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_OvercomingObstacles_Grade6/cover.jpg",
         "directInstructions": [
           {
-            "name": "DialogueinNarrativeWriting-8",
+            "name": "Dialogue in Narrative Writing",
             "contentId": "DI_DialogueinNarrativeWriting_G6-8"
           },
           {
-            "name": "EndingsinNarrativeWriting-8",
+            "name": "Endings in Narrative Writing",
             "contentId": "DI_EndingsinNarrativeWriting_G6-8"
           }
         ]
@@ -7598,15 +7598,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_SocialMedia_6_Rewrite/cover.jpg",
         "directInstructions": [
           {
-            "name": "PurposeofArguments-8",
+            "name": "The Purpose of Arguments",
             "contentId": "DI_PurposeofArguments_Grade6-8"
           },
           {
-            "name": "OrganizingArguments-8",
+            "name": "Organizing Arguments",
             "contentId": "DI_OrganizingArguments_Grade6-8"
           },
           {
-            "name": "WhatIsCERCA Grade3-12",
+            "name": "An Introduction: What Is CERCA?",
             "contentId": "ML_WhatIsCERCA_Grade3-12"
           }
         ]
@@ -7801,15 +7801,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_GovernmentRoleinHealthyEating_Grade6_Revised/cover.jpg",
         "directInstructions": [
           {
-            "name": "SummaryinArguments-8",
+            "name": "Summary in Arguments",
             "contentId": "DI_SummaryinArguments_Grade6-8"
           },
           {
-            "name": "IntroductionsinArguments-8",
+            "name": "Introductions in Arguments",
             "contentId": "DI_IntroductionsinArguments_Grade6-8"
           },
           {
-            "name": "Claims-8",
+            "name": "Claims",
             "contentId": "DI_Claims_Grade6-8"
           }
         ]
@@ -8004,19 +8004,19 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_StudentSpeech_Grade6/cover.jpg",
         "directInstructions": [
           {
-            "name": "SupportingArgumentswithReasons-8",
+            "name": "Supporting Arguments with Reasons",
             "contentId": "DI_SupportingArgumentswithReasons_Grade6-8"
           },
           {
-            "name": "Evidence-8",
+            "name": "Supporting Claims with Evidence",
             "contentId": "DI_Evidence_G6-8"
           },
           {
-            "name": "EvaluatingEvidence-8",
+            "name": "Evaluating Evidence",
             "contentId": "DI_EvaluatingEvidence_Grade6-8"
           },
           {
-            "name": "Counterarguments-8",
+            "name": "Counterarguments",
             "contentId": "DI_Counterarguments_G6-8"
           }
         ]
@@ -8203,15 +8203,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_SchoolPolicy_Grade6/cover.jpg",
         "directInstructions": [
           {
-            "name": "Reasoning-8",
+            "name": "Reasoning",
             "contentId": "DI_Reasoning_G6-8"
           },
           {
-            "name": "IntegratingEvidence-8",
+            "name": "Integrating Evidence Effectively",
             "contentId": "DI_IntegratingEvidence_G6-8"
           },
           {
-            "name": "IssuesAppealsandRhetoricalDevices-8",
+            "name": "Issues, Appeals, and Rhetorical Devices",
             "contentId": "DI_IssuesAppealsandRhetoricalDevices_G6-8"
           }
         ]
@@ -8390,11 +8390,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_CharacterChoices_G6/cover.jpg",
         "directInstructions": [
           {
-            "name": "ConclusionsinArguments-8",
+            "name": "Conclusions in Arguments",
             "contentId": "DI_ConclusionsinArguments_G6-8"
           },
           {
-            "name": "TransitionsandLinkingWords-8",
+            "name": "Transitions and Linking Words",
             "contentId": "DI_TransitionsandLinkingWords_G6-8"
           }
         ]
@@ -8573,11 +8573,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_Machines_Grade6/cover.jpg",
         "directInstructions": [
           {
-            "name": "Audience-8",
+            "name": "Audience",
             "contentId": "DI_Audience_G6-8"
           },
           {
-            "name": "CharacteristicsofaFormalStyle-8",
+            "name": "Characteristics of a Formal Style",
             "contentId": "DI_CharacteristicsofaFormalStyle_G6-8"
           }
         ]
@@ -8758,11 +8758,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_Leadership_Grade6/cover.jpg",
         "directInstructions": [
           {
-            "name": "IntroductionsandOrganizationinInformativeWriting-8",
+            "name": "Introductions and Organization in Informative Writing",
             "contentId": "DI_IntroductionsandOrganizationinInformativeWriting_G6-8"
           },
           {
-            "name": "DevelopingIdeasinInformativeWriting-8",
+            "name": "Developing Ideas in Informative Writing",
             "contentId": "DI_DevelopingIdeasinInformativeWriting_G6-8"
           }
         ]
@@ -8941,11 +8941,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_RenaissanceArt_G6_2023/cover.jpg",
         "directInstructions": [
           {
-            "name": "AnalyzingConnectionswithinInformationalTexts-8",
+            "name": "Analyzing Connections within Informational Texts",
             "contentId": "DI_AnalyzingConnectionswithinInformationalTexts_G6-8"
           },
           {
-            "name": "AnalyzingTextFeatures-8",
+            "name": "Analyzing Text Features",
             "contentId": "DI_AnalyzingTextFeatures_G6-8"
           }
         ]
@@ -9132,15 +9132,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_FoodandSociety_G6/cover.jpg",
         "directInstructions": [
           {
-            "name": "ConclusionsinInformativeWriting-8",
+            "name": "Conclusions in Informative Writing",
             "contentId": "DI_ConclusionsinInformativeWriting_G6-8"
           },
           {
-            "name": "TransitionsinInformativeWriting-8",
+            "name": "Transitions in Informative Writing",
             "contentId": "DI_TransitionsinInformativeWriting_G6-8"
           },
           {
-            "name": "PreciseLanguageandVocabularyinInformativeWriting-8",
+            "name": "Precise Language and Vocabulary in Informative Writing",
             "contentId": "DI_PreciseLanguageandVocabularyinInformativeWriting_G6-8"
           }
         ]
@@ -9321,15 +9321,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_GrowingUp_Grade7/cover.jpg",
         "directInstructions": [
           {
-            "name": "PurposeofNarrativeWriting G6-8",
+            "name": "The Purpose of Narrative Writing",
             "contentId": "DI_PurposeofNarrativeWriting_G6-8"
           },
           {
-            "name": "OrganizingNarrativeWriting G6-8",
+            "name": "Organizing Narrative Writing",
             "contentId": "DI_OrganizingNarrativeWriting_G6-8"
           },
           {
-            "name": "TypesofNarrativeWriting G6-8",
+            "name": "Types of Narrative Writing",
             "contentId": "DI_TypesofNarrativeWriting_G6-8"
           }
         ]
@@ -9506,15 +9506,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_Friends_Grade7_Rewrite/cover.jpg",
         "directInstructions": [
           {
-            "name": "BeginningsinNarrativeWriting G6-8",
+            "name": "Beginnings in Narrative Writing",
             "contentId": "DI_BeginningsinNarrativeWriting_G6-8"
           },
           {
-            "name": "SettinginNarrativeWriting G6-8",
+            "name": "Setting in Narrative Writing",
             "contentId": "DI_SettinginNarrativeWriting_G6-8"
           },
           {
-            "name": "CharactersinNarrativeWriting G6-8",
+            "name": "Characters in Narrative Writing",
             "contentId": "DI_CharactersinNarrativeWriting_G6-8"
           }
         ]
@@ -9691,15 +9691,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_AutoPoetry_Grade7/cover.jpg",
         "directInstructions": [
           {
-            "name": "UsingConcreteSensoryDetailsinNarrativeWriting G6-8",
+            "name": "Using Concrete, Sensory Details in Narrative Writing",
             "contentId": "DI_UsingConcreteSensoryDetailsinNarrativeWriting_G6-8"
           },
           {
-            "name": "DevelopingEventsinNarrativeWriting G6-8",
+            "name": "Developing Events in Narrative Writing",
             "contentId": "DI_DevelopingEventsinNarrativeWriting_G6-8"
           },
           {
-            "name": "TransitionsandLinkingWordsinNarrativeWriting G6-8",
+            "name": "Transitions and Linking Words in Narrative Writing",
             "contentId": "DI_TransitionsandLinkingWordsinNarrativeWriting_G6-8"
           }
         ]
@@ -9868,11 +9868,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_OvercomingObstacles_Grade7/cover.jpg",
         "directInstructions": [
           {
-            "name": "DialogueinNarrativeWriting G6-8",
+            "name": "Dialogue in Narrative Writing",
             "contentId": "DI_DialogueinNarrativeWriting_G6-8"
           },
           {
-            "name": "EndingsinNarrativeWriting G6-8",
+            "name": "Endings in Narrative Writing",
             "contentId": "DI_EndingsinNarrativeWriting_G6-8"
           }
         ]
@@ -10061,15 +10061,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_SocialMedia_7_Rewrite/cover.jpg",
         "directInstructions": [
           {
-            "name": "PurposeofArguments Grade6-8",
+            "name": "The Purpose of Arguments",
             "contentId": "DI_PurposeofArguments_Grade6-8"
           },
           {
-            "name": "OrganizingArguments Grade6-8",
+            "name": "Organizing Arguments",
             "contentId": "DI_OrganizingArguments_Grade6-8"
           },
           {
-            "name": "WhatIsCERCA Grade3-12",
+            "name": "An Introduction: What Is CERCA?",
             "contentId": "ML_WhatIsCERCA_Grade3-12"
           }
         ]
@@ -10264,15 +10264,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_GovernmentRoleinHealthyEating_Grade7_Revised/cover.jpg",
         "directInstructions": [
           {
-            "name": "SummaryinArguments Grade6-8",
+            "name": "Summary in Arguments",
             "contentId": "DI_SummaryinArguments_Grade6-8"
           },
           {
-            "name": "IntroductionsinArguments Grade6-8",
+            "name": "Introductions in Arguments",
             "contentId": "DI_IntroductionsinArguments_Grade6-8"
           },
           {
-            "name": "Claims Grade6-8",
+            "name": "Claims",
             "contentId": "DI_Claims_Grade6-8"
           }
         ]
@@ -10467,19 +10467,19 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_StudentSpeech_Grade6/cover.jpg",
         "directInstructions": [
           {
-            "name": "SupportingArgumentswithReasons Grade6-8",
+            "name": "Supporting Arguments with Reasons",
             "contentId": "DI_SupportingArgumentswithReasons_Grade6-8"
           },
           {
-            "name": "Evidence G6-8",
+            "name": "Supporting Claims with Evidence",
             "contentId": "DI_Evidence_G6-8"
           },
           {
-            "name": "EvaluatingEvidence Grade6-8",
+            "name": "Evaluating Evidence",
             "contentId": "DI_EvaluatingEvidence_Grade6-8"
           },
           {
-            "name": "Counterarguments G6-8",
+            "name": "Counterarguments",
             "contentId": "DI_Counterarguments_G6-8"
           }
         ]
@@ -10666,15 +10666,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_SchoolPolicy_Grade7/cover.jpg",
         "directInstructions": [
           {
-            "name": "Reasoning G6-8",
+            "name": "Reasoning",
             "contentId": "DI_Reasoning_G6-8"
           },
           {
-            "name": "IntegratingEvidence G6-8",
+            "name": "Integrating Evidence Effectively",
             "contentId": "DI_IntegratingEvidence_G6-8"
           },
           {
-            "name": "IssuesAppealsandRhetoricalDevices G6-8",
+            "name": "Issues, Appeals, and Rhetorical Devices",
             "contentId": "DI_IssuesAppealsandRhetoricalDevices_G6-8"
           }
         ]
@@ -10853,11 +10853,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_CharacterChoices_G7/cover.jpg",
         "directInstructions": [
           {
-            "name": "ConclusionsinArguments G6-8",
+            "name": "Conclusions in Arguments",
             "contentId": "DI_ConclusionsinArguments_G6-8"
           },
           {
-            "name": "TransitionsandLinkingWords G6-8",
+            "name": "Transitions and Linking Words",
             "contentId": "DI_TransitionsandLinkingWords_G6-8"
           }
         ]
@@ -11036,11 +11036,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_Machines_G7_2022/cover.jpg",
         "directInstructions": [
           {
-            "name": "Audience G6-8",
+            "name": "Audience",
             "contentId": "DI_Audience_G6-8"
           },
           {
-            "name": "CharacteristicsofaFormalStyle G6-8",
+            "name": "Characteristics of a Formal Style",
             "contentId": "DI_CharacteristicsofaFormalStyle_G6-8"
           }
         ]
@@ -11221,11 +11221,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_Leadership_Grade7/cover.jpg",
         "directInstructions": [
           {
-            "name": "IntroductionsandOrganizationinInformativeWriting G6-8",
+            "name": "Introductions and Organization in Informative Writing",
             "contentId": "DI_IntroductionsandOrganizationinInformativeWriting_G6-8"
           },
           {
-            "name": "DevelopingIdeasinInformativeWriting G6-8",
+            "name": "Developing Ideas in Informative Writing",
             "contentId": "DI_DevelopingIdeasinInformativeWriting_G6-8"
           }
         ]
@@ -11404,11 +11404,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_RenaissanceArt_G7_2023/cover.jpg",
         "directInstructions": [
           {
-            "name": "AnalyzingConnectionswithinInformationalTexts G6-8",
+            "name": "Analyzing Connections within Informational Texts",
             "contentId": "DI_AnalyzingConnectionswithinInformationalTexts_G6-8"
           },
           {
-            "name": "AnalyzingTextFeatures G6-8",
+            "name": "Analyzing Text Features",
             "contentId": "DI_AnalyzingTextFeatures_G6-8"
           }
         ]
@@ -11595,15 +11595,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_FoodandSociety_G7/cover.jpg",
         "directInstructions": [
           {
-            "name": "ConclusionsinInformativeWriting G6-8",
+            "name": "Conclusions in Informative Writing",
             "contentId": "DI_ConclusionsinInformativeWriting_G6-8"
           },
           {
-            "name": "TransitionsinInformativeWriting G6-8",
+            "name": "Transitions in Informative Writing",
             "contentId": "DI_TransitionsinInformativeWriting_G6-8"
           },
           {
-            "name": "PreciseLanguageandVocabularyinInformativeWriting G6-8",
+            "name": "Precise Language and Vocabulary in Informative Writing",
             "contentId": "DI_PreciseLanguageandVocabularyinInformativeWriting_G6-8"
           }
         ]
@@ -11784,15 +11784,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_GrowingUp_Grade8/cover.jpg",
         "directInstructions": [
           {
-            "name": "PurposeofNarrativeWriting G6-8",
+            "name": "The Purpose of Narrative Writing",
             "contentId": "DI_PurposeofNarrativeWriting_G6-8"
           },
           {
-            "name": "OrganizingNarrativeWriting G6-8",
+            "name": "Organizing Narrative Writing",
             "contentId": "DI_OrganizingNarrativeWriting_G6-8"
           },
           {
-            "name": "TypesofNarrativeWriting G6-8",
+            "name": "Types of Narrative Writing",
             "contentId": "DI_TypesofNarrativeWriting_G6-8"
           }
         ]
@@ -11969,15 +11969,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_Friends_Grade8/cover.jpg",
         "directInstructions": [
           {
-            "name": "BeginningsinNarrativeWriting G6-8",
+            "name": "Beginnings in Narrative Writing",
             "contentId": "DI_BeginningsinNarrativeWriting_G6-8"
           },
           {
-            "name": "SettinginNarrativeWriting G6-8",
+            "name": "Setting in Narrative Writing",
             "contentId": "DI_SettinginNarrativeWriting_G6-8"
           },
           {
-            "name": "CharactersinNarrativeWriting G6-8",
+            "name": "Characters in Narrative Writing",
             "contentId": "DI_CharactersinNarrativeWriting_G6-8"
           }
         ]
@@ -12154,15 +12154,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_AutoPoetry_Grade8/cover.jpg",
         "directInstructions": [
           {
-            "name": "UsingConcreteSensoryDetailsinNarrativeWriting G6-8",
+            "name": "Using Concrete, Sensory Details in Narrative Writing",
             "contentId": "DI_UsingConcreteSensoryDetailsinNarrativeWriting_G6-8"
           },
           {
-            "name": "DevelopingEventsinNarrativeWriting G6-8",
+            "name": "Developing Events in Narrative Writing",
             "contentId": "DI_DevelopingEventsinNarrativeWriting_G6-8"
           },
           {
-            "name": "TransitionsandLinkingWordsinNarrativeWriting G6-8",
+            "name": "Transitions and Linking Words in Narrative Writing",
             "contentId": "DI_TransitionsandLinkingWordsinNarrativeWriting_G6-8"
           }
         ]
@@ -12331,11 +12331,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/NL_OvercomingObstacles_Grade8/cover.jpg",
         "directInstructions": [
           {
-            "name": "DialogueinNarrativeWriting G6-8",
+            "name": "Dialogue in Narrative Writing",
             "contentId": "DI_DialogueinNarrativeWriting_G6-8"
           },
           {
-            "name": "EndingsinNarrativeWriting G6-8",
+            "name": "Endings in Narrative Writing",
             "contentId": "DI_EndingsinNarrativeWriting_G6-8"
           }
         ]
@@ -12524,15 +12524,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_SocialMedia_G8_2022/cover.jpg",
         "directInstructions": [
           {
-            "name": "PurposeofArguments Grade6-8",
+            "name": "The Purpose of Arguments",
             "contentId": "DI_PurposeofArguments_Grade6-8"
           },
           {
-            "name": "OrganizingArguments Grade6-8",
+            "name": "Organizing Arguments",
             "contentId": "DI_OrganizingArguments_Grade6-8"
           },
           {
-            "name": "WhatIsCERCA Grade3-12",
+            "name": "An Introduction: What Is CERCA?",
             "contentId": "ML_WhatIsCERCA_Grade3-12"
           }
         ]
@@ -12727,15 +12727,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_GovernmentRoleinHealthyEating_Grade8_Revised/cover.jpg",
         "directInstructions": [
           {
-            "name": "SummaryinArguments Grade6-8",
+            "name": "Summary in Arguments",
             "contentId": "DI_SummaryinArguments_Grade6-8"
           },
           {
-            "name": "IntroductionsinArguments Grade6-8",
+            "name": "Introductions in Arguments",
             "contentId": "DI_IntroductionsinArguments_Grade6-8"
           },
           {
-            "name": "Claims Grade6-8",
+            "name": "Claims",
             "contentId": "DI_Claims_Grade6-8"
           }
         ]
@@ -12930,19 +12930,19 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_StudentSpeech_Grade6/cover.jpg",
         "directInstructions": [
           {
-            "name": "SupportingArgumentswithReasons Grade6-8",
+            "name": "Supporting Arguments with Reasons",
             "contentId": "DI_SupportingArgumentswithReasons_Grade6-8"
           },
           {
-            "name": "Evidence G6-8",
+            "name": "Supporting Claims with Evidence",
             "contentId": "DI_Evidence_G6-8"
           },
           {
-            "name": "EvaluatingEvidence Grade6-8",
+            "name": "Evaluating Evidence",
             "contentId": "DI_EvaluatingEvidence_Grade6-8"
           },
           {
-            "name": "Counterarguments G6-8",
+            "name": "Counterarguments",
             "contentId": "DI_Counterarguments_G6-8"
           }
         ]
@@ -13129,15 +13129,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_SchoolPolicy_Grade8/cover.jpg",
         "directInstructions": [
           {
-            "name": "Reasoning G6-8",
+            "name": "Reasoning",
             "contentId": "DI_Reasoning_G6-8"
           },
           {
-            "name": "IntegratingEvidence G6-8",
+            "name": "Integrating Evidence Effectively",
             "contentId": "DI_IntegratingEvidence_G6-8"
           },
           {
-            "name": "IssuesAppealsandRhetoricalDevices G6-8",
+            "name": "Issues, Appeals, and Rhetorical Devices",
             "contentId": "DI_IssuesAppealsandRhetoricalDevices_G6-8"
           }
         ]
@@ -13316,11 +13316,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_CharacterChoices_G8/cover.jpg",
         "directInstructions": [
           {
-            "name": "ConclusionsinArguments G6-8",
+            "name": "Conclusions in Arguments",
             "contentId": "DI_ConclusionsinArguments_G6-8"
           },
           {
-            "name": "TransitionsandLinkingWords G6-8",
+            "name": "Transitions and Linking Words",
             "contentId": "DI_TransitionsandLinkingWords_G6-8"
           }
         ]
@@ -13499,11 +13499,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_Machines_G8_2022/cover.jpg",
         "directInstructions": [
           {
-            "name": "Audience G6-8",
+            "name": "Audience",
             "contentId": "DI_Audience_G6-8"
           },
           {
-            "name": "CharacteristicsofaFormalStyle G6-8",
+            "name": "Characteristics of a Formal Style",
             "contentId": "DI_CharacteristicsofaFormalStyle_G6-8"
           }
         ]
@@ -13684,11 +13684,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_Leadership_Grade8/cover.jpg",
         "directInstructions": [
           {
-            "name": "IntroductionsandOrganizationinInformativeWriting G6-8",
+            "name": "Introductions and Organization in Informative Writing",
             "contentId": "DI_IntroductionsandOrganizationinInformativeWriting_G6-8"
           },
           {
-            "name": "DevelopingIdeasinInformativeWriting G6-8",
+            "name": "Developing Ideas in Informative Writing",
             "contentId": "DI_DevelopingIdeasinInformativeWriting_G6-8"
           }
         ]
@@ -13867,11 +13867,11 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_RenaissanceArt_G8_2023/cover.jpg",
         "directInstructions": [
           {
-            "name": "AnalyzingConnectionswithinInformationalTexts G6-8",
+            "name": "Analyzing Connections within Informational Texts",
             "contentId": "DI_AnalyzingConnectionswithinInformationalTexts_G6-8"
           },
           {
-            "name": "AnalyzingTextFeatures G6-8",
+            "name": "Analyzing Text Features",
             "contentId": "DI_AnalyzingTextFeatures_G6-8"
           }
         ]
@@ -14058,15 +14058,15 @@
         "coverImageUrl": "https://thinkcerca-prod.s3.amazonaws.com/lessons/AL_FoodandSociety_G8/cover.jpg",
         "directInstructions": [
           {
-            "name": "ConclusionsinInformativeWriting G6-8",
+            "name": "Conclusions in Informative Writing",
             "contentId": "DI_ConclusionsinInformativeWriting_G6-8"
           },
           {
-            "name": "TransitionsinInformativeWriting G6-8",
+            "name": "Transitions in Informative Writing",
             "contentId": "DI_TransitionsinInformativeWriting_G6-8"
           },
           {
-            "name": "PreciseLanguageandVocabularyinInformativeWriting G6-8",
+            "name": "Precise Language and Vocabulary in Informative Writing",
             "contentId": "DI_PreciseLanguageandVocabularyinInformativeWriting_G6-8"
           }
         ]
