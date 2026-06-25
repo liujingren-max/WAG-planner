@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { generateLessonPlan } from "@/utils/planningLogic";
-import { getAvailableGrades, getAvailableUnits, getAvailableModules, getModuleData } from "@/utils/activitiesData";
+import { getAvailableGrades, getAvailableUnits, getAvailableModules, getModuleData, getAllModuleNames } from "@/utils/activitiesData";
 import TopNav from "@/components/TopNav";
 
 const range = (start: number, end: number) => Array.from({ length: end - start + 1 }, (_, i) => start + i);
@@ -22,6 +22,7 @@ export default function Index() {
   const [availableGrades, setAvailableGrades] = useState<number[]>([]);
   const [availableUnits, setAvailableUnits] = useState<number[]>([]);
   const [availableModules, setAvailableModules] = useState<number[]>([]);
+  const [moduleNames, setModuleNames] = useState<Record<number, string>>({});
 
   const [sessionsCount, setSessionsCount] = useState(4);
   const [sessionMinutes, setSessionMinutes] = useState(50);
@@ -58,6 +59,7 @@ export default function Index() {
       setAvailableModules(modules);
       if (modules.length > 0 && !modules.includes(module)) setModule(modules[0]);
     });
+    getAllModuleNames(grade, unit).then(setModuleNames);
   }, [unit, grade, availableUnits.length]);
 
   async function handleGenerate() {
@@ -87,8 +89,8 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Helmet>
-        <title>New Module Plan – ThinkCERCA</title>
-        <meta name="description" content="Create a new ThinkCERCA module plan." />
+        <title>New WAG Plan – ThinkCERCA</title>
+        <meta name="description" content="Create a new ThinkCERCA WAG plan." />
         <link rel="canonical" href={window.location.origin} />
       </Helmet>
 
@@ -97,7 +99,7 @@ export default function Index() {
       <div className="flex-1 flex justify-center px-6 py-12">
         <div className="w-full max-w-[514px]">
           <h1 className="text-[34px] font-bold text-[#4a4a4a] tracking-[-1.02px] mb-8">
-            New Module Plan
+            New WAG Plan
           </h1>
 
           <div className="space-y-5">
@@ -114,19 +116,6 @@ export default function Index() {
               </Select>
             </div>
 
-            {/* Unit */}
-            <div className="space-y-1.5">
-              <Label className="text-[11px] font-medium text-[#4a4a4a]">Unit</Label>
-              <Select value={String(unit)} onValueChange={v => { setUnit(Number(v)); setModule(1); }}>
-                <SelectTrigger className="h-[50px] border-[#ccc] rounded-[5px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableUnits.map(u => <SelectItem key={u} value={String(u)}>Unit {u}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-
             {/* Module */}
             <div className="space-y-1.5">
               <Label className="text-[11px] font-medium text-[#4a4a4a]">Module</Label>
@@ -137,7 +126,7 @@ export default function Index() {
                 <SelectContent>
                   {availableModules.map(m => (
                     <SelectItem key={m} value={String(m)}>
-                      {m === 0 ? 'Unit Preview' : `Module ${m}`}
+                      {moduleNames[m] ?? `Module ${m}`}
                     </SelectItem>
                   ))}
                 </SelectContent>
